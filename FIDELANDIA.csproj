@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Dashboard.ico" />
+    <None Remove="Resources\iconImage.png" />
+    <None Remove="Resources\icono.ico" />
+    <None Remove="Resources\icono1.jpg" />
+    <None Remove="Resources\logo.ico" />
+    <None Remove="Resources\Produccion.ico" />
+    <None Remove="Resources\Proveedores.ico" />
+    <None Remove="Resources\Venta.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Dashboard.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\icono.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\icono1.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\logo.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Produccion.ico" />
+    <Resource Include="Resources\Proveedores.ico" />
+    <Resource Include="Resources\Venta.ico" />
+  </ItemGroup>
+
+</Project>

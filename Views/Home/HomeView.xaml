@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="FIDELANDIA.Views.Home.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Background="#F9F9F9">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32">
+
+            <!-- Bienvenida -->
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Texto de bienvenida -->
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="¡Bienvenido!" 
+                               FontSize="28" FontWeight="Bold" 
+                               Foreground="#333333"/>
+                    <TextBlock Text="Aplicación para gestión de proveedores y stock." 
+                               FontSize="16" Foreground="#666666" Margin="0,8,0,0"/>
+                </StackPanel>
+
+                <!-- Foto del usuario -->
+                <Border Grid.Column="1" Width="130" Height="130" CornerRadius="60" Background="#F2F2F2" HorizontalAlignment="Right">
+                    <Image Source="/Resources/icono.ico" Stretch="UniformToFill" ClipToBounds="True"/>
+                </Border>
+            </Grid>
+
+            <!-- Cards principales -->
+            <WrapPanel HorizontalAlignment="Center" ItemHeight="170" ItemWidth="260" Margin="0,0,0,20">
+                
+                <!-- Ver proveedores -->
+                <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
+                        Effect="{StaticResource DropShadow}">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Image Source="/Resources/Proveedores.ico" Width="64" Height="64" Margin="0,0,0,12"/>
+                        <TextBlock Text="Ver proveedores" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Cargar produccion diaria -->
+                <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
+                        Effect="{StaticResource DropShadow}">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Image Source="/Resources/Produccion.ico" Width="64" Height="64" Margin="0,0,0,12"/>
+                        <TextBlock Text="Cargar producción" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Cargar venta diaria -->
+                <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
+                        Effect="{StaticResource DropShadow}">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Image Source="/Resources/Venta.ico" Width="64" Height="64" Margin="0,0,0,12"/>
+                        <TextBlock Text="Cargar venta" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Dashboard -->
+                <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
+                        Effect="{StaticResource DropShadow}">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Image Source="/Resources/Dashboard.ico" Width="64" Height="64" Margin="0,0,0,12"/>
+                        <TextBlock Text="Dashboard" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+            </WrapPanel>
+
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

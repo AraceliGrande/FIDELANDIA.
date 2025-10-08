@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="FIDELANDIA.Views.Produccion.CrearVentaFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignWidth="800"
+             Background="Transparent">
+
+    <Border Background="White" Padding="32" Effect="{StaticResource DropShadow}">
+        <StackPanel>
+
+            <!-- Título -->
+            <TextBlock Text="Registrar Venta"
+                       FontSize="19"
+                       FontWeight="Bold"
+                       Foreground="#e5740a"
+                       Margin="0,0,0,10"/>
+
+            <!-- Subtítulo -->
+            <TextBlock Text="Seleccione la cantidad a vender de cada lote disponible."
+                       FontSize="11"
+                       FontWeight="SemiBold"
+                       Foreground="DarkOliveGreen"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,20"/>
+
+            <!-- DataGrid de lotes -->
+            <DataGrid x:Name="DgLotes" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column"
+                      GridLinesVisibility="All" Margin="0,0,0,20" Height="300">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Lote" Binding="{Binding Lote}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Tipo de Pasta" Binding="{Binding TipoPasta}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Fecha Producción" Binding="{Binding FechaProduccion}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Cantidad Disponible" Binding="{Binding CantidadDisponible}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Cantidad a Vender" Binding="{Binding CantidadAVender}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Botones -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="120" Height="35" Margin="0,0,12,0" Click="Cancelar_Click"/>
+                <Button Content="Registrar Venta" Style="{StaticResource PrimaryButton}" Width="120" Height="35" Click="RegistrarVenta_Click"/>
+            </StackPanel>
+
+        </StackPanel>
+    </Border>
+</UserControl>

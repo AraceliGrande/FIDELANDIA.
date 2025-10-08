@@ -1,0 +1,204 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- ===== COLORES ===== -->
+    <Color x:Key="PrimaryColor">#F9F9F9</Color>
+    <!-- Fondo principal (beige pastel) -->
+    <Color x:Key="AccentColor">#e5740a</Color>
+    <!-- Naranja pastel -->
+    <Color x:Key="SecondaryColor">#FFE0B2</Color>
+    <!-- Durazno claro -->
+    <Color x:Key="TextPrimaryColor">#333333</Color>
+    <Color x:Key="TextSecondaryColor">#666666</Color>
+    <Color x:Key="HoverColor">#FFD699</Color>
+    <Color x:Key="ColorOrangeTitle">#e5740a</Color>
+    <!-- Hover más suave -->
+
+    <!-- ===== BRUSHES ===== -->
+    <SolidColorBrush x:Key="BgPrimary" Color="{StaticResource PrimaryColor}" />
+    <SolidColorBrush x:Key="BgSecondary" Color="{StaticResource SecondaryColor}" />
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+    <SolidColorBrush x:Key="TextPrimary" Color="{StaticResource TextPrimaryColor}" />
+    <SolidColorBrush x:Key="TextSecondary" Color="{StaticResource TextSecondaryColor}" />
+    <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
+
+    <!-- ===== ESTILO GLOBAL DE BOTONES ===== -->
+    <Style TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Padding" Value="12,6"/>
+        <Setter Property="Margin" Value="8"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.15" Color="#888"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" 
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect BlurRadius="18" ShadowDepth="4" Opacity="0.25" Color="#888"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- DropShadow para bordes -->
+    <DropShadowEffect x:Key="DropShadow" BlurRadius="8" ShadowDepth="2" Opacity="0.2"/>
+
+    <!-- Botón primario -->
+    <Style x:Key="PrimaryButton" TargetType="Button">
+        <Setter Property="Background" Value="#F76334"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" 
+                        CornerRadius="6"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <Border.Effect>
+                            <DropShadowEffect Color="Gray"
+                                          BlurRadius="10"
+                                          ShadowDepth="2"
+                                          Opacity="0.5"/>
+                        </Border.Effect>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <!-- Botón secundario -->
+    <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="#e5740a"/>
+        <Setter Property="BorderBrush" Value="#e5740a"/>
+    </Style>
+
+    <!-- Alinear texto a la derecha -->
+    <Style x:Key="RightAlignStyle" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
+
+
+    <!-- ===== ESTILO DE CARDS ===== -->
+    <Style x:Key="card" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource BgSecondary}"/>
+        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Margin" Value="8"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect BlurRadius="12" ShadowDepth="3" Opacity="0.25"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <TranslateTransform Y="0"/>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect BlurRadius="16" ShadowDepth="5" Opacity="0.35"/>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="RenderTransform">
+                    <Setter.Value>
+                        <TranslateTransform Y="-3"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="UnderlineTextBox" TargetType="TextBox">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        <Setter Property="BorderBrush" Value="#ccc"/>
+    </Style>
+
+    <!-- Estilo para labels/campos -->
+    <Style x:Key="FormLabel" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Margin" Value="0,0,0,4"/>
+    </Style>
+
+    <!-- Estilo para contenedores de campo -->
+    <Style x:Key="FormFieldContainer" TargetType="StackPanel">
+        <Setter Property="Margin" Value="0,0,0,20"/>
+    </Style>
+
+    <Style x:Key="UnderlineDatePicker" TargetType="DatePicker">
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        <Setter Property="BorderBrush" Value="#ccc"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding" Value="4"/>
+    </Style>
+
+    <Style x:Key="UnderlineComboBox" TargetType="ComboBox">
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+        <Setter Property="BorderBrush" Value="#ccc"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding" Value="4"/>
+    </Style>
+
+    <Style TargetType="Button" x:Key="SidebarButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Margin" Value="10 5"/>
+        <Setter Property="Padding" Value="8"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border CornerRadius="8" Background="{TemplateBinding Background}">
+                        <ContentPresenter Margin="10"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#ed7a0e"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="#ed7a0e"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+</ResourceDictionary>

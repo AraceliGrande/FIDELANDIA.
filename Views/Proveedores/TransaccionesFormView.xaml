@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="FIDELANDIA.Views.Proveedores.TransaccionesFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Background="Transparent">
+
+    <Border Background="White" Padding="32" MaxWidth="800" Effect="{StaticResource DropShadow}">
+        <StackPanel>
+
+            <!-- Título con nombre del proveedor -->
+            <TextBlock FontSize="19" FontWeight="Bold" Foreground="#e5740a" Margin="0,0,0,8">
+                <Run Text="Nueva Transacción - "/>
+                <Run x:Name="TxtProveedorNombre" Text="Proveedor 1"/>
+            </TextBlock>
+
+            <!-- Subtítulo -->
+            <TextBlock Text="Ingrese los datos asociados a esta nueva transferencia."
+                FontSize="11"
+                FontWeight="SemiBold"
+                Foreground="DarkOliveGreen"
+                TextWrapping="Wrap"
+                        Margin="0,0,0,20"/>
+
+
+            <Grid Margin="0,0,0,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Fecha + Tipo -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Concepto -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Monto -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Factura -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Botones -->
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Fecha -->
+                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,16">
+                    <TextBlock Text="Fecha" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <DatePicker x:Name="DpFecha" Style="{StaticResource UnderlineDatePicker}"/>
+                </StackPanel>
+
+                <!-- Tipo -->
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="12,0,0,16">
+                    <TextBlock Text="Tipo" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <ComboBox x:Name="CbTipo" Style="{StaticResource UnderlineComboBox}" 
+                              ItemsSource="{Binding Tipos}" SelectedIndex="0"/>
+                </StackPanel>
+
+                <!-- Concepto -->
+                <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,16">
+                    <TextBlock Text="Concepto" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtConcepto" Style="{StaticResource UnderlineTextBox}"/>
+                </StackPanel>
+
+                <!-- Monto -->
+                <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,16">
+                    <TextBlock Text="Monto" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtDebe" Style="{StaticResource UnderlineTextBox}"/>
+                </StackPanel>
+
+                <!-- Factura (opcional) -->
+                <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Margin="0,0,0,16">
+                    <TextBlock Text="Factura (opcional)" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtFactura" Style="{StaticResource UnderlineTextBox}"/>
+                </StackPanel>
+
+                <!-- Botones -->
+                <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                    <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="120" Margin="0,0,12,0" Height="35" Click="Cancelar_Click"/>
+                    <Button Content="Guardar" Style="{StaticResource PrimaryButton}" Width="120" Height="35"  Click="Guardar_Click"/>
+                </StackPanel>
+
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>

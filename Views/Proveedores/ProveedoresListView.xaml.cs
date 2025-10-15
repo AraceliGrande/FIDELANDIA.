@@ -36,7 +36,7 @@ namespace FIDELANDIA.Views
             try
             {
                 var proveedores = _service.ObtenerTodos();
-                ProveedoresItemsControl.ItemsSource = proveedores;
+                ProveedoresListBox.ItemsSource = proveedores;
             }
             catch (Exception ex)
             {
@@ -61,13 +61,12 @@ namespace FIDELANDIA.Views
         }
 
         // Evento de selección de proveedor
-        private void ItemBorder_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void ProveedoresListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
             {
-                if (sender is Border border && border.DataContext is ProveedorModel proveedor)
+                if (ProveedoresListBox.SelectedItem is ProveedorModel proveedor)
                 {
-                    // Llamamos al evento externo
                     var proveedorCompleto = _service.ObtenerProveedorCompleto(proveedor.ProveedorID);
                     if (proveedorCompleto != null)
                         ProveedorSeleccionado?.Invoke(proveedorCompleto);

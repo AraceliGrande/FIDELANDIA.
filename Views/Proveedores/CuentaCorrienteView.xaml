@@ -22,91 +22,54 @@
             <StackPanel>
 
                 <!-- ENCABEZADO - Datos del proveedor -->
-                <Border Background="#f9f9f9" CornerRadius="8" Padding="16" BorderBrush="#ddd" BorderThickness="1" Margin="0,0,0,20">
+                <Border Background="#fdfdfd" CornerRadius="8" Padding="16" BorderBrush="#ddd" BorderThickness="1" Margin="0,0,0,20">
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
                             <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Info básica -->
-                        <StackPanel>
-                            <TextBlock Text="Cuenta Corriente" FontSize="14" Foreground="#a34c00" FontWeight="SemiBold"/>
-                            <TextBlock x:Name="DetalleNombre" Text="Proveedor 1" FontSize="20" FontWeight="Bold" Margin="0,4,0,12" Foreground="#333"/>
+                        <!-- INFO DEL PROVEEDOR -->
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <!-- Línea con "Cuenta Corriente" + nombre del proveedor -->
+                            <DockPanel LastChildFill="True" Margin="0,0,0,16">
+                                <TextBlock Text="Cuenta Corriente: " FontSize="14" Foreground="#a34c00" FontWeight="SemiBold"
+                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock x:Name="DetalleNombre" Text="Nombre del proveedor" FontSize="14" Foreground="#a34c00" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                            </DockPanel>
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="📋 CUIT:" FontWeight="Bold" Grid.Column="0" Margin="0,0,8,0"/>
-                                <TextBlock x:Name="DetalleCuit" Text="00-00000000-0" Grid.Column="1" Foreground="#555"/>
-                            </Grid>
+                            <!-- Datos organizados -->
+                            <UniformGrid Columns="2" Rows="2" Margin="0,0,0,0">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,10,10">
+                                    <TextBlock Text="📋 CUIT:" FontWeight="Bold" Width="80"/>
+                                    <TextBlock x:Name="DetalleCuit" Text="00-00000000-0" Foreground="#555" Width="Auto"/>
+                                </StackPanel>
 
-                            <Grid Margin="0,4,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="📞 Teléfono:" FontWeight="Bold" Grid.Column="0" Margin="0,0,8,0"/>
-                                <TextBlock x:Name="DetalleTelefono" Text="(011) 1234-5678" Grid.Column="1" Foreground="#555"/>
-                            </Grid>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <TextBlock Text="📞 Teléfono:" FontWeight="Bold" Width="80"/>
+                                    <TextBlock x:Name="DetalleTelefono" Text="(000) 0000-0000" Foreground="#555" Width="Auto"/>
+                                </StackPanel>
 
-                            <Grid Margin="0,4,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="📧 Email:" FontWeight="Bold" Grid.Column="0" Margin="0,0,8,0"/>
-                                <TextBlock x:Name="DetalleEmail" Text="proveedor@mail.com" Grid.Column="1" Foreground="#555"/>
-                            </Grid>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
+                                    <TextBlock Text="📧 Email:" FontWeight="Bold" Width="80"/>
+                                    <TextBlock x:Name="DetalleEmail" Text="emailProveedor@mail.com" Foreground="#555" Width="Auto"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🏠 Dirección:" FontWeight="Bold" Width="80"/>
+                                    <TextBlock x:Name="DetalleDireccion" Text="Direccion proveedor" Foreground="#555" Width="Auto"/>
+                                </StackPanel>
+                            </UniformGrid>
                         </StackPanel>
 
-                        <!-- Total / saldo -->
+                        <!-- SALDO -->
                         <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <TextBlock Text="Saldo actual" FontSize="13" Foreground="#777" TextAlignment="Right"/>
-                            <TextBlock x:Name="DetalleSaldo" Text="$ 0,00" FontSize="24" FontWeight="Bold" Foreground="#2e7d32" TextAlignment="Right"/>
+                            <TextBlock Text="Saldo Actual" FontSize="14" Foreground="#777" TextAlignment="Right"/>
+                            <TextBlock x:Name="DetalleSaldo" Text="$ 0,00" FontSize="28" FontWeight="Bold" Foreground="#2e7d32" TextAlignment="Right"/>
                         </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- FILTROS -->
-                <Border Background="#fefefe" CornerRadius="8" Padding="10" BorderBrush="#ddd" BorderThickness="1" Margin="0,0,0,20">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Desde -->
-                        <Grid Grid.Column="0" Margin="0,0,8,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Desde:" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                            <Border Grid.Column="1" CornerRadius="6" BorderBrush="#ccc" BorderThickness="1">
-                                <DatePicker HorizontalAlignment="Stretch" Margin="2"/>
-                            </Border>
-                        </Grid>
-
-                        <!-- Hasta -->
-                        <Grid Grid.Column="1" Margin="0,0,8,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Hasta:" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                            <Border Grid.Column="1" CornerRadius="6" BorderBrush="#ccc" BorderThickness="1">
-                                <DatePicker HorizontalAlignment="Stretch" Margin="2"/>
-                            </Border>
-                        </Grid>
-
-                        <!-- Botón Buscar -->
-                        <Button Content="Buscar" Style="{StaticResource PrimaryButton}" Grid.Column="2" Width="100" Height="28"/>
-                    </Grid>
-                </Border>
 
                 <!-- TABLA DE MOVIMIENTOS -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -123,6 +86,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </ScrollViewer>
+
             </StackPanel>
         </DockPanel>
     </Border>

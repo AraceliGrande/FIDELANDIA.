@@ -25,39 +25,51 @@ namespace FIDELANDIA.Views
             InitializeComponent();
         }
 
-        public void MostrarProveedor(ProveedorModel proveedor)
+
+        public void MostrarProveedor(ProveedorModel? proveedor)
         {
             if (proveedor == null) return;
 
-            // Actualizar nombre en el header
-            DetalleNombre.Text = proveedor.Nombre;
-            DetalleCuit.Text = proveedor.Cuit;
-            DetalleTelefono.Text = proveedor.Telefono;
-            DetalleEmail.Text = proveedor.Email;
-
-            // Mostrar saldo actual
-            DetalleSaldo.Text = proveedor.SaldoActual.ToString("C2"); // Formato $ 0,00
-
-            // Llenar DataGrid con movimientos (transacciones)
-            decimal saldoAcumulado = 0;
-            MovimientosGrid.ItemsSource = proveedor.Transacciones.Select(t =>
+            try
             {
-                if (t.TipoTransaccion == "Debe")
-                    saldoAcumulado += t.Monto;
-                else if (t.TipoTransaccion == "Haber")
-                    saldoAcumulado -= t.Monto;
+                // Actualizar nombre en el header
+                DetalleNombre.Text = proveedor.Nombre;
+                DetalleCuit.Text = proveedor.Cuit;
+                DetalleTelefono.Text = proveedor.Telefono;
+                DetalleEmail.Text = proveedor.Email;
 
-                return new
+                // Mostrar saldo actual
+                DetalleSaldo.Text = proveedor.SaldoActual.ToString("C2"); // Formato $ 0,00
+
+                // Llenar DataGrid con movimientos (transacciones)
+                decimal saldoAcumulado = 0;
+                MovimientosGrid.ItemsSource = proveedor.Transacciones != null
+                ? proveedor.Transacciones.Select(t =>
                 {
-                    Fecha = t.Fecha.ToShortDateString(),
-                    Tipo = t.TipoTransaccion,
-                    Concepto = t.Detalle,
-                    Debe = t.TipoTransaccion == "Debe" ? t.Monto : 0,
-                    Haber = t.TipoTransaccion == "Haber" ? t.Monto : 0,
-                    Saldo = saldoAcumulado,
-                };
-            }).ToList();
+                    if (t.TipoTransaccion == "Debe")
+                        saldoAcumulado += t.Monto;
+                    else if (t.TipoTransaccion == "Haber")
+                        saldoAcumulado -= t.Monto;
+
+                    return new
+                    {
+                        Fecha = t.Fecha.ToShortDateString(),
+                        Tipo = t.TipoTransaccion,
+                        Concepto = t.Detalle,
+                        Debe = t.TipoTransaccion == "Debe" ? t.Monto : 0,
+                        Haber = t.TipoTransaccion == "Haber" ? t.Monto : 0,
+                        Saldo = saldoAcumulado,
+                    };
+                }).ToList()
+                : new System.Collections.Generic.List<object>(); // vacío si Transacciones es null
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al mostrar el proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+        
 
         private void BtnNuevaTransaccion_Click(object sender, System.Windows.RoutedEventArgs e)
         {

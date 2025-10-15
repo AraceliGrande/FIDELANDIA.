@@ -2,6 +2,7 @@
 using FIDELANDIA.Models;
 using FIDELANDIA.Services;
 using FIDELANDIA.Windows;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -15,39 +16,69 @@ namespace FIDELANDIA.Views
         {
             InitializeComponent();
 
-            var dbContext = new FidelandiaDbContext();
-            _service = new ProveedorService(dbContext);
+            try
+            {
+                var dbContext = new FidelandiaDbContext();
+                _service = new ProveedorService(dbContext);
 
-            CargarProveedores();
+                CargarProveedores();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al inicializar la vista de proveedores: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public event Action<ProveedorModel> ProveedorSeleccionado;
 
         private void CargarProveedores()
         {
-            var proveedores = _service.ObtenerTodos();
-            ProveedoresItemsControl.ItemsSource = proveedores;
+            try
+            {
+                var proveedores = _service.ObtenerTodos();
+                ProveedoresItemsControl.ItemsSource = proveedores;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar los proveedores: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnNuevoProveedor_Click(object sender, RoutedEventArgs e)
         {
-            var ventana = new ProveedoresFormWindow();
-            ventana.Owner = Window.GetWindow(this);
-            ventana.ShowDialog();
+            try
+            {
+                var ventana = new ProveedoresFormWindow();
+                ventana.Owner = Window.GetWindow(this);
+                ventana.ShowDialog();
 
-            CargarProveedores();
+                CargarProveedores();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al abrir la ventana de nuevo proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         // Evento de selección de proveedor
         private void ItemBorder_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (sender is Border border && border.DataContext is ProveedorModel proveedor)
+            try
             {
-                // Llamamos al evento externo
-                ProveedorSeleccionado?.Invoke(_service.ObtenerProveedorCompleto(proveedor.ProveedorID));
+                if (sender is Border border && border.DataContext is ProveedorModel proveedor)
+                {
+                    // Llamamos al evento externo
+                    var proveedorCompleto = _service.ObtenerProveedorCompleto(proveedor.ProveedorID);
+                    if (proveedorCompleto != null)
+                        ProveedorSeleccionado?.Invoke(proveedorCompleto);
+                    else
+                        MessageBox.Show("No se pudo obtener el proveedor completo.", "Atención", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al seleccionar el proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
 }
-
-

@@ -45,22 +45,39 @@ namespace FIDELANDIA.Services
         // ✅ Traer todos los proveedores
         public List<ProveedorModel> ObtenerTodos()
         {
-            return _dbContext.Proveedores
-                             .OrderBy(p => p.Nombre)
-                             .Select(p => new ProveedorModel
-                             {
-                                 ProveedorID = p.ProveedorID,
-                                 Nombre = p.Nombre,
-                                 Cuit = p.Cuit,
-                                 SaldoActual = p.SaldoActual,    
-                             }).ToList();
+            try
+            {
+                return _dbContext.Proveedores
+                                 .OrderBy(p => p.Nombre)
+                                 .Select(p => new ProveedorModel
+                                 {
+                                     ProveedorID = p.ProveedorID,
+                                     Nombre = p.Nombre,
+                                     Cuit = p.Cuit,
+                                     SaldoActual = p.SaldoActual,
+                                 }).ToList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al obtener los proveedores: {ex.Message}");
+                return new List<ProveedorModel>();
+            }
         }
 
-        public ProveedorModel ObtenerProveedorCompleto(int proveedorId)
+        public ProveedorModel? ObtenerProveedorCompleto(int proveedorId)
         {
-            return _dbContext.Proveedores
-                             .Where(p => p.ProveedorID == proveedorId)
-                             .FirstOrDefault();
+            try
+            {
+                return _dbContext.Proveedores
+                                 .Where(p => p.ProveedorID == proveedorId)
+                                 .FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al obtener el proveedor: {ex.Message}");
+                return null;
+            }
         }
+
     }
 }

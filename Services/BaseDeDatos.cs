@@ -17,7 +17,7 @@ namespace FIDELANDIA.Services
 
         public BaseDeDatos()
         {
-            _conexionString = @"Server=DESKTOP-ML2Q34Q\SQLEXPRESS;Database=FIDELANDIA;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;";
+            _conexionString = @"Server=DESKTOP-5NQHMNN;Database=FidelandiaDB;Trusted_Connection=True";
         }
 
         internal ObservableCollection<UserModel> GetUsuarios()

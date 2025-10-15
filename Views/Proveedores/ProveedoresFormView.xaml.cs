@@ -1,46 +1,64 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using FIDELANDIA.Services;
+using FIDELANDIA.Data;
 
 namespace FIDELANDIA.Views
 {
-    /// <summary>
-    /// Lógica de interacción para ProveedoresFormView.xaml
-    /// </summary>
     public partial class ProveedoresFormView : UserControl
     {
+        private readonly ProveedorService _service;
+
         public ProveedoresFormView()
         {
             InitializeComponent();
+
+            // Inicializamos el service con el DbContext
+            var dbContext = new FidelandiaDbContext();
+            _service = new ProveedorService(dbContext);
         }
+
         private void Cancelar_Click(object sender, RoutedEventArgs e)
         {
             Window parentWindow = Window.GetWindow(this);
             if (parentWindow != null)
-            {
                 parentWindow.Close();
-            }
         }
-        private void Confirmar_Click(object sender, RoutedEventArgs e)
+
+        private void Guardar_Click(object sender, RoutedEventArgs e)
         {
-            Window parentWindow = Window.GetWindow(this);
-            if (parentWindow != null)
+            try
             {
-                parentWindow.Close();
+                // Crear proveedor
+                bool resultado = _service.CrearProveedor(
+                    TxtNombre.Text,
+                    TxtCuit.Text,
+                    TxtDireccion.Text,
+                    TxtTelefono.Text,
+                    TxtEmail.Text
+                );
+
+                if (resultado)
+                {
+                    // Mensaje de éxito
+                    MessageBox.Show("Proveedor creado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    Window parentWindow = Window.GetWindow(this);
+                    if (parentWindow != null)
+                        parentWindow.Close();
+                }
+                else
+                {
+                    // Mensaje de error genérico si el service retorna false
+                    MessageBox.Show("No se pudo crear el proveedor.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Mensaje de error con excepción
+                MessageBox.Show($"Ocurrió un error al crear el proveedor:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
     }
-
 }

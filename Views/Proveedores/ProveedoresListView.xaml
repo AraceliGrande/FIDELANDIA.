@@ -6,37 +6,30 @@
     <Border Background="White" CornerRadius="12" Padding="16" 
             BorderBrush="#eee" BorderThickness="1" Effect="{StaticResource DropShadow}" Margin="0,0,10,0">
         <DockPanel LastChildFill="True">
-            <!-- Título -->
+            
             <TextBlock Text="Proveedores" FontSize="20" FontWeight="Bold" Margin="0,0,0,16" 
                        Foreground="#b65601" DockPanel.Dock="Top"/>
 
-            <!-- Botón siempre al fondo -->
             <Button Content="+ Nuevo Proveedor" Style="{StaticResource PrimaryButton}" 
                     DockPanel.Dock="Bottom" Margin="0,16,0,0" x:Name="BtnNuevoProveedor" Height="29" Width="146"
                     Click="BtnNuevoProveedor_Click" Cursor="Hand"/>
-            
-            <!-- Scroll de proveedores -->
+
+            <!-- ItemsControl con binding -->
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel x:Name="ProveedoresList">
-                    <Border Background="White" CornerRadius="8" Padding="12" Margin="0,0,0,12" Effect="{StaticResource DropShadow}" Width="221">
-                        <StackPanel>
-                            <TextBlock Text="Proveedor 1" FontWeight="Bold" Foreground="#333"/>
-                            <TextBlock Text="Contacto: Juan Pérez" FontSize="12" Foreground="#666"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Background="White" CornerRadius="8" Padding="12" Margin="0,0,0,12" Effect="{StaticResource DropShadow}" Width="220">
-                        <StackPanel>
-                            <TextBlock Text="Proveedor 2" FontWeight="Bold" Foreground="#333"/>
-                            <TextBlock Text="Contacto: Ana Gómez" FontSize="12" Foreground="#666"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Background="White" CornerRadius="8" Padding="12" Margin="0,0,0,12" Effect="{StaticResource DropShadow}" Width="220">
-                        <StackPanel>
-                            <TextBlock Text="Proveedor 3" FontWeight="Bold" Foreground="#333"/>
-                            <TextBlock Text="Contacto: Luis Díaz" FontSize="12" Foreground="#666"/>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
+                <ItemsControl x:Name="ProveedoresItemsControl" Margin="0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="White" CornerRadius="8" Padding="12" Margin="0,0,0,12" 
+                                Width="220" Effect="{StaticResource DropShadow}"
+                                MouseLeftButtonUp="ItemBorder_MouseLeftButtonUp">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Nombre}" FontWeight="Bold" Foreground="#333"/>
+                                    <TextBlock Text="{Binding Cuit, StringFormat=CUIT: {0}}" FontSize="12" Foreground="#666"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
         </DockPanel>
     </Border>

@@ -22,26 +22,44 @@
                Foreground="DarkOliveGreen"
                TextWrapping="Wrap"
                Margin="0,0,0,40"/>
-            
-            <!-- Espacio entre el subtítulo y el formulario -->
+
+
+            <!-- Nombre -->
             <StackPanel Style="{StaticResource FormFieldContainer}">
                 <TextBlock Text="Nombre" Style="{StaticResource FormLabel}"/>
                 <TextBox x:Name="TxtNombre" Style="{StaticResource UnderlineTextBox}"/>
             </StackPanel>
 
+            <!-- CUIT -->
+            <StackPanel Style="{StaticResource FormFieldContainer}">
+                <TextBlock Text="CUIT" Style="{StaticResource FormLabel}"/>
+                <TextBox x:Name="TxtCuit" Style="{StaticResource UnderlineTextBox}"/>
+            </StackPanel>
+
+            <!-- Teléfono -->
             <StackPanel Style="{StaticResource FormFieldContainer}">
                 <TextBlock Text="Teléfono" Style="{StaticResource FormLabel}"/>
                 <TextBox x:Name="TxtTelefono" Style="{StaticResource UnderlineTextBox}"/>
             </StackPanel>
 
-            <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,0,0,30">
+            <!-- Dirección -->
+            <StackPanel Style="{StaticResource FormFieldContainer}">
                 <TextBlock Text="Dirección" Style="{StaticResource FormLabel}"/>
                 <TextBox x:Name="TxtDireccion" Style="{StaticResource UnderlineTextBox}"/>
             </StackPanel>
 
+            <!-- Email -->
+            <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,0,0,30">
+                <TextBlock Text="Email" Style="{StaticResource FormLabel}"/>
+                <TextBox x:Name="TxtEmail" Style="{StaticResource UnderlineTextBox}"/>
+            </StackPanel>
+
+            <!-- Botones -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom">
-                <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="120" Margin="0,0,12,0" Height="35"/>
-                <Button Content="Guardar" Style="{StaticResource PrimaryButton}" Width="120" Height="35"/>
+                <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="120" Margin="0,0,12,0" Height="35" 
+                         Click="Cancelar_Click"/>
+                <Button Content="Guardar" Style="{StaticResource PrimaryButton}" Width="120" Height="35"
+                        Click="Guardar_Click"/>
             </StackPanel>
         </StackPanel>
     </Border>

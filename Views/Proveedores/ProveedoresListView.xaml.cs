@@ -1,38 +1,53 @@
-﻿using FIDELANDIA.Windows;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FIDELANDIA.Data;
+using FIDELANDIA.Models;
+using FIDELANDIA.Services;
+using FIDELANDIA.Windows;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FIDELANDIA.Views
 {
-    /// <summary>
-    /// Lógica de interacción para ProveedoresListView.xaml
-    /// </summary>
     public partial class ProveedoresListView : UserControl
     {
+        private readonly ProveedorService _service;
+
         public ProveedoresListView()
         {
             InitializeComponent();
+
+            var dbContext = new FidelandiaDbContext();
+            _service = new ProveedorService(dbContext);
+
+            CargarProveedores();
+        }
+
+        public event Action<ProveedorModel> ProveedorSeleccionado;
+
+        private void CargarProveedores()
+        {
+            var proveedores = _service.ObtenerTodos();
+            ProveedoresItemsControl.ItemsSource = proveedores;
         }
 
         private void BtnNuevoProveedor_Click(object sender, RoutedEventArgs e)
         {
-            // Crear y abrir la ventana modal para el formulario
             var ventana = new ProveedoresFormWindow();
-            ventana.Owner = Window.GetWindow(this); // Para que sea modal sobre la ventana principal
+            ventana.Owner = Window.GetWindow(this);
             ventana.ShowDialog();
+
+            CargarProveedores();
         }
 
+        // Evento de selección de proveedor
+        private void ItemBorder_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.DataContext is ProveedorModel proveedor)
+            {
+                // Llamamos al evento externo
+                ProveedorSeleccionado?.Invoke(_service.ObtenerProveedorCompleto(proveedor.ProveedorID));
+            }
+        }
     }
 }
+
+

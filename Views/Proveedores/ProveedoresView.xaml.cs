@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FIDELANDIA.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,14 +16,20 @@ using System.Windows.Shapes;
 
 namespace FIDELANDIA.Views
 {
-    /// <summary>
-    /// Lógica de interacción para ProveedoresView.xaml
-    /// </summary>
     public partial class ProveedoresView : UserControl
     {
         public ProveedoresView()
         {
             InitializeComponent();
+
+            // Vincular evento: cuando se selecciona un proveedor
+            ListaProveedores.ProveedorSeleccionado += MostrarCuentaCorriente;
+        }
+
+        private void MostrarCuentaCorriente(ProveedorModel proveedor)
+        {
+            // Mostrar los datos del proveedor en el panel derecho
+            CuentaCorriente.MostrarProveedor(proveedor);
         }
     }
 }

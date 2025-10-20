@@ -63,17 +63,17 @@
                                             <!-- Primera columna -->
                                             <StackPanel Grid.Column="0" Margin="0,0,16,0">
                                                 <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="📋 CUIT: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock Text="📋 CUIT: " FontWeight="SemiBold" Width="90"/>
                                                     <TextBlock x:Name="DetalleCuit" Text="00-00000000-0" Foreground="#555"/>
                                                 </StackPanel>
 
                                                 <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="📞 Teléfono: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock Text="📞 Teléfono: " FontWeight="SemiBold" Width="90"/>
                                                     <TextBlock x:Name="DetalleTelefono" Text="(000) 0000-0000" Foreground="#555"/>
                                                 </StackPanel>
 
                                                 <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="📧 Email: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock Text="📧 Email: " FontWeight="SemiBold" Width="90"/>
                                                     <TextBlock x:Name="DetalleEmail" Text="emailProveedor@mail.com" Foreground="#555"/>
                                                 </StackPanel>
                                             </StackPanel>
@@ -81,17 +81,17 @@
                                             <!-- Segunda columna -->
                                             <StackPanel Grid.Column="1" Margin="16,0,0,0">
                                                 <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="🗂 Categoría: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock Text="🗂 Categoría: " FontWeight="SemiBold" Width="90"/>
                                                     <TextBlock x:Name="DetalleCategoria" Text="N/A" Foreground="#555"/>
                                                 </StackPanel>
 
                                                 <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="💰 Límite: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock Text="💰 Límite: " FontWeight="SemiBold" Width="90"/>
                                                     <TextBlock x:Name="DetalleLimiteCredito" Text="$0,00" Foreground="#555"/>
                                                 </StackPanel>
 
                                                 <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="⚡ Activo: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock Text="⚡ Activo: " FontWeight="SemiBold" Width="90"/>
                                                     <TextBlock x:Name="DetalleActivo" Text="Sí" Foreground="#555"/>
                                                 </StackPanel>
                                             </StackPanel>

@@ -29,7 +29,7 @@
                 <TextBox x:Name="TxtDescripcion" Style="{StaticResource UnderlineTextBox}"/>
             </StackPanel>
 
-            <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,0,0,20">
+            <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,0,0,40">
                 <TextBlock Text="Costo Actual" Style="{StaticResource FormLabel}"/>
                 <TextBox x:Name="TxtCosto" Style="{StaticResource UnderlineTextBox}"/>
             </StackPanel>

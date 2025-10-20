@@ -6,9 +6,13 @@
         xmlns:local="clr-namespace:FIDELANDIA.Views.Produccion"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="CrearTipoPastaWindow" Height="450" Width="800">
+        Icon="/Resources/logo.ico"
+        SizeToContent="Height"
+        Background="#f0f2f5"
+        Title="CrearTipoPastaWindow" 
+        Width="800">
     <Grid>
-        <Border Background="White" Padding="20" CornerRadius="8" Effect="{StaticResource DropShadow}">
+        <Border Background="White" Padding="32" CornerRadius="8" Effect="{StaticResource DropShadow}">
             <local:CrearTipoPastaFormView/>
         </Border>
     </Grid>

@@ -16,7 +16,7 @@ namespace FIDELANDIA.Models
         public DateTime FechaVencimiento { get; set; }
         public string Estado { get; set; }
 
-        // Relación muchos a 1
         public virtual TipoPastaModel TipoPasta { get; set; }
+
     }
 }

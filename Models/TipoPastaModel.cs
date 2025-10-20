@@ -13,6 +13,8 @@ namespace FIDELANDIA.Models
 
         // Relación 1 a muchos
         public virtual ICollection<LoteProduccionModel> Lotes { get; set; } = new List<LoteProduccionModel>();
+        public virtual StockActualModel Stock { get; set; }
+
     }
 }
 

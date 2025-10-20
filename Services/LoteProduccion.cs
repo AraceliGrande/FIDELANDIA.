@@ -12,11 +12,13 @@ namespace FIDELANDIA.Services
     {
         private readonly FidelandiaDbContext _dbContext;
         private readonly TipoPastaService _tipoPastaService;
+        private readonly StockService _stockService;
 
         public LoteProduccionService(FidelandiaDbContext dbContext)
         {
             _dbContext = dbContext;
-            _tipoPastaService = new TipoPastaService(dbContext); // para validar el tipo de pasta
+            _tipoPastaService = new TipoPastaService(dbContext);
+            _stockService = new StockService(dbContext);
         }
 
         // Crear un nuevo lote de producción
@@ -37,6 +39,9 @@ namespace FIDELANDIA.Services
 
                 _dbContext.LoteProduccion.Add(lote);
                 _dbContext.SaveChanges();
+                
+                _stockService.AgregarLoteAlStock(lote);
+
                 return true;
             }
             catch (Exception ex)

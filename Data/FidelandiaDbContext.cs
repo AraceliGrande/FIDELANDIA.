@@ -16,6 +16,7 @@ namespace FIDELANDIA.Data
         public DbSet<CategoriaProveedorModel> CategoriaProveedor { get; set; }
         public DbSet<TipoPastaModel> TiposPasta { get; set; }
         public DbSet<LoteProduccionModel> LoteProduccion { get; set; }
+        public DbSet<StockActualModel> StockActual { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -37,6 +38,7 @@ namespace FIDELANDIA.Data
             modelBuilder.Entity<CategoriaProveedorModel>().HasKey(c => c.CategoriaProveedorID);
             modelBuilder.Entity<TipoPastaModel>().HasKey(tp => tp.IdTipoPasta);
             modelBuilder.Entity<LoteProduccionModel>().HasKey(lp => lp.IdLote);
+            modelBuilder.Entity<StockActualModel>().HasKey(s => s.IdStock);
 
             // Relación Transaccion → Proveedor
             modelBuilder.Entity<TransaccionModel>()
@@ -57,6 +59,28 @@ namespace FIDELANDIA.Data
                  .WithMany(tp => tp.Lotes)
                  .HasForeignKey(lp => lp.IdTipoPasta)
                  .OnDelete(DeleteBehavior.Restrict);
+
+            // TipoPasta → Stock (1:1)
+            modelBuilder.Entity<TipoPastaModel>()
+                .HasOne(tp => tp.Stock)
+                .WithOne(s => s.TipoPasta)
+                .HasForeignKey<StockActualModel>(s => s.IdTipoPasta)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relación StockActual -> LoteProduccion
+            modelBuilder.Entity<StockActualModel>()
+                .HasMany(s => s.LotesDisponibles)
+                .WithOne() 
+                .HasForeignKey(l => l.IdTipoPasta) 
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // TipoPasta → Lotes (1:N) (opcional)
+            modelBuilder.Entity<TipoPastaModel>()
+                .HasMany(tp => tp.Lotes)
+                .WithOne(l => l.TipoPasta)
+                .HasForeignKey(l => l.IdTipoPasta)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
 
     }

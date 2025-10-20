@@ -27,14 +27,14 @@
             <!-- Tipo de pasta -->
             <StackPanel Style="{StaticResource FormFieldContainer}">
                 <TextBlock Text="Tipo de Pasta" Style="{StaticResource FormLabel}"/>
-                <ComboBox x:Name="CmbTipoPasta" Style="{StaticResource UnderlineComboBox}">
-                    <ComboBoxItem Content="Fettuccine"/>
-                    <ComboBoxItem Content="Spaghetti"/>
-                    <ComboBoxItem Content="Ravioli"/>
-                </ComboBox>
+                <ComboBox x:Name="CmbTipoPasta"
+                      Style="{StaticResource UnderlineComboBox}"
+                      DisplayMemberPath="Nombre"
+                      SelectedValuePath="IdTipoPasta"/>
             </StackPanel>
 
-            <!-- Fecha de producción -->
+
+        <!-- Fecha de producción -->
             <StackPanel Style="{StaticResource FormFieldContainer}">
                 <TextBlock Text="Fecha de Producción" Style="{StaticResource FormLabel}"/>
                 <DatePicker x:Name="DpFechaProduccion" Style="{StaticResource UnderlineDatePicker}"/>

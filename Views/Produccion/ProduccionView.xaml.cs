@@ -92,5 +92,12 @@ namespace FIDELANDIA.Views.Produccion
             ventana.ShowDialog();
         }
 
+        private void BtnNuevoTipoPasta_Click(object sender, RoutedEventArgs e)
+        {
+            var ventana = new CrearTipoPastaWindow();
+            ventana.Owner = Window.GetWindow(this); // opcional, para que sea modal
+            ventana.ShowDialog();
+        }
+
     }
 }

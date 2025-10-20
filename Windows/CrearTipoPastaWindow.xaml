@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FIDELANDIA.Views.Produccion"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
         Title="CrearTipoPastaWindow" Height="450" Width="800">
     <Grid>
         <Border Background="White" Padding="20" CornerRadius="8" Effect="{StaticResource DropShadow}">

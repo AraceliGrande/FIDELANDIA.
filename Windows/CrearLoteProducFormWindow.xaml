@@ -8,6 +8,8 @@
         Title="Ingresar nuevo lote de producción"
         Icon="/Resources/logo.ico"
         MaxWidth="800"
+        Height="600"
+        SizeToContent="Height"
         WindowStartupLocation="CenterScreen"
         Background="#f0f2f5">
     <Grid>

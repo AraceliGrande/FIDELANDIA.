@@ -29,7 +29,7 @@ namespace FIDELANDIA.Views
         private void MostrarCuentaCorriente(ProveedorModel proveedor)
         {
             // Mostrar los datos del proveedor en el panel derecho
-            CuentaCorriente.MostrarProveedor(proveedor);
+            CuentaCorriente.MostrarProveedor(proveedor, resetearEstado: true);
         }
     }
 }

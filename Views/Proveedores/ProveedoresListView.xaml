@@ -15,40 +15,16 @@
                     Click="BtnNuevoProveedor_Click" Cursor="Hand"/>
 
             <!-- ItemsControl con binding -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <ScrollViewer.Resources>
-                    <Style TargetType="ScrollBar">
-                        <Setter Property="Width" Value="0.1"/>
-                        <!-- ultra fina -->
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ScrollBar">
-                                    <Grid Background="Transparent">
-                                        <Track Name="PART_Track" IsDirectionReversed="True">
-                                            <Track.Thumb>
-                                                <Thumb>
-                                                    <Thumb.Template>
-                                                        <ControlTemplate TargetType="Thumb">
-                                                            <Border Background="#888" CornerRadius="6" Opacity="0.15"/>
-                                                        </ControlTemplate>
-                                                    </Thumb.Template>
-                                                </Thumb>
-                                            </Track.Thumb>
-                                        </Track>
-                                    </Grid>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ScrollViewer.Resources>
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+
                 <ListBox x:Name="ProveedoresListBox" Margin="0" 
-         BorderThickness="0"
-         Background="Transparent"
-         SelectionChanged="ProveedoresListBox_SelectionChanged">
+                     BorderThickness="0"
+                     Background="Transparent"
+                     SelectionChanged="ProveedoresListBox_SelectionChanged">    
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border CornerRadius="10" Padding="12" Width="Auto" Margin="0,0,0,12">
+                            <Border CornerRadius="10" Padding="12" Width="Auto" Margin="0,8,0,8">
                                 <StackPanel>
                                     <TextBlock Text="{Binding Nombre}" FontWeight="Bold" Foreground="#333"/>
                                     <TextBlock Text="{Binding Cuit, StringFormat=CUIT: {0}}" FontSize="12" Foreground="#666"/>
@@ -61,7 +37,7 @@
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="Padding" Value="0"/>
-                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="Margin" Value="2.5"/>
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             <Setter Property="OverridesDefaultStyle" Value="True"/>
                             <Setter Property="Template">

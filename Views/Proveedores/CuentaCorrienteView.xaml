@@ -19,75 +19,160 @@
                 <Button Content="⬇ Exportar CSV" Style="{StaticResource SecondaryButton}" Height="32" Width="163"/>
             </StackPanel>
 
-            <StackPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+ HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
 
-                <!-- ENCABEZADO - Datos del proveedor -->
-                <Border Background="#fdfdfd" CornerRadius="8" Padding="16" BorderBrush="#ddd" BorderThickness="1" Margin="0,0,0,20">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*"/>
-                            <ColumnDefinition Width="2*"/>
-                        </Grid.ColumnDefinitions>
+                    <StackPanel>
 
-                        <!-- INFO DEL PROVEEDOR -->
-                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                            <!-- Línea con "Cuenta Corriente" + nombre del proveedor -->
-                            <DockPanel LastChildFill="True" Margin="0,0,0,16">
-                                <TextBlock Text="Cuenta Corriente: " FontSize="14" Foreground="#a34c00" FontWeight="SemiBold"
-                           VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <TextBlock x:Name="DetalleNombre" Text="Nombre del proveedor" FontSize="14" Foreground="#a34c00" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
-                            </DockPanel>
+                        <!-- ENCABEZADO - Datos del proveedor -->
+                        <Border Background="#fdfdfd" CornerRadius="8" Padding="9" BorderBrush="#ddd" BorderThickness="1" Margin="0,0,0,10">
+                            <Grid Margin="1,1,1,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4*"/>
+                                    <!-- Expander -->
+                                    <ColumnDefinition Width="2*"/>
+                                    <!-- Saldo -->
+                                </Grid.ColumnDefinitions>
 
-                            <!-- Datos organizados -->
-                            <UniformGrid Columns="2" Rows="2" Margin="0,0,0,0">
-                                <StackPanel Orientation="Horizontal" Margin="0,0,10,10">
-                                    <TextBlock Text="📋 CUIT:" FontWeight="Bold" Width="80"/>
-                                    <TextBlock x:Name="DetalleCuit" Text="00-00000000-0" Foreground="#555" Width="Auto"/>
+                                <!-- EXPANDER: Datos del proveedor -->
+                                <Expander Grid.Column="0" IsExpanded="False" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,0,16,0">
+                                    <Expander.Header>
+                                        <DockPanel LastChildFill="True">
+                                            <TextBlock Text="  Cuenta Corriente: " 
+                                               FontSize="14" 
+                                               Foreground="#a34c00" 
+                                               FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="DetalleNombre" 
+                                               Text="Nombre del proveedor"
+                                               FontSize="14" 
+                                               Foreground="#a34c00" 
+                                               FontWeight="Bold"
+                                               TextTrimming="CharacterEllipsis"/>
+                                        </DockPanel>
+                                    </Expander.Header>
+
+                                    <!-- Contenido del Expander -->
+                                    <StackPanel Margin="20,10,0,0">
+                                        <Grid Margin="0,10,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="2*" />
+                                                <ColumnDefinition Width="2*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Primera columna -->
+                                            <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                    <TextBlock Text="📋 CUIT: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock x:Name="DetalleCuit" Text="00-00000000-0" Foreground="#555"/>
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                    <TextBlock Text="📞 Teléfono: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock x:Name="DetalleTelefono" Text="(000) 0000-0000" Foreground="#555"/>
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                    <TextBlock Text="📧 Email: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock x:Name="DetalleEmail" Text="emailProveedor@mail.com" Foreground="#555"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <!-- Segunda columna -->
+                                            <StackPanel Grid.Column="1" Margin="16,0,0,0">
+                                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                    <TextBlock Text="🗂 Categoría: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock x:Name="DetalleCategoria" Text="N/A" Foreground="#555"/>
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                    <TextBlock Text="💰 Límite: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock x:Name="DetalleLimiteCredito" Text="$0,00" Foreground="#555"/>
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                    <TextBlock Text="⚡ Activo: " FontWeight="Bold" Width="90"/>
+                                                    <TextBlock x:Name="DetalleActivo" Text="Sí" Foreground="#555"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Expander>
+
+                                <!-- SALDO: visible siempre -->
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">
+                                    <TextBlock Text="Saldo Actual" FontSize="14" Foreground="#777" TextAlignment="Right"/>
+                                    <TextBlock x:Name="DetalleSaldo" FontSize="28" FontWeight="Bold" Foreground="#2e7d32" TextAlignment="Right"/>
                                 </StackPanel>
+                            </Grid>
 
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                    <TextBlock Text="📞 Teléfono:" FontWeight="Bold" Width="80"/>
-                                    <TextBlock x:Name="DetalleTelefono" Text="(000) 0000-0000" Foreground="#555" Width="Auto"/>
-                                </StackPanel>
 
-                                <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
-                                    <TextBlock Text="📧 Email:" FontWeight="Bold" Width="80"/>
-                                    <TextBlock x:Name="DetalleEmail" Text="emailProveedor@mail.com" Foreground="#555" Width="Auto"/>
-                                </StackPanel>
+                        </Border>
 
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="🏠 Dirección:" FontWeight="Bold" Width="80"/>
-                                    <TextBlock x:Name="DetalleDireccion" Text="Direccion proveedor" Foreground="#555" Width="Auto"/>
+
+                        <!-- TABLA DE MOVIMIENTOS -->
+                        <DataGrid x:Name="MovimientosGrid"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          HeadersVisibility="Column"
+                          RowHeight="25"
+                          Background="White"
+                          AlternatingRowBackground="#FFF8F8F8"
+                          HorizontalGridLinesBrush="#EEE"
+                          GridLinesVisibility="Horizontal"
+                          VerticalGridLinesBrush="#EEE"
+                          RowHeaderWidth="0"
+                          BorderThickness="0">
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha}" Width="80"/>
+                                <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="80"/>
+                                <DataGridTextColumn Header="Concepto" Binding="{Binding Concepto}" Width="*"/>
+                                <DataGridTextColumn Header="Debe" Binding="{Binding Debe}" Width="80" ElementStyle="{StaticResource RightAlignStyle}"/>
+                                <DataGridTextColumn Header="Haber" Binding="{Binding Haber}" Width="80" ElementStyle="{StaticResource RightAlignStyle}"/>
+                                <DataGridTextColumn Header="Saldo pendiente" Binding="{Binding Saldo}" Width="100" ElementStyle="{StaticResource RightAlignStyle}"/>
+                                <DataGridTextColumn Header="Factura" Binding="{Binding Factura}" Width="120"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <!-- PAGINACIÓN -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,0">
+                            <!-- ComboBox para seleccionar cantidad de registros por página -->
+                            <ComboBox x:Name="CbTamanoPagina" Width="60" SelectionChanged="CbTamanoPagina_SelectionChanged" Height="20" Background="#FFF"
+Margin="10,0,20,0">
+                                <ComboBoxItem Content="5"/>
+                                <ComboBoxItem Content="12"/>
+                                <ComboBoxItem Content="25"/>
+                                <ComboBoxItem Content="50"/>
+                                <ComboBoxItem Content="70"/>
+                            </ComboBox>
+
+                            <Border DockPanel.Dock="Bottom" Padding="8" Background="Transparent">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Button Content="⬅" Width="28" Height="28" Margin="0,0,8,0" 
+                                Click="BtnPaginaAnterior_Click"
+                                x:Name="BtnAnterior"
+                                Background="#FFF"
+                                Foreground="#555"
+                                FontWeight="SemiBold"
+                                />
+
+                                    <TextBlock x:Name="TxtPaginaActual" Text="Página 1 / 1"
+                                VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12"
+                                Margin="20,5,35,5"/>
+
+                                    <Button Content="⮕" Width="28" Height="28" Margin="0,0,0,0" 
+                                Click="BtnPaginaSiguiente_Click"
+                                x:Name="BtnSiguiente"
+                                Background="#FFF"
+                                Foreground="#555"
+                                FontWeight="SemiBold"
+                                />
                                 </StackPanel>
-                            </UniformGrid>
+                            </Border>
                         </StackPanel>
-
-                        <!-- SALDO -->
-                        <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <TextBlock Text="Saldo Actual" FontSize="14" Foreground="#777" TextAlignment="Right"/>
-                            <TextBlock x:Name="DetalleSaldo" Text="$ 0,00" FontSize="28" FontWeight="Bold" Foreground="#2e7d32" TextAlignment="Right"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-
-                <!-- TABLA DE MOVIMIENTOS -->
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <DataGrid x:Name="MovimientosGrid" AutoGenerateColumns="False" CanUserAddRows="False"
-                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" RowHeight="28">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha}" Width="80"/>
-                            <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="80"/>
-                            <DataGridTextColumn Header="Concepto" Binding="{Binding Concepto}" Width="*"/>
-                            <DataGridTextColumn Header="Debe" Binding="{Binding Debe}" Width="80" ElementStyle="{StaticResource RightAlignStyle}"/>
-                            <DataGridTextColumn Header="Haber" Binding="{Binding Haber}" Width="80" ElementStyle="{StaticResource RightAlignStyle}"/>
-                            <DataGridTextColumn Header="Saldo" Binding="{Binding Saldo}" Width="80" ElementStyle="{StaticResource RightAlignStyle}"/>
-                            <DataGridTextColumn Header="Factura" Binding="{Binding Factura}" Width="120"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </ScrollViewer>
-
-            </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
         </DockPanel>
     </Border>
 </UserControl>

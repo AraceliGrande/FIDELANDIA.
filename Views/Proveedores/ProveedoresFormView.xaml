@@ -4,65 +4,106 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignWidth="600"
              Background="Transparent">
-    
-    <Border Background="White" Padding="32" Effect="{StaticResource DropShadow}">
-        <StackPanel>
-            <TextBlock Text="Nuevo Proveedor"
-               FontSize="19"
-               FontWeight="Bold"
-               Foreground="#e5740a"
-               Margin="0,0,0,10"/>
 
-            <!-- Subtítulo -->
-            <TextBlock Text="Ingrese los datos que se solicitan a continuación para dar de alta un nuevo proveedor."
-               FontSize="11"
-               FontWeight="SemiBold"
-               Foreground="DarkOliveGreen"
-               TextWrapping="Wrap"
-               Margin="0,0,0,40"/>
+    <Border Background="White" Padding="32" MaxWidth="800" Effect="{StaticResource DropShadow}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- Título -->
+                <TextBlock Text="Nuevo Proveedor"
+                           FontSize="19"
+                           FontWeight="Bold"
+                           Foreground="#e5740a"
+                           Margin="0,0,0,8"/>
+
+                <!-- Subtítulo -->
+                <TextBlock Text="Ingrese los datos que se solicitan a continuación para dar de alta un nuevo proveedor."
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           Foreground="DarkSeaGreen"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,20"/>
+
+                <!-- Grid principal -->
+                <Grid Margin="0,0,0,16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Nombre + Teléfono -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- CUIT + Email -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Dirección -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Categoría -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Límite de crédito + Activo -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Botones -->
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Nombre -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,16">
+                        <TextBlock Text="Nombre" Style="{StaticResource FormLabel}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtNombre" Style="{StaticResource UnderlineTextBox}"/>
+                    </StackPanel>
+
+                    <!-- Teléfono -->
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="12,0,0,16">
+                        <TextBlock Text="Teléfono" Style="{StaticResource FormLabel}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtTelefono" Style="{StaticResource UnderlineTextBox}"/>
+                    </StackPanel>
+
+                    <!-- CUIT -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,16">
+                        <TextBlock Text="CUIT" Style="{StaticResource FormLabel}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtCuit" Style="{StaticResource UnderlineTextBox}"/>
+                    </StackPanel>
+
+                    <!-- Email -->
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,0,0,16">
+                        <TextBlock Text="Email" Style="{StaticResource FormLabel}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtEmail" Style="{StaticResource UnderlineTextBox}"/>
+                    </StackPanel>
+
+                    <!-- Dirección -->
+                    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,16">
+                        <TextBlock Text="Dirección" Style="{StaticResource FormLabel}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtDireccion" Style="{StaticResource UnderlineTextBox}"/>
+                    </StackPanel>
+
+                    <!-- Categoría -->
+                    <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Margin="0,0,0,16">
+                        <TextBlock Text="Categoría" Style="{StaticResource FormLabel}"/>
+                        <ComboBox x:Name="CmbCategoria" Style="{StaticResource UnderlineComboBox}" 
+                        DisplayMemberPath="Nombre" SelectedValuePath="CategoriaProveedorID"/>
+                    </StackPanel>
 
 
-            <!-- Nombre -->
-            <StackPanel Style="{StaticResource FormFieldContainer}">
-                <TextBlock Text="Nombre" Style="{StaticResource FormLabel}"/>
-                <TextBox x:Name="TxtNombre" Style="{StaticResource UnderlineTextBox}"/>
+                    <!-- Límite de crédito -->
+                    <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,0,12,16">
+                        <TextBlock Text="Límite de crédito" Style="{StaticResource FormLabel}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtLimiteCredito" Style="{StaticResource UnderlineTextBox}"/>
+                    </StackPanel>
+
+                    <!-- Activo -->
+                    <StackPanel Grid.Row="4" Grid.Column="1" Margin="12,0,0,16" VerticalAlignment="Center">
+                        <CheckBox x:Name="ChkActivo" Content="Activo" IsChecked="True"/>
+                    </StackPanel>
+
+                    <!-- Botones -->
+                    <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                        <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="120" Margin="0,0,12,0" Height="35" Click="Cancelar_Click"/>
+                        <Button Content="Guardar" Style="{StaticResource PrimaryButton}" Width="120" Height="35" Click="Guardar_Click"/>
+                    </StackPanel>
+
+                </Grid>
+
             </StackPanel>
-
-            <!-- CUIT -->
-            <StackPanel Style="{StaticResource FormFieldContainer}">
-                <TextBlock Text="CUIT" Style="{StaticResource FormLabel}"/>
-                <TextBox x:Name="TxtCuit" Style="{StaticResource UnderlineTextBox}"/>
-            </StackPanel>
-
-            <!-- Teléfono -->
-            <StackPanel Style="{StaticResource FormFieldContainer}">
-                <TextBlock Text="Teléfono" Style="{StaticResource FormLabel}"/>
-                <TextBox x:Name="TxtTelefono" Style="{StaticResource UnderlineTextBox}"/>
-            </StackPanel>
-
-            <!-- Dirección -->
-            <StackPanel Style="{StaticResource FormFieldContainer}">
-                <TextBlock Text="Dirección" Style="{StaticResource FormLabel}"/>
-                <TextBox x:Name="TxtDireccion" Style="{StaticResource UnderlineTextBox}"/>
-            </StackPanel>
-
-            <!-- Email -->
-            <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,0,0,30">
-                <TextBlock Text="Email" Style="{StaticResource FormLabel}"/>
-                <TextBox x:Name="TxtEmail" Style="{StaticResource UnderlineTextBox}"/>
-            </StackPanel>
-
-            <!-- Botones -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom">
-                <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="120" Margin="0,0,12,0" Height="35" 
-                         Click="Cancelar_Click"/>
-                <Button Content="Guardar" Style="{StaticResource PrimaryButton}" Width="120" Height="35"
-                        Click="Guardar_Click"/>
-            </StackPanel>
-        </StackPanel>
+        </ScrollViewer>
     </Border>
-
 </UserControl>
-

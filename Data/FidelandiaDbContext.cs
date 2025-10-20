@@ -13,6 +13,7 @@ namespace FIDELANDIA.Data
     {
         public DbSet<ProveedorModel> Proveedores { get; set; }
         public DbSet<TransaccionModel> Transacciones { get; set; }
+        public DbSet<CategoriaProveedorModel> CategoriaProveedor { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -22,16 +23,29 @@ namespace FIDELANDIA.Data
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
+
         {
-            // Definimos explícitamente las claves primarias
+
+            modelBuilder.Entity<CategoriaProveedorModel>().ToTable("CategoriaProveedor");
+
+            // Claves primarias
             modelBuilder.Entity<ProveedorModel>().HasKey(p => p.ProveedorID);
             modelBuilder.Entity<TransaccionModel>().HasKey(t => t.TransaccionID);
+            modelBuilder.Entity<CategoriaProveedorModel>().HasKey(c => c.CategoriaProveedorID);
 
-            // Relación 1 a muchos
+            // Relación Transaccion → Proveedor
             modelBuilder.Entity<TransaccionModel>()
-                        .HasOne(t => t.Proveedor)
-                        .WithMany(p => p.Transacciones)
-                        .HasForeignKey(t => t.ProveedorID);
+                .HasOne(t => t.Proveedor)
+                .WithMany(p => p.Transacciones)
+                .HasForeignKey(t => t.ProveedorID);
+
+            // Relación Proveedor → Categoria
+            modelBuilder.Entity<ProveedorModel>()
+                .HasOne(p => p.Categoria)
+                .WithMany(c => c.Proveedores)
+                .HasForeignKey(p => p.CategoriaProveedorID)
+                .OnDelete(DeleteBehavior.Restrict);
         }
+
     }
 }

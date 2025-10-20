@@ -10,9 +10,5 @@
         MaxWidth="800"
         WindowStartupLocation="CenterScreen"
         Background="#f0f2f5">
-    
-    <Grid Background="#f0f2f5">
-        <local:TransaccionesFormView/>
-    </Grid>
 
 </Window>

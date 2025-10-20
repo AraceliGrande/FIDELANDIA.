@@ -13,8 +13,14 @@ namespace FIDELANDIA.Models
         public string Email { get; set; }
         public decimal SaldoActual { get; set; } = 0;
         public DateTime FechaAlta { get; set; } = DateTime.Now;
+        public decimal LimiteCredito { get; set; } = 0;
+        public bool IsActivo { get; set; } = true;
+
+        // Relación con categoría
+        public int CategoriaProveedorID { get; set; }
+        public CategoriaProveedorModel Categoria { get; set; }
 
         // Relación 1 a muchos con Transacciones
-        public List<TransaccionModel> Transacciones { get; set; } = new List<TransaccionModel>();
+        public virtual ICollection<TransaccionModel> Transacciones { get; set; } = new List<TransaccionModel>();
     }
 }

@@ -9,6 +9,7 @@ namespace FIDELANDIA.Models
         public decimal Monto { get; set; }
         public DateTime Fecha { get; set; } = DateTime.Now;
         public string Detalle { get; set; }
+        public decimal Saldo { get; set; }
 
         // Relación con Proveedor
         public int ProveedorID { get; set; }

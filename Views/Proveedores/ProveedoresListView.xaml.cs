@@ -70,8 +70,6 @@ namespace FIDELANDIA.Views
                     var proveedorCompleto = _service.ObtenerProveedorCompleto(proveedor.ProveedorID);
                     if (proveedorCompleto != null)
                         ProveedorSeleccionado?.Invoke(proveedorCompleto);
-                    else
-                        MessageBox.Show("No se pudo obtener el proveedor completo.", "Atención", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             catch (Exception ex)

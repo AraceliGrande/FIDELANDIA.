@@ -11,9 +11,9 @@
         </Grid.ColumnDefinitions>
 
         <!-- Lista de Proveedores -->
-        <views:ProveedoresListView Grid.Column="0"/>
+        <views:ProveedoresListView x:Name="ListaProveedores" Grid.Column="0"/>
 
         <!-- Detalle Cuenta Corriente -->
-        <views:CuentaCorrienteView Grid.Column="1"/>
+        <views:CuentaCorrienteView x:Name="CuentaCorriente" Grid.Column="1"/>
     </Grid>
 </UserControl>

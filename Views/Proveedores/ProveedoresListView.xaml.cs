@@ -1,38 +1,81 @@
-﻿using FIDELANDIA.Windows;
+﻿using FIDELANDIA.Data;
+using FIDELANDIA.Models;
+using FIDELANDIA.Services;
+using FIDELANDIA.Windows;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FIDELANDIA.Views
 {
-    /// <summary>
-    /// Lógica de interacción para ProveedoresListView.xaml
-    /// </summary>
     public partial class ProveedoresListView : UserControl
     {
+        private readonly ProveedorService _service;
+
         public ProveedoresListView()
         {
             InitializeComponent();
+
+            try
+            {
+                var dbContext = new FidelandiaDbContext();
+                _service = new ProveedorService(dbContext);
+
+                CargarProveedores();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al inicializar la vista de proveedores: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public event Action<ProveedorModel> ProveedorSeleccionado;
+
+        private void CargarProveedores()
+        {
+            try
+            {
+                var proveedores = _service.ObtenerTodos();
+                ProveedoresListBox.ItemsSource = proveedores;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar los proveedores: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnNuevoProveedor_Click(object sender, RoutedEventArgs e)
         {
-            // Crear y abrir la ventana modal para el formulario
-            var ventana = new ProveedoresFormWindow();
-            ventana.Owner = Window.GetWindow(this); // Para que sea modal sobre la ventana principal
-            ventana.ShowDialog();
+            try
+            {
+                var ventana = new ProveedoresFormWindow();
+                ventana.Owner = Window.GetWindow(this);
+                ventana.ShowDialog();
+
+                CargarProveedores();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al abrir la ventana de nuevo proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
+        // Evento de selección de proveedor
+        private void ProveedoresListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (ProveedoresListBox.SelectedItem is ProveedorModel proveedor)
+                {
+                    var proveedorCompleto = _service.ObtenerProveedorCompleto(proveedor.ProveedorID);
+                    if (proveedorCompleto != null)
+                        ProveedorSeleccionado?.Invoke(proveedorCompleto);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al seleccionar el proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }

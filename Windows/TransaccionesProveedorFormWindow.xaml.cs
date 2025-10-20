@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FIDELANDIA.Models;
+using FIDELANDIA.Views.Proveedores;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,17 +21,22 @@ namespace FIDELANDIA.Windows
     /// </summary>
     public partial class TransaccionesProveedorFormWindow : Window
     {
-        public TransaccionesProveedorFormWindow()
+        public TransaccionesProveedorFormWindow(ProveedorModel proveedorActual)
         {
             InitializeComponent();
+
+            // Cargar el formulario dentro de la ventana
+            Content = new TransaccionesFormView(proveedorActual);
         }
+
         private void Cancelar_Click(object sender, RoutedEventArgs e)
         {
-            this.Close(); // Cierra la ventana actual
+            this.Close();
         }
+
         private void Guardar_Click(object sender, RoutedEventArgs e)
         {
-            this.Close(); // Cierra la ventana actual
+            this.Close();
         }
     }
 }

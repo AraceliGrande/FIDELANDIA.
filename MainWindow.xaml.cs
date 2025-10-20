@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using FIDELANDIA.Data;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -17,6 +18,18 @@ namespace FIDELANDIA
         public MainWindow()
         {
             InitializeComponent();
+            ProbarConexion();
+        }
+        private void ProbarConexion()
+        {
+            using (var db = new FidelandiaDbContext())
+            {
+                // Traer todos los proveedores de la base
+                var proveedores = db.Proveedores.ToList();
+
+                // Mostrar cantidad de proveedores
+                MessageBox.Show($"Hay {proveedores.Count} proveedores en la base de datos");
+            }
         }
     }
 }

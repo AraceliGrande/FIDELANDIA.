@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 
+
 namespace FIDELANDIA.Services
 {
     public class StockService
@@ -18,21 +19,28 @@ namespace FIDELANDIA.Services
         }
 
         // Obtener todo el stock actualizado
-        public List<StockActualModel> ObtenerTodos()
+        public object ObtenerStocksParaVista()
         {
-            try
+            var stocks = _dbContext.StockActual
+                                   .Include(s => s.TipoPasta)
+                                   .Include(s => s.LotesDisponibles)
+                                   .ToList();
+
+            var secciones = stocks.Select(stock => new
             {
-                return _dbContext.StockActual
-                                 .Include(s => s.TipoPasta)
-                                 .Include(s => s.LotesDisponibles)
-                                 .OrderBy(s => s.TipoPasta.Nombre)
-                                 .ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al obtener stock: {ex.Message}");
-                return new List<StockActualModel>();
-            }
+                Nombre = stock.TipoPasta.Nombre,
+                Filas = stock.LotesDisponibles
+                            .OrderBy(l => l.FechaProduccion)
+                            .Select(lote => new string[]
+                            {
+                            lote.IdLote.ToString(),
+                            lote.FechaProduccion.ToString("dd/MM/yyyy"),
+                            lote.FechaVencimiento.ToString("dd/MM/yyyy"),
+                            lote.CantidadDisponible.ToString("0.##") + " paquetes",
+                            }).ToArray()
+            }).ToArray();
+
+            return secciones;
         }
 
         // Crear stock para un tipo de pasta si no existe

@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:FIDELANDIA.Views"
         Title="Nuevo Proveedor"
         MaxWidth="800"
-        MinHeight="600"
+        SizeToContent="Height"
         Icon="/Resources/logo.ico"
         WindowStartupLocation="CenterScreen"
         Background="#f0f2f5">

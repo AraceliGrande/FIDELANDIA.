@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FIDELANDIA.Views.Produccion"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignWidth="800">
     <Grid>
         <StackPanel>
             <TextBlock Text="Crear Nuevo Tipo de Pasta"
@@ -29,14 +29,14 @@
                 <TextBox x:Name="TxtDescripcion" Style="{StaticResource UnderlineTextBox}"/>
             </StackPanel>
 
-            <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,0,0,20">
+            <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,0,0,40">
                 <TextBlock Text="Costo Actual" Style="{StaticResource FormLabel}"/>
                 <TextBox x:Name="TxtCosto" Style="{StaticResource UnderlineTextBox}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="100" Margin="0,0,10,0" Click="Cancelar_Click"/>
-                <Button Content="Guardar" Style="{StaticResource PrimaryButton}" Width="100" Click="Guardar_Click"/>
+                <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="120" Height="35" Margin="0,0,12,0" Click="Cancelar_Click"/>
+                <Button Content="Guardar" Style="{StaticResource PrimaryButton}" Width="120" Height="35" Click="Guardar_Click"/>
             </StackPanel>
         </StackPanel>
     </Grid>

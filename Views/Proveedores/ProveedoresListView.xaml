@@ -7,7 +7,7 @@
             BorderBrush="#eee" BorderThickness="1" Effect="{StaticResource DropShadow}" Margin="0,0,10,0">
         <DockPanel LastChildFill="True">
             
-            <TextBlock Text="Proveedores" FontSize="20" FontWeight="Bold" Margin="0,0,0,16" 
+            <TextBlock Text="Proveedores" FontSize="18" FontWeight="Bold" Margin="0,0,0,20" 
                        Foreground="#b65601" DockPanel.Dock="Top"/>
 
             <Button Content="+ Nuevo Proveedor" Style="{StaticResource PrimaryButton}" 

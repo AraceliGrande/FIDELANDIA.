@@ -1,4 +1,5 @@
 ﻿using FIDELANDIA.Commands;
+using FIDELANDIA.Helpers;
 using FIDELANDIA.Views;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -37,6 +38,16 @@ namespace FIDELANDIA.ViewModels
 
             // Inicializar NavigateCommand usando el método Navigate
             NavigateCommand = new RelayCommand(Navigate);
+
+            AppEvents.LoteCreado += () =>
+            {
+                // Solo si la vista actual es ProduccionView
+                if (CurrentView is Views.Produccion.ProduccionView)
+                {
+                    // Reemplazar la instancia para reiniciar todo
+                    CurrentView = new Views.Produccion.ProduccionView();
+                }
+            };
         }
 
         private void ToggleSidebar()

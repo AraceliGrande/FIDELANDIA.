@@ -1,62 +1,195 @@
 ﻿<UserControl x:Class="FIDELANDIA.Views.Produccion.CrearProduccionFormView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
-             d:DesignWidth="600"
-             Background="Transparent">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             Background="#F5F5F5">
 
-    <Border Background="White" Padding="32" Effect="{StaticResource DropShadow}">
-        <StackPanel>
-            <!-- Título -->
-            <TextBlock Text="Crear Nuevo Lote de Producción"
-                       FontSize="19"
-                       FontWeight="Bold"
-                       Foreground="#e5740a"
-                       Margin="0,0,0,10"/>
+    <UserControl.Resources>
+        <!-- Estilo para las cards seleccionables -->
+        <Style x:Key="CardToggleButton" TargetType="ToggleButton">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EEE"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="border" CornerRadius="10" BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" Padding="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFF3E0"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFB656"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFF8F0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-            <!-- Subtítulo -->
-            <TextBlock Text="Complete los datos a continuación para generar un nuevo lote de producción."
-                       FontSize="11"
-                       FontWeight="SemiBold"
-                       Foreground="DarkOliveGreen"
-                       TextWrapping="Wrap"
-                       Margin="0,0,0,40"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
 
-            <!-- Tipo de pasta -->
-            <StackPanel Style="{StaticResource FormFieldContainer}">
-                <TextBlock Text="Tipo de Pasta" Style="{StaticResource FormLabel}"/>
-                <ComboBox x:Name="CmbTipoPasta"
-                      Style="{StaticResource UnderlineComboBox}"
-                      DisplayMemberPath="Nombre"
-                      SelectedValuePath="IdTipoPasta"/>
+    <Grid Margin="36">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Columna izquierda -->
+        <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="30,10,80,20">
+
+                <!-- Título -->
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="Crear Nuevo Lote de Producción"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               Foreground="#E5740A"
+                               Margin="0,0,0,10"/>
+                    <TextBlock Text="Seleccione el tipo de pasta y complete los datos para generar un nuevo lote."
+                               FontSize="12"
+                               Foreground="#555"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <!-- Cards -->
+
+                <ItemsControl x:Name="CardTipoPasta" ItemsSource="{Binding TiposPasta}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="4" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ToggleButton Style="{StaticResource CardToggleButton}"
+                          Margin="5"
+                          Height="80"
+                          HorizontalAlignment="Stretch"
+                          Tag="{Binding IdTipoPasta}"
+                          Checked="CardTipoPasta_Checked"
+                          Unchecked="CardTipoPasta_Unchecked">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Nombre}" FontWeight="Bold" FontSize="14"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ToggleButton>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+
+
+                <!-- Formulario -->
+                <StackPanel Margin="0,10,0,0">
+
+                    <!-- Fecha de producción -->
+                    <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,25,0,0">
+                        <TextBlock Text="Fecha de Producción" Style="{StaticResource FormLabel}"/>
+                        <DatePicker x:Name="DpFechaProduccion" Style="{StaticResource UnderlineDatePicker}" SelectedDateChanged="DpFechaProduccion_SelectedDateChanged">
+                            <DatePicker.Resources>
+                                <Style TargetType="DatePickerTextBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="DatePickerTextBox">
+                                                <ScrollViewer x:Name="PART_ContentHost" Background="Transparent" Focusable="False"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Padding" Value="2"/>
+                                    <Setter Property="Foreground" Value="Black"/>
+                                </Style>
+                            </DatePicker.Resources>
+                        </DatePicker>
+                    </StackPanel>
+
+                    <!-- Fecha de vencimiento -->
+                    <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,25,0,0">
+                        <TextBlock Text="Fecha de Vencimiento" Style="{StaticResource FormLabel}"/>
+                        <DatePicker x:Name="DpFechaVencimiento" Style="{StaticResource UnderlineDatePicker}" SelectedDateChanged="DpFechaVencimiento_SelectedDateChanged">
+                            <DatePicker.Resources>
+                                <Style TargetType="DatePickerTextBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="DatePickerTextBox">
+                                                <ScrollViewer x:Name="PART_ContentHost" Background="Transparent" Focusable="False"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Padding" Value="2"/>
+                                    <Setter Property="Foreground" Value="Black"/>
+                                </Style>
+                            </DatePicker.Resources>
+                        </DatePicker>
+                    </StackPanel>
+
+                    <!-- Cantidad -->
+                    <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,25,0,0">
+                        <TextBlock Text="Cantidad a Producir (kg)" Style="{StaticResource FormLabel}"/>
+                        <TextBox x:Name="TxtCantidad" Style="{StaticResource UnderlineTextBox}" TextChanged="TxtCantidad_TextChanged"/>
+                    </StackPanel>
+                </StackPanel>
             </StackPanel>
+        </ScrollViewer>
 
+        <!-- Columna derecha (resumen del lote) -->
+        <Border Grid.Column="1" Background="#FAFAFA" CornerRadius="12" Padding="26" Margin="12,0,0,0" BorderBrush="#EEE" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Resumen del Lote" FontSize="18" FontWeight="Bold" Foreground="#2E2E2E" Margin="0,0,0,10"/>
 
-        <!-- Fecha de producción -->
-            <StackPanel Style="{StaticResource FormFieldContainer}">
-                <TextBlock Text="Fecha de Producción" Style="{StaticResource FormLabel}"/>
-                <DatePicker x:Name="DpFechaProduccion" Style="{StaticResource UnderlineDatePicker}"/>
+                <!-- Mostrar resumen dinámico -->
+                <StackPanel x:Name="ResumenContainer" Margin="0,5,0,0">
+                    <StackPanel Margin="0,20,0,0">
+                        <TextBlock Text="Tipo de pasta:" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBlock x:Name="LblTipoPastaSeleccionado" Text="-" FontSize="12" FontWeight="Bold" Foreground="#E5740A" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <Separator Margin="0,8" Background="#EEE"/>
+
+                    <StackPanel Margin="0,20,0,0">
+                        <TextBlock Text="Fecha de producción:" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBlock x:Name="LblFechaProduccion" Text="-" FontSize="12" FontWeight="Bold"  Foreground="#E5740A" HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Separator Margin="0,8" Background="#EEE"/>
+
+                    <StackPanel Margin="0,20,0,0">
+                        <TextBlock Text="Fecha de vencimiento:" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBlock x:Name="LblFechaVencimiento" Text="-" FontSize="12" FontWeight="Bold" Foreground="#E5740A" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <Separator Margin="0,8" Background="#EEE"/>
+
+                    <StackPanel Margin="0,20,0,0">
+                        <TextBlock Text="Cantidad a producir:" FontWeight="SemiBold" FontSize="12"/>
+                        <TextBlock x:Name="LblCantidad" Text="-" FontSize="12" FontWeight="Bold" Foreground="#E5740A" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <Separator Margin="0,8" Background="#EEE"/>
+                
+                </StackPanel>
             </StackPanel>
+        </Border>
 
-            <!-- Cantidad a producir -->
-            <StackPanel Style="{StaticResource FormFieldContainer}">
-                <TextBlock Text="Cantidad a Producir (kg)" Style="{StaticResource FormLabel}"/>
-                <TextBox x:Name="TxtCantidad" Style="{StaticResource UnderlineTextBox}"/>
-            </StackPanel>
-
-            <!-- Fecha de vencimiento -->
-            <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,0,0,30">
-                <TextBlock Text="Fecha de Vencimiento" Style="{StaticResource FormLabel}"/>
-                <DatePicker x:Name="DpFechaVencimiento" Style="{StaticResource UnderlineDatePicker}"/>
-            </StackPanel>
-
-            <!-- Botones -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="120" Height="35" Margin="0,0,12,0" Click="Cancelar_Click"/>
-                <Button Content="Guardar" Style="{StaticResource PrimaryButton}" Width="120" Height="35" Click="Guardar_Click"/>
-            </StackPanel>
+        <!-- Botones -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                    Grid.ColumnSpan="2" Margin="0,0,16,16">
+            <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="100" Height="36"
+                    Margin="0,0,8,0" Click="Cancelar_Click"/>
+            <Button Content="Guardar" Style="{StaticResource PrimaryButton}" Width="120" Height="36"
+                    Click="Guardar_Click"/>
         </StackPanel>
-    </Border>
+    </Grid>
 </UserControl>

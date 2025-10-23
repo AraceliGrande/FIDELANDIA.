@@ -3,158 +3,187 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="Transparent">
 
-    <Grid Margin="20">
-        <Border Background="White" CornerRadius="12" Padding="16" 
-                BorderBrush="#eee" BorderThickness="1" Effect="{StaticResource DropShadow}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <!-- Encabezado -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Contenido scroll -->
-                    <RowDefinition Height="*"/>
-                    <!-- Footer fijo -->
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+    <Grid Margin="20" >
 
-                <!-- Header con título y botones principales -->
-                <DockPanel Grid.Row="0" Margin="0,0,0,16">
-                    <TextBlock Text="Producciones Disponibles" 
-                               FontSize="20" FontWeight="Bold" 
-                               Foreground="#b65601"
-                               VerticalAlignment="Center"
-                               DockPanel.Dock="Left"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="➕ Nuevo lote de producción" 
-                                Style="{StaticResource SecondaryButton}" 
-                                Height="29" Width="205" Margin="0,0,10,0"
-                                Click="NuevoLote_Click"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Header -->
+                <RowDefinition Height="*"/>
+                <!-- Contenido -->
+                <RowDefinition Height="Auto"/>
+                <!-- Footer -->
+            </Grid.RowDefinitions>
 
-                            <Button Content="💰 Nueva venta de productos" 
-                                Style="{StaticResource SecondaryButton}" 
-                                Height="29" Width="205"
-                                Click="NuevaVenta_Click"/>
 
-                        </StackPanel>
+            <!-- CONTENIDO PRINCIPAL -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- IZQUIERDA: CARD DE PRODUCCIONES DISPONIBLES -->
+                <Border Grid.Column="0" Background="White" CornerRadius="12" BorderBrush="#EEE" BorderThickness="1" Padding="15" Margin="0,0,10,0">
+                    <StackPanel>
+                        <!-- Título principal -->
+                        <TextBlock Text="Producciones disponibles"
+                                      FontSize="18" FontWeight="Bold" Margin="0,0,0,20" 
+                       Foreground="#b65601" />
+
+                        <!-- Contenido scrollable -->
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding Secciones}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="3"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Click="TipoPasta_Click"
+                                                    Cursor="Hand"
+                                                    BorderThickness="0"
+                                                    Background="White"
+                                                    Padding="10"
+                                                    Margin="5">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="border"
+                                                                Background="{TemplateBinding Background}"
+                                                                CornerRadius="12"
+                                                                BorderBrush="#EEE"
+                                                                BorderThickness="1"
+                                                                Padding="{TemplateBinding Padding}">
+                                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <TextBlock Text="🍜" FontSize="28" Foreground="#f5be7f" Margin="0,0,0,6" HorizontalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding Nombre}" FontWeight="SemiBold" FontSize="15" Foreground="#000" HorizontalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding CantidadDisponible, StringFormat='{}{0} paquetes'}" FontSize="13" Foreground="#555" HorizontalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="border" Property="Background" Value="#FFF3E0"/>
+                                                            <Setter TargetName="border" Property="Effect">
+                                                                <Setter.Value>
+                                                                    <DropShadowEffect ShadowDepth="0" Color="#ffd89e" Opacity="0.3" BlurRadius="8"/>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
                     </StackPanel>
-                </DockPanel>
+                </Border>
 
-                <!-- Contenido scrollable -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Columns="2" Margin="20"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                <!-- DERECHA: CARD DE RESUMEN Y DETALLE -->
+                <Border Grid.Column="1" Background="White" CornerRadius="12" BorderBrush="#EEE" BorderThickness="1" Padding="20" Margin="2,0,0,0">
+                    <StackPanel>
+                        <!-- Título más pequeño -->
+                        <TextBlock Text="Resumen y detalle"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Foreground="#cb773c"
+                                       Margin="0,0,0,20"/>
 
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border BorderBrush="#DDD" BorderThickness="1" CornerRadius="6" Padding="10" Margin="10">
-                                    <StackPanel>
-                                        <!-- Título de la sección -->
-                                        <Border CornerRadius="4" Padding="6" Margin="0,0,0,10">
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <Ellipse Width="12" Height="12" Fill="#78E362" VerticalAlignment="Center" Margin="0,0,15,0"/>
-                                                <TextBlock Text="{Binding Nombre}" FontSize="14" FontWeight="Bold" Foreground="#1F6412" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Border>
+                        <!-- Tarjetas de resumen -->
+                        <UniformGrid Columns="2" Margin="0,0,0,10">
+                            <Border Background="#FFF" CornerRadius="10" BorderBrush="#EEE" BorderThickness="1" Padding="10" Margin="4">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="Tipos de pasta" FontSize="13" Foreground="#666" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding TotalTipos}" FontSize="18" FontWeight="Bold" Foreground="#2E3C2F" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
 
-                                        <!-- Tabla -->
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="*"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
+                            <Border Background="#FFF" CornerRadius="10" BorderBrush="#EEE" BorderThickness="1" Padding="10" Margin="4">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="Producción total" FontSize="13" Foreground="#666" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding ProduccionTotal}" FontSize="18" FontWeight="Bold" Foreground="#2E3C2F" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
 
-                                            <!-- Encabezados -->
-                                            <TextBlock Text="Nº Lote" FontWeight="Bold" Grid.Row="0" Grid.Column="0"/>
-                                            <TextBlock Text="Fecha producción" FontWeight="Bold" Grid.Row="0" Grid.Column="1"/>
-                                            <TextBlock Text="Fecha vencimiento" FontWeight="Bold" Grid.Row="0" Grid.Column="2"/>
-                                            <TextBlock Text="Cantidad (Disponible)" FontWeight="Bold" Grid.Row="0" Grid.Column="3"/>
+                            <Border Background="#FFF" CornerRadius="10" BorderBrush="#EEE" BorderThickness="1" Padding="10" Margin="4">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="Ventas del día" FontSize="13" Foreground="#666" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding VentasDia}" FontSize="18" FontWeight="Bold" Foreground="#2E3C2F" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
 
+                            <Border Background="#FFF" CornerRadius="10" BorderBrush="#EEE" BorderThickness="1" Padding="10" Margin="4">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="Stock total" FontSize="13" Foreground="#666" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding StockTotal}" FontSize="18" FontWeight="Bold" Foreground="#2E3C2F" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
 
-                                            <!-- Filas dinámicas -->
-                                            <ItemsControl ItemsSource="{Binding Filas}" Grid.Row="1" Grid.ColumnSpan="4">
-                                                <ItemsControl.ItemContainerStyle>
-                                                    <Style>
-                                                        <Setter Property="FrameworkElement.Margin" Value="0,0,0,2"/>
-                                                    </Style>
-                                                </ItemsControl.ItemContainerStyle>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Grid Margin="10,10,10,5">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <TextBlock Text="{Binding [0]}" Grid.Column="0"/>
-                                                            <TextBlock Text="{Binding [1]}" Grid.Column="1"/>
-                                                            <TextBlock Text="{Binding [2]}" Grid.Column="2"/>
-                                                            <TextBlock Text="{Binding [3]}" Grid.Column="3"/>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </Grid>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                        <!-- Tabla detalle compacta -->
+                        <Border Padding="14" BorderBrush="#eee" BorderThickness="1" CornerRadius="10" Background="White" Height="250">
+                            <StackPanel x:Name="TablaDetalle" DataContext="{x:Null}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="1,0,0,15">
+                                    <TextBlock Text="{Binding Nombre}" FontWeight="Bold" FontSize="14" Foreground="#B65601"/>
+                                    <TextBlock Text="   (Detalle de productos disponibles)" FontSize="11" Foreground="#555" Margin="10,3,0,0"/>
+                                </StackPanel>
 
-                <!-- Footer fijo -->
-                <Grid Grid.Row="2" Margin="0,20,20,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                                <!-- Encabezados -->
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Nº Lote" FontWeight="Bold" Grid.Column="0"/>
+                                    <TextBlock Text="Producción" FontWeight="Bold" Grid.Column="1"/>
+                                    <TextBlock Text="Vencimiento" FontWeight="Bold" Grid.Column="2"/>
+                                    <TextBlock Text="Cantidad" FontWeight="Bold" Grid.Column="3"/>
+                                </Grid>
 
-                    <!-- Botones del resumen -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Content="📊 Generar balance diario" Style="{StaticResource PrimaryButton}" Height="30" Width="200" Margin="10,0"/> 
-                        <Button Content="💰 Resumen de venta diario" Style="{StaticResource PrimaryButton}" Height="30" Width="200" Margin="10,0"/>
-                        <Button Content="🍳 Resumen de producción diario" Style="{StaticResource PrimaryButton}" Height="30" Width="200" Margin="10,0"/>
+                                <!-- Filas -->
+                                <ItemsControl ItemsSource="{Binding Lotes}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="6" Margin="0,2" Background="White">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding IdLote}" Grid.Column="0"/>
+                                                    <TextBlock Text="{Binding FechaProduccion, StringFormat=dd/MM/yyyy}" Grid.Column="1"/>
+                                                    <TextBlock Text="{Binding FechaVencimiento, StringFormat=dd/MM/yyyy}" Grid.Column="2"/>
+                                                    <TextBlock Text="{Binding CantidadDisponible}" Grid.Column="3" FontWeight="SemiBold"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
-
-                    <!-- Botón flotante circular -->
-                    <Button Grid.Column="1"
-                            Content="＋"
-                            Style="{StaticResource SecondaryButton}"
-                            Width="35" Height="35" Margin="10"
-                            FontSize="15"
-                            FontWeight="Bold"
-                            Background="White"
-                            Foreground="#333"
-                            BorderBrush="#ccc"
-                            BorderThickness="1"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Click="BtnNuevoTipoPasta_Click">    
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}"
-                                        CornerRadius="50"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        Padding="5"
-                                        Effect="{DynamicResource DropShadowEffect}">    
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </Grid>
+                </Border>
             </Grid>
-        </Border>
+
+            <!-- FOOTER -->
+            <Grid Grid.Row="2" Margin="0,10,0,0">
+                <Border Background="White" CornerRadius="12" BorderBrush="#EEE" BorderThickness="1" Padding="14">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="📊 Generar balance diario" Style="{StaticResource PrimaryButton}" Height="30" Width="200" Margin="10,0"/>
+                        <Button Content="➕ Nuevo lote" Style="{StaticResource SecondaryButton}" Height="30" Width="170" Margin="0,0,10,0" Click="NuevoLote_Click"/>
+                        <Button Content="💰 Nueva venta" Style="{StaticResource SecondaryButton}" Height="30" Width="170" Click="NuevaVenta_Click"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+
+        </Grid>
     </Grid>
 </UserControl>

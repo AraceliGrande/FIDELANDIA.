@@ -17,6 +17,9 @@ namespace FIDELANDIA.Data
         public DbSet<TipoPastaModel> TiposPasta { get; set; }
         public DbSet<LoteProduccionModel> LoteProduccion { get; set; }
         public DbSet<StockActualModel> StockActual { get; set; }
+        public DbSet<VentaModel> Venta { get; set; }
+        public DbSet<DetalleVentaModel> DetalleVenta { get; set; }
+
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -39,6 +42,8 @@ namespace FIDELANDIA.Data
             modelBuilder.Entity<TipoPastaModel>().HasKey(tp => tp.IdTipoPasta);
             modelBuilder.Entity<LoteProduccionModel>().HasKey(lp => lp.IdLote);
             modelBuilder.Entity<StockActualModel>().HasKey(s => s.IdStock);
+            modelBuilder.Entity<VentaModel>().HasKey(v => v.IdVenta);
+            modelBuilder.Entity<DetalleVentaModel>().HasKey(d => d.IdDetalle);
 
             // Relación Transaccion → Proveedor
             modelBuilder.Entity<TransaccionModel>()
@@ -79,6 +84,20 @@ namespace FIDELANDIA.Data
                 .HasMany(tp => tp.Lotes)
                 .WithOne(l => l.TipoPasta)
                 .HasForeignKey(l => l.IdTipoPasta)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relación DetalleVenta → Venta
+            modelBuilder.Entity<DetalleVentaModel>()
+                .HasOne(d => d.Venta)
+                .WithMany(v => v.DetalleVenta)
+                .HasForeignKey(d => d.IdVenta)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relación DetalleVenta → LoteProduccion
+            modelBuilder.Entity<DetalleVentaModel>()
+                .HasOne(d => d.Lote)
+                .WithMany() // sin navegación inversa
+                .HasForeignKey(d => d.IdLote)
                 .OnDelete(DeleteBehavior.Restrict);
 
         }

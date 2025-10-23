@@ -1,8 +1,10 @@
 ﻿using FIDELANDIA.Data;
 using FIDELANDIA.Models;
+using FIDELANDIA.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 
@@ -19,28 +21,76 @@ namespace FIDELANDIA.Services
         }
 
         // Obtener todo el stock actualizado
-        public object ObtenerStocksParaVista()
+        public ProduccionDatos ObtenerStocksParaVista()
         {
             var stocks = _dbContext.StockActual
                                    .Include(s => s.TipoPasta)
                                    .Include(s => s.LotesDisponibles)
                                    .ToList();
 
-            var secciones = stocks.Select(stock => new
-            {
-                Nombre = stock.TipoPasta.Nombre,
-                Filas = stock.LotesDisponibles
-                            .OrderBy(l => l.FechaProduccion)
-                            .Select(lote => new string[]
-                            {
-                            lote.IdLote.ToString(),
-                            lote.FechaProduccion.ToString("dd/MM/yyyy"),
-                            lote.FechaVencimiento.ToString("dd/MM/yyyy"),
-                            lote.CantidadDisponible.ToString("0.##") + " paquetes",
-                            }).ToArray()
-            }).ToArray();
+            var hoy = DateTime.Today;
+            var ventasDia = _dbContext.Venta
+                                      .Include(v => v.DetalleVenta)
+                                      .ThenInclude(dv => dv.Lote)
+                                      .Where(v => v.Fecha.Date == hoy)
+                                      .SelectMany(v => v.DetalleVenta)
+                                      .Sum(dv => (decimal?)dv.Cantidad) ?? 0;
 
-            return secciones;
+            var produccionVM = new ProduccionDatos();
+
+            foreach (var stock in stocks)
+            {
+                var seccion = new StockSeccionViewModel
+                {
+                    NombreTipoPasta = stock.TipoPasta.Nombre,
+                    CantidadDisponible = Math.Truncate(stock.CantidadDisponible),
+                    UltimaActualizacion = stock.UltimaActualizacion,
+                    Lotes = new ObservableCollection<LoteDetalleViewModel>(
+                        stock.LotesDisponibles
+                             .OrderBy(l => l.FechaProduccion)
+                             .Select(l => new LoteDetalleViewModel
+                             {
+                                 IdLote = l.IdLote,
+                                 FechaProduccion = l.FechaProduccion,
+                                 FechaVencimiento = l.FechaVencimiento,
+                                 CantidadDisponible = Math.Truncate(l.CantidadDisponible),
+                                 Estado = l.Estado
+                             })
+                    )
+                };
+
+                produccionVM.Secciones.Add(seccion);
+            }
+
+
+            // Indicadores
+            produccionVM.TotalTipos = produccionVM.Secciones.Count;
+            produccionVM.StockTotal = (int)produccionVM.Secciones.Sum(s => s.CantidadDisponible);
+            produccionVM.ProduccionTotal = (int)produccionVM.Secciones.Sum(s => s.Lotes.Sum(l => l.CantidadDisponible));
+            produccionVM.VentasDia = 0; // Aquí ponés tu lógica si la tenés
+
+
+            return produccionVM;
+        }
+
+
+        public List<LoteProduccionModel> ObtenerLotesDisponibles()
+        {
+            try
+            {
+                var lotes = _dbContext.LoteProduccion
+                    .Include(l => l.TipoPasta)
+                    .Where(l => l.CantidadDisponible > 0 && l.Estado != "Agotado")
+                    .OrderBy(l => l.FechaProduccion)
+                    .ToList();
+
+                return lotes;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al obtener los lotes disponibles: {ex.Message}");
+                return new List<LoteProduccionModel>();
+            }
         }
 
         // Crear stock para un tipo de pasta si no existe

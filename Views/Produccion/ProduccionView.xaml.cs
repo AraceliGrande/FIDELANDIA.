@@ -1,20 +1,13 @@
 ﻿using FIDELANDIA.Data;
+using FIDELANDIA.Helpers;
 using FIDELANDIA.Services;
+using FIDELANDIA.ViewModels;
 using FIDELANDIA.Windows;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FIDELANDIA.Views.Produccion
 {
@@ -31,30 +24,74 @@ namespace FIDELANDIA.Views.Produccion
 
         private void RefrescarTablaStock()
         {
-            this.DataContext = _stockService.ObtenerStocksParaVista();
+            var datos = _stockService.ObtenerStocksParaVista();
+            if (datos == null)
+            {
+                this.DataContext = null;
+                return;
+            }
+
+            // Crear ViewModel
+            var produccionVM = new ProduccionDatos();
+            produccionVM.Secciones.Clear(); // importante si se reutiliza
+
+            foreach (var stock in datos.Secciones)
+            {
+                var seccionVM = new StockSeccionViewModel
+                {
+                    NombreTipoPasta = stock.Nombre,
+                    CantidadDisponible = stock.CantidadDisponible,
+                    Lotes = new ObservableCollection<LoteDetalleViewModel>(
+                        stock.Filas.Select(f => new LoteDetalleViewModel
+                        {
+                            IdLote = int.Parse(f[0]),
+                            FechaProduccion = DateTime.Parse(f[1]),
+                            FechaVencimiento = DateTime.Parse(f[2]),
+                            CantidadDisponible = decimal.Parse(f[3].Replace(" paquetes", "")),
+                            Estado = "Disponible"
+                        }))
+                };
+
+                produccionVM.Secciones.Add(seccionVM);
+            }
+
+            // Actualizar indicadores
+            produccionVM.TotalTipos = produccionVM.Secciones.Count;
+            produccionVM.StockTotal = (int)produccionVM.Secciones.Sum(s => s.CantidadDisponible);
+            produccionVM.ProduccionTotal = (int)produccionVM.Secciones.Sum(s => s.Lotes.Sum(l => l.CantidadDisponible));
+            produccionVM.VentasDia = 0;
+
+            this.DataContext = produccionVM;
         }
+
 
         private void NuevoLote_Click(object sender, RoutedEventArgs e)
         {
             var ventana = new CrearLoteProducFormWindow();
+            ventana.Owner = Window.GetWindow(this);
             ventana.ShowDialog();
-            RefrescarTablaStock(); // ✅ actualizar después de crear un lote
         }
 
         private void NuevaVenta_Click(object sender, RoutedEventArgs e)
         {
             var ventana = new CrearVentaProducFormWindow();
+            ventana.Owner = Window.GetWindow(this);
             ventana.ShowDialog();
-            RefrescarTablaStock(); // ✅ actualizar después de una venta
         }
 
         private void BtnNuevoTipoPasta_Click(object sender, RoutedEventArgs e)
         {
-            var ventana = new CrearTipoPastaWindow();
+            var ventana = new CrearLoteProducFormWindow();
             ventana.Owner = Window.GetWindow(this);
             ventana.ShowDialog();
-            RefrescarTablaStock(); // ✅ actualizar después de agregar un tipo de pasta
+        }
+
+        private void TipoPasta_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is StockSeccionViewModel stock)
+            {
+                TablaDetalle.DataContext = stock;
+            }
         }
     }
-
 }

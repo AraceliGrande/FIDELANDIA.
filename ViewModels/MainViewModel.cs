@@ -47,6 +47,7 @@ namespace FIDELANDIA.ViewModels
                     // Reemplazar la instancia para reiniciar todo
                     CurrentView = new Views.Produccion.ProduccionView();
                 }
+
             };
         }
 

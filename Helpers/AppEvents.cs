@@ -12,5 +12,9 @@ namespace FIDELANDIA.Helpers
         {
             LoteCreado?.Invoke();
         }
+        public static void NotificarVentaCreada()
+        {
+            LoteCreado?.Invoke();
+        }
     }
 }

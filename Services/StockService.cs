@@ -8,7 +8,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 
-
 namespace FIDELANDIA.Services
 {
     public class StockService
@@ -38,7 +37,7 @@ namespace FIDELANDIA.Services
 
             var produccionVM = new ProduccionDatos();
 
-            foreach (var stock in stocks)
+            foreach (var stock in stocks.Where(s => s.CantidadDisponible > 0))
             {
                 var seccion = new StockSeccionViewModel
                 {
@@ -62,17 +61,14 @@ namespace FIDELANDIA.Services
                 produccionVM.Secciones.Add(seccion);
             }
 
-
             // Indicadores
             produccionVM.TotalTipos = produccionVM.Secciones.Count;
             produccionVM.StockTotal = (int)produccionVM.Secciones.Sum(s => s.CantidadDisponible);
             produccionVM.ProduccionTotal = (int)produccionVM.Secciones.Sum(s => s.Lotes.Sum(l => l.CantidadDisponible));
-            produccionVM.VentasDia = 0; // Aquí ponés tu lógica si la tenés
-
+            produccionVM.VentasDia = 0;
 
             return produccionVM;
         }
-
 
         public List<LoteProduccionModel> ObtenerLotesDisponibles()
         {
@@ -114,7 +110,7 @@ namespace FIDELANDIA.Services
             return stock;
         }
 
-        // Al agregar lote al stock
+        // Agregar lote al stock
         public bool AgregarLoteAlStock(LoteProduccionModel lote)
         {
             try
@@ -131,7 +127,10 @@ namespace FIDELANDIA.Services
                     stock = CrearOObtenerStock(tipoPasta);
                 }
 
-                // Agregarlo a la colección de stock (opcional, para mantener navegación)
+                // ⚡ Vincular lote al stock
+                lote.IdStockActual = stock.IdStock;
+
+                // Agregarlo a la colección de stock (solo para navegación en memoria)
                 stock.LotesDisponibles.Add(lote);
 
                 // Actualizar stock
@@ -153,7 +152,6 @@ namespace FIDELANDIA.Services
                 return false;
             }
         }
-
 
         // Descontar stock al vender
         public bool DescontarStock(int idTipoPasta, decimal cantidad)
@@ -184,10 +182,16 @@ namespace FIDELANDIA.Services
                     }
                 }
 
-                // Eliminar lotes agotados
-                stock.LotesDisponibles = stock.LotesDisponibles
-                                             .Where(l => l.CantidadDisponible > 0)
-                                             .ToList();
+                // Desvincular lotes agotados
+                var lotesAgotados = stock.LotesDisponibles
+                                         .Where(l => l.CantidadDisponible <= 0)
+                                         .ToList();
+
+                foreach (var lote in lotesAgotados)
+                {
+                    lote.IdStockActual = null; // ⚡ desvincula de la DB
+                    stock.LotesDisponibles.Remove(lote); // opcional, navegación en memoria
+                }
 
                 stock.CantidadDisponible -= cantidad;
                 stock.UltimaActualizacion = DateTime.Now;

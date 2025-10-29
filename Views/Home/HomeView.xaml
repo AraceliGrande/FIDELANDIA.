@@ -33,19 +33,23 @@
 
             <!-- Cards principales -->
             <WrapPanel HorizontalAlignment="Center" ItemHeight="170" ItemWidth="260" Margin="0,0,0,20">
-                
+
                 <!-- Ver proveedores -->
-                <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
-                        Effect="{StaticResource DropShadow}">
+                <Border Background="White" CornerRadius="12" Padding="16" Margin="15"
+                        Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
+                        MouseLeftButtonDown="Border_MouseLeftButtonDown"
+                        Cursor="Hand">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Image Source="/Resources/Proveedores.ico" Width="64" Height="64" Margin="0,0,0,12"/>
                         <TextBlock Text="Ver proveedores" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Border>
 
-                <!-- Cargar produccion diaria -->
+                <!-- Cargar producción diaria -->
                 <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
-                        Effect="{StaticResource DropShadow}">
+                        Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
+                        MouseLeftButtonDown="ProduccionBorder_MouseLeftButtonDown"
+                        Cursor="Hand">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Image Source="/Resources/Produccion.ico" Width="64" Height="64" Margin="0,0,0,12"/>
                         <TextBlock Text="Cargar producción" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
@@ -54,7 +58,9 @@
 
                 <!-- Cargar venta diaria -->
                 <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
-                        Effect="{StaticResource DropShadow}">
+                        Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
+                        MouseLeftButtonDown="VentaBorder_MouseLeftButtonDown"
+                        Cursor="Hand">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Image Source="/Resources/Venta.ico" Width="64" Height="64" Margin="0,0,0,12"/>
                         <TextBlock Text="Cargar venta" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
@@ -63,12 +69,15 @@
 
                 <!-- Dashboard -->
                 <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
-                        Effect="{StaticResource DropShadow}">
+                        Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
+                        MouseLeftButtonDown="DashboardBorder_MouseLeftButtonDown"
+                        Cursor="Hand" >
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Image Source="/Resources/Dashboard.ico" Width="64" Height="64" Margin="0,0,0,12"/>
                         <TextBlock Text="Dashboard" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Border>
+
 
             </WrapPanel>
 

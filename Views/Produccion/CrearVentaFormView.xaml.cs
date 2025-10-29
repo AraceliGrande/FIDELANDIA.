@@ -1,4 +1,5 @@
 ﻿using FIDELANDIA.Data;
+using FIDELANDIA.Helpers;
 using FIDELANDIA.Models;
 using FIDELANDIA.Services;
 using System;
@@ -24,8 +25,9 @@ namespace FIDELANDIA.Views.Produccion
         public CrearVentaFormView()
         {
             InitializeComponent();
-            _stockService = new StockService(new FidelandiaDbContext());
-            _ventaService = new VentaService(new FidelandiaDbContext());
+            var db = new FidelandiaDbContext();
+            _stockService = new StockService(db);
+            _ventaService = new VentaService(db, _stockService);
 
             _cantidadesSeleccionadas = new Dictionary<int, int>();
             CargarTiposPastaDisponibles();
@@ -133,22 +135,73 @@ namespace FIDELANDIA.Views.Produccion
             Window.GetWindow(this)?.Close();
         }
 
-        private void RegistrarVenta_Click(object sender, RoutedEventArgs e)
+        private async void RegistrarVenta_Click(object sender, RoutedEventArgs e)
         {
-            var seleccion = _tiposPasta
-                .Where(t => _cantidadesSeleccionadas[t.IdTipoPasta] > 0)
-                .Select(t => (t.IdTipoPasta, (decimal)_cantidadesSeleccionadas[t.IdTipoPasta]))
-                .ToList();
-
-            if (!seleccion.Any())
+            try
             {
-                MessageBox.Show("Seleccione al menos una cantidad para registrar la venta.");
-                return;
+                var detalles = ObtenerDetalleVentas();
+
+                if (!detalles.Any())
+                {
+                    MessageBox.Show("Seleccione al menos una cantidad para registrar la venta.");
+                    return;
+                }
+
+                // Llamar al servicio para crear la venta y actualizar los lotes
+                var ventaCreada = await _ventaService.CrearVentaAsync(detalles);
+
+                MessageBox.Show($"Venta registrada correctamente");
+
+                // Limpiar selección y actualizar resumen
+                foreach (var key in _cantidadesSeleccionadas.Keys.ToList())
+                    _cantidadesSeleccionadas[key] = 0;
+
+                ActualizarResumen();
+                TiposPastaList.Items.Refresh();
+
+                AppEvents.NotificarVentaCreada();
+                Window.GetWindow(this)?.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al registrar la venta: {ex.Message}");
+            }
+        }
+
+
+        private List<DetalleVentaModel> ObtenerDetalleVentas()
+        {
+            var detalles = new List<DetalleVentaModel>();
+
+            foreach (var tipo in _tiposPasta)
+            {
+                var cantidadSeleccionada = _cantidadesSeleccionadas[tipo.IdTipoPasta];
+                if (cantidadSeleccionada <= 0) continue;
+
+                decimal cantidadRestante = cantidadSeleccionada;
+
+                // Repartir la cantidad a vender entre los lotes disponibles (FIFO)
+                foreach (var lote in tipo.Lotes.OrderBy(l => l.FechaVencimiento))
+                {
+                    if (cantidadRestante <= 0) break;
+
+                    var cantLote = Math.Min(cantidadRestante, lote.CantidadDisponible);
+                    if (cantLote > 0)
+                    {
+                        detalles.Add(new DetalleVentaModel
+                        {
+                            IdLote = lote.IdLote,
+                            Cantidad = cantLote,
+                        });
+
+                        cantidadRestante -= cantLote;
+                    }
+                }
             }
 
-            // Simulación de guardado
-            MessageBox.Show("Venta registrada correctamente (simulación).");
+            return detalles;
         }
+
 
         // Helper para encontrar el Border padre
         public static T FindParent<T>(DependencyObject child) where T : DependencyObject

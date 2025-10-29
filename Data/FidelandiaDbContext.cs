@@ -72,12 +72,12 @@ namespace FIDELANDIA.Data
                 .HasForeignKey<StockActualModel>(s => s.IdTipoPasta)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relación StockActual -> LoteProduccion
+            // Relación StockActual -> LoteProduccion (1:N) mediante IdStockActual
             modelBuilder.Entity<StockActualModel>()
                 .HasMany(s => s.LotesDisponibles)
-                .WithOne() 
-                .HasForeignKey(l => l.IdTipoPasta) 
-                .OnDelete(DeleteBehavior.Restrict);
+                .WithOne(l => l.StockActual)
+                .HasForeignKey(l => l.IdStockActual)
+                .OnDelete(DeleteBehavior.SetNull);
 
             // TipoPasta → Lotes (1:N) (opcional)
             modelBuilder.Entity<TipoPastaModel>()

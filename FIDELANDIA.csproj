@@ -1,51 +1,84 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<StartupObject>FIDELANDIA.App</StartupObject>
+		<AssemblyName>Fidelandia</AssemblyName>
+		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<ApplicationIcon>logo.ico</ApplicationIcon>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Resources\Dashboard.ico" />
-    <None Remove="Resources\iconImage.png" />
-    <None Remove="Resources\icono.ico" />
-    <None Remove="Resources\icono1.jpg" />
-    <None Remove="Resources\logo.ico" />
-    <None Remove="Resources\Produccion.ico" />
-    <None Remove="Resources\Proveedores.ico" />
-    <None Remove="Resources\Venta.ico" />
-  </ItemGroup>
+	<PropertyGroup>
+		<NoWarn>NU1701;NU1605</NoWarn>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Resource Include="Resources\Dashboard.ico" />
-  </ItemGroup>
+	<PropertyGroup>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<Optimize>False</Optimize>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Resource Include="Resources\icono.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\icono1.jpg">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\logo.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Produccion.ico" />
-    <Resource Include="Resources\Proveedores.ico" />
-    <Resource Include="Resources\Venta.ico" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<Optimize>False</Optimize>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Resources\Dashboard.ico" />
+		<None Remove="Resources\iconImage.png" />
+		<None Remove="Resources\icono.ico" />
+		<None Remove="Resources\icono1.jpg" />
+		<None Remove="Resources\logo.ico" />
+		<None Remove="Resources\Produccion.ico" />
+		<None Remove="Resources\Proveedores.ico" />
+		<None Remove="Resources\Venta.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="logo.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Resources\Dashboard.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.10" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Resource Include="Resources\icono.ico">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\icono1.jpg">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\logo.ico">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\Produccion.ico" />
+		<Resource Include="Resources\Proveedores.ico" />
+		<Resource Include="Resources\Venta.ico" />
+	</ItemGroup>
 
 </Project>

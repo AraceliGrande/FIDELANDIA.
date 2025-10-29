@@ -18,5 +18,8 @@ namespace FIDELANDIA.Models
 
         public virtual TipoPastaModel TipoPasta { get; set; }
 
+        public int? IdStockActual { get; set; }
+        public virtual StockActualModel StockActual { get; set; }
+
     }
 }

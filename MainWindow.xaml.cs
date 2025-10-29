@@ -22,14 +22,22 @@ namespace FIDELANDIA
         }
         private void ProbarConexion()
         {
-            using (var db = new FidelandiaDbContext())
+            try
             {
-                // Traer todos los proveedores de la base
-                var proveedores = db.Proveedores.ToList();
-
-                // Mostrar cantidad de proveedores
-                MessageBox.Show($"Hay {proveedores.Count} proveedores en la base de datos");
+                using (var db = new FidelandiaDbContext())
+                {
+                    // Intentar acceder a la base de datos
+                    db.Database.CanConnect();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"❌ Error al conectar con la base de datos:\n{ex.Message}",
+                                "Error de conexión",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
             }
         }
+
     }
 }

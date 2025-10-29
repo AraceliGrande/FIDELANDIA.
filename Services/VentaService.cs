@@ -2,120 +2,80 @@
 using FIDELANDIA.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
+using System.Threading.Tasks;
 
 namespace FIDELANDIA.Services
 {
     public class VentaService
     {
-        private readonly FidelandiaDbContext _dbContext;
+        private readonly FidelandiaDbContext _context;
+        private readonly StockService _stockService;
 
-        public VentaService(FidelandiaDbContext dbContext)
+        public VentaService(FidelandiaDbContext context, StockService stockService)
         {
-            _dbContext = dbContext;
+            _context = context;
+            _stockService = stockService;
         }
 
-        /// <summary>
-        /// Registra una venta asociada a un lote, descuenta del stock y actualiza el estado del lote.
-        /// </summary>
-        public bool RegistrarVenta(int idLote, decimal cantidad, decimal costoUnitario)
+        /// Crea una venta, actualiza lotes y descuenta stock actual.
+        /// Si falla el descuento de stock, no se guarda nada.
+        public async Task<VentaModel> CrearVentaAsync(List<DetalleVentaModel> detalleVentas)
         {
+            if (detalleVentas == null || !detalleVentas.Any())
+                throw new ArgumentException("Debe proveer al menos un detalle de venta.");
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
             try
             {
-                // 🔹 Buscar el lote de producción
-                var lote = _dbContext.LoteProduccion
-                    .Include(l => l.TipoPasta)
-                    .FirstOrDefault(l => l.IdLote == idLote);
-
-                if (lote == null)
-                {
-                    MessageBox.Show("No se encontró el lote especificado.");
-                    return false;
-                }
-
-                if (lote.CantidadDisponible < cantidad)
-                {
-                    MessageBox.Show("No hay suficiente cantidad disponible en el lote.");
-                    return false;
-                }
-
-                // 🔹 Crear la venta
                 var venta = new VentaModel
                 {
-                    Fecha = DateTime.Now
+                    Fecha = DateTime.Now,
+                    DetalleVenta = new List<DetalleVentaModel>()
                 };
 
-                _dbContext.Venta.Add(venta);
-                _dbContext.SaveChanges(); // Guardamos para obtener el IdVenta generado
-
-                // 🔹 Crear el detalle de la venta
-                var detalle = new DetalleVentaModel
+                foreach (var detalle in detalleVentas)
                 {
-                    IdVenta = venta.IdVenta,
-                    IdLote = lote.IdLote,
-                    Cantidad = cantidad,
-                    CostoUnitario = costoUnitario
-                };
+                    // Traer lote
+                    var lote = await _context.LoteProduccion
+                                             .FirstOrDefaultAsync(l => l.IdLote == detalle.IdLote);
 
-                _dbContext.DetalleVenta.Add(detalle);
+                    if (lote == null)
+                        throw new Exception($"No se encontró el lote con Id {detalle.IdLote}");
 
-                // 🔹 Actualizar cantidad del lote
-                lote.CantidadDisponible -= cantidad;
+                    if (detalle.Cantidad > lote.CantidadDisponible)
+                        throw new Exception($"Cantidad a vender ({detalle.Cantidad}) excede stock disponible ({lote.CantidadDisponible}) del lote {detalle.IdLote}");
 
-                if (lote.CantidadDisponible <= 0)
-                {
-                    lote.CantidadDisponible = 0;
-                    lote.Estado = "Agotado";
-                }
+                    // Descontar stock usando el service
+                    bool stockActualizado = _stockService.DescontarStock(lote.IdTipoPasta, detalle.Cantidad);
 
-                // 🔹 Actualizar el stock actual
-                var stock = _dbContext.StockActual
-                    .FirstOrDefault(s => s.IdTipoPasta == lote.IdTipoPasta);
+                    if (!stockActualizado)
+                        throw new Exception($"No se pudo descontar el stock para el tipo de pasta Id {lote.IdTipoPasta}");
 
-                if (stock != null)
-                {
-                    stock.CantidadDisponible -= cantidad;
-                    stock.UltimaActualizacion = DateTime.Now;
-
-                    if (stock.CantidadDisponible <= 0)
+                    // Agregar detalle a la venta (solo guardamos la cantidad y el lote)
+                    venta.DetalleVenta.Add(new DetalleVentaModel
                     {
-                        _dbContext.StockActual.Remove(stock);
-                    }
+                        IdLote = detalle.IdLote,
+                        Cantidad = detalle.Cantidad,
+                        CostoUnitario = detalle.CostoUnitario
+                    });
                 }
 
-                _dbContext.SaveChanges();
+                // Guardar venta + detalles
+                _context.Venta.Add(venta);
+                await _context.SaveChangesAsync();
 
-                MessageBox.Show("✅ Venta registrada correctamente.");
-                return true;
+                await transaction.CommitAsync();
+                return venta;
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show($"❌ Error al registrar la venta: {ex.Message}");
-                return false;
+                await transaction.RollbackAsync();
+                throw;
             }
         }
 
-        /// <summary>
-        /// Devuelve todas las ventas con sus detalles y tipo de pasta asociado (opcional).
-        /// </summary>
-        public List<VentaModel> ObtenerVentasConDetalles()
-        {
-            try
-            {
-                return _dbContext.Venta
-                    .Include(v => v.DetalleVenta)
-                        .ThenInclude(d => d.Lote)
-                            .ThenInclude(l => l.TipoPasta)
-                    .OrderByDescending(v => v.Fecha)
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al obtener las ventas: {ex.Message}");
-                return new List<VentaModel>();
-            }
-        }
     }
 }
-

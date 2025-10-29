@@ -86,6 +86,14 @@ namespace FIDELANDIA.Views.Produccion
             ventana.ShowDialog();
         }
 
+
+        private void GenerarBalanceDiario_Click(object sender, RoutedEventArgs e)
+        {
+            var ventana = new BalanceDiarioWindow();
+            ventana.Owner = Window.GetWindow(this);
+            ventana.ShowDialog();
+        }
+
         private void TipoPasta_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is StockSeccionViewModel stock)

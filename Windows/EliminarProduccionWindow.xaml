@@ -1,16 +1,17 @@
-﻿<Window x:Class="FIDELANDIA.Windows.BalanceDiarioWindow"
+﻿<Window x:Class="FIDELANDIA.Windows.EliminarProduccionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FIDELANDIA.Views.Produccion"
         mc:Ignorable="d"
-        Title="Balance Diario"
         Icon="/Resources/logo.ico"
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
-        Background="#f0f2f5">
+        Title="EliminarDetalleVentaWindow" Height="450" Width="800">
     <Grid>
-        <local:BalanceDiario x:Name="BalanceControl"/>
+        <Border Background="White" Padding="32" CornerRadius="8" Effect="{StaticResource DropShadow}">
+            <local:EliminarProduccionView x:Name="EliminarProduccionView"/>
+        </Border>
     </Grid>
 </Window>

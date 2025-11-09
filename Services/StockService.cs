@@ -28,12 +28,14 @@ namespace FIDELANDIA.Services
                                    .ToList();
 
             var hoy = DateTime.Today;
+
+            // Total ventas del día (opcional si lo querés mostrar)
             var ventasDia = _dbContext.Venta
                                       .Include(v => v.DetalleVenta)
                                       .ThenInclude(dv => dv.Lote)
                                       .Where(v => v.Fecha.Date == hoy)
                                       .SelectMany(v => v.DetalleVenta)
-                                      .Sum(dv => (decimal?)dv.Cantidad) ?? 0;
+                                      .Sum(dv => (int?)dv.Cantidad) ?? 0;
 
             var produccionVM = new ProduccionDatos();
 
@@ -53,6 +55,7 @@ namespace FIDELANDIA.Services
                                  FechaProduccion = l.FechaProduccion,
                                  FechaVencimiento = l.FechaVencimiento,
                                  CantidadDisponible = Math.Truncate(l.CantidadDisponible),
+                                 CantidadProducida = Math.Truncate(l.CantidadProducida), // ✔ Nueva propiedad
                                  Estado = l.Estado
                              })
                     )
@@ -61,11 +64,11 @@ namespace FIDELANDIA.Services
                 produccionVM.Secciones.Add(seccion);
             }
 
-            // Indicadores
+            // 🔹 Indicadores
             produccionVM.TotalTipos = produccionVM.Secciones.Count;
             produccionVM.StockTotal = (int)produccionVM.Secciones.Sum(s => s.CantidadDisponible);
-            produccionVM.ProduccionTotal = (int)produccionVM.Secciones.Sum(s => s.Lotes.Sum(l => l.CantidadDisponible));
-            produccionVM.VentasDia = 0;
+            produccionVM.ProduccionTotal = (int)produccionVM.Secciones.Sum(s => s.Lotes.Sum(l => l.CantidadProducida));
+            produccionVM.VentasDia = ventasDia;
 
             return produccionVM;
         }

@@ -4,9 +4,9 @@
              xmlns:views="clr-namespace:FIDELANDIA.Views"
               Background="Transparent" Cursor="">
 
-    <Grid Margin="20">
+    <Grid Margin="15,8,15,8">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="265"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 

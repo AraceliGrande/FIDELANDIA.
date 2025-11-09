@@ -32,6 +32,7 @@ namespace FIDELANDIA.Services
                 {
                     IdTipoPasta = idTipoPasta,
                     CantidadDisponible = cantidadDisponible,
+                    CantidadProducida = cantidadDisponible,
                     FechaProduccion = fechaProduccion,
                     FechaVencimiento = fechaVencimiento,
                     Estado = estado
@@ -83,6 +84,66 @@ namespace FIDELANDIA.Services
             {
                 MessageBox.Show($"Error al obtener lote de producción: {ex.Message}");
                 return null;
+            }
+        }
+
+        public async Task<(bool ok, string mensaje)> EliminarLoteAsync(int idLote)
+        {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                var lote = await _dbContext.LoteProduccion
+                    .Include(l => l.TipoPasta)
+                    .Include(l => l.StockActual)
+                    .FirstOrDefaultAsync(l => l.IdLote == idLote);
+
+                if (lote == null)
+                    return (false, "No se encontró el lote especificado.");
+
+                // 🔹 Obtener los detalles de venta vinculados
+                var detalles = await _dbContext.DetalleVenta
+                    .Include(d => d.Venta)
+                    .Where(d => d.IdLote == idLote)
+                    .ToListAsync();
+
+                // 🔹 Eliminar los detalles y ventas vacías
+                foreach (var detalle in detalles)
+                {
+                    _dbContext.DetalleVenta.Remove(detalle);
+                    await _dbContext.SaveChangesAsync();
+
+                    var venta = await _dbContext.Venta
+                        .Include(v => v.DetalleVenta)
+                        .FirstOrDefaultAsync(v => v.IdVenta == detalle.IdVenta);
+
+                    if (venta != null && !venta.DetalleVenta.Any())
+                        _dbContext.Venta.Remove(venta);
+                }
+
+                // 🔹 Actualizar stock (restar lo producido)
+                var stock = await _dbContext.StockActual
+                    .FirstOrDefaultAsync(s => s.IdTipoPasta == lote.IdTipoPasta);
+
+                if (stock != null)
+                {
+                    stock.CantidadDisponible -= lote.CantidadProducida;
+                    if (stock.CantidadDisponible < 0)
+                        stock.CantidadDisponible = 0;
+                    stock.UltimaActualizacion = DateTime.Now;
+                    _dbContext.StockActual.Update(stock);
+                }
+
+                // 🔹 Eliminar el lote
+                _dbContext.LoteProduccion.Remove(lote);
+                await _dbContext.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+                return (true, "Producción eliminada correctamente junto con sus dependencias.");
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return (false, $"Error al eliminar producción: {ex.Message}");
             }
         }
     }

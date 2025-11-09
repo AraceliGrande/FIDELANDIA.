@@ -39,7 +39,7 @@
 
     <Grid Margin="36">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="5*"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
@@ -61,31 +61,38 @@
                 </StackPanel>
 
                 <!-- Cards -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+              HorizontalScrollBarVisibility="Disabled"
+              MaxHeight="230"
+              Margin="0">
+                    <ItemsControl x:Name="CardTipoPasta" ItemsSource="{Binding TiposPasta}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="4" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                <ItemsControl x:Name="CardTipoPasta" ItemsSource="{Binding TiposPasta}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="4" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ToggleButton Style="{StaticResource CardToggleButton}"
-                          Margin="5"
-                          Height="80"
-                          HorizontalAlignment="Stretch"
-                          Tag="{Binding IdTipoPasta}"
-                          Checked="CardTipoPasta_Checked"
-                          Unchecked="CardTipoPasta_Unchecked">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Nombre}" FontWeight="Bold" FontSize="14"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </ToggleButton>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ToggleButton Style="{StaticResource CardToggleButton}"
+                              Width="165"
+                              Height="80"
+                              Margin="5"
+                              Tag="{Binding IdTipoPasta}"
+                              Checked="CardTipoPasta_Checked"
+                              Unchecked="CardTipoPasta_Unchecked">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Nombre}"
+                                   FontWeight="Bold"
+                                   FontSize="14"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ToggleButton>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
 
 
                 <!-- Formulario -->
@@ -137,7 +144,7 @@
 
                     <!-- Cantidad -->
                     <StackPanel Style="{StaticResource FormFieldContainer}" Margin="0,25,0,0">
-                        <TextBlock Text="Cantidad a Producir (kg)" Style="{StaticResource FormLabel}"/>
+                        <TextBlock Text="Cantidad a Producir (Unidades)" Style="{StaticResource FormLabel}"/>
                         <TextBox x:Name="TxtCantidad" Style="{StaticResource UnderlineTextBox}" TextChanged="TxtCantidad_TextChanged"/>
                     </StackPanel>
                 </StackPanel>

@@ -32,6 +32,7 @@
 
 	<ItemGroup>
 		<None Remove="Resources\Dashboard.ico" />
+		<None Remove="Resources\fidelandia_fondo.png" />
 		<None Remove="Resources\iconImage.png" />
 		<None Remove="Resources\icono.ico" />
 		<None Remove="Resources\icono1.jpg" />
@@ -67,6 +68,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Resource Include="Resources\fidelandia_fondo.png" />
 		<Resource Include="Resources\icono.ico">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>

@@ -1,147 +1,253 @@
-﻿using FIDELANDIA.Models;
+﻿using FIDELANDIA.Data;
+using FIDELANDIA.Helpers;
+using FIDELANDIA.Models;
+using FIDELANDIA.Services;
+using FIDELANDIA.Windows;
 using LiveCharts;
 using LiveCharts.Wpf;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using static FIDELANDIA.Services.BalanceService;
 
 namespace FIDELANDIA.Views.Produccion
 {
-    public partial class BalanceDiario : UserControl
+    public partial class BalanceDiario : UserControl, INotifyPropertyChanged
     {
+        private readonly BalanceService _balanceService;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
         public List<string> TipoPastaLabels { get; set; }
         public Func<double, string> FormatoCantidad { get; set; }
-        public List<LoteDetalleViewModel1> LotesDetalle { get; set; }
-        public List<LoteDetalleViewModel1> LotesDetallePorTipo { get; set; }
 
-        public string SelectedTipoPasta { get; set; }
-        public List<LoteDetalleViewModel1> LotesFiltrados { get; set; }
+        public BalanceDiarioResultado LotesDetalle { get; set; }
+        public ObservableCollection<LoteDetalleViewModel1> LotesProduccion { get; set; }
 
-        private List<DetalleVentaModel> ventasGlobal;
+        // 🔹 ObservableCollection para actualización automática
+        public ObservableCollection<DetalleVentaModel> VentasDetalladas { get; set; }
+        public List<LoteDetalleViewModel1> LotesResumenVentasHoy { get; set; }
+        public ObservableCollection<LoteDetalleViewModel1> LotesFiltrados { get; set; }
+
+        public List<BalanceDiarioModel> BalanceDiarioModel { get; set; }
 
         public BalanceDiario()
         {
             InitializeComponent();
-            CargarDatosMockup();
+
+            var dbContext = new FidelandiaDbContext();
+            _balanceService = new BalanceService(dbContext);
+
+            CargarDatos();
             DataContext = this;
+
+            // 🔹 Escuchar cuando se crea o elimina un lote
+            AppEvents.LoteCreado += OnDatosActualizados;
         }
 
-        private void CargarDatosMockup()
+        private void OnDatosActualizados()
         {
-            var tiposPasta = new List<TipoPastaModel>
+            Application.Current.Dispatcher.Invoke(CargarDatos);
+        }
+
+        ~BalanceDiario()
+        {
+            AppEvents.LoteCreado -= OnDatosActualizados;
+        }
+
+        private void CargarDatos()
+        {
+            try
             {
-                new TipoPastaModel { Nombre = "Fettuccine" },
-                new TipoPastaModel { Nombre = "Spaghetti" },
-                new TipoPastaModel { Nombre = "Penne" },
-                new TipoPastaModel { Nombre = "Ravioli" }
-            };
+                // 🔹 Obtener todos los lotes con producción, ventas y stock
+                LotesDetalle = _balanceService.ObtenerLotesDetalle();
 
-            var lotes = new List<LoteProduccionModel>
-            {
-                new LoteProduccionModel { IdLote=1, TipoPasta = tiposPasta[0], CantidadDisponible = 100, FechaProduccion = DateTime.Now.AddDays(-1), FechaVencimiento = DateTime.Now.AddMonths(1), Estado="OK" },
-                new LoteProduccionModel { IdLote=2, TipoPasta = tiposPasta[0], CantidadDisponible = 50, FechaProduccion = DateTime.Now.AddDays(-2), FechaVencimiento = DateTime.Now.AddMonths(1), Estado="OK" },
-                new LoteProduccionModel { IdLote=3, TipoPasta = tiposPasta[1], CantidadDisponible = 150, FechaProduccion = DateTime.Now.AddDays(-3), FechaVencimiento = DateTime.Now.AddMonths(1), Estado="OK" },
-                new LoteProduccionModel { IdLote=4, TipoPasta = tiposPasta[2], CantidadDisponible = 120, FechaProduccion = DateTime.Now.AddDays(-1), FechaVencimiento = DateTime.Now.AddMonths(1), Estado="OK" },
-                new LoteProduccionModel { IdLote=5, TipoPasta = tiposPasta[3], CantidadDisponible = 80, FechaProduccion = DateTime.Now.AddDays(-1), FechaVencimiento = DateTime.Now.AddMonths(1), Estado="OK" }
-            };
+                // Producción de hoy
+                LotesProduccion = new ObservableCollection<LoteDetalleViewModel1>(LotesDetalle.LotesProduccionHoy);
+                OnPropertyChanged(nameof(LotesProduccion));
 
-            ventasGlobal = new List<DetalleVentaModel>
-            {
-                new DetalleVentaModel { Lote = lotes[0], Cantidad = 60 },
-                new DetalleVentaModel { Lote = lotes[1], Cantidad = 20 },
-                new DetalleVentaModel { Lote = lotes[2], Cantidad = 100 },
-                new DetalleVentaModel { Lote = lotes[3], Cantidad = 30 },
-                new DetalleVentaModel { Lote = lotes[0], Cantidad = 10 }
-            };
+                // Ventas del día
+                VentasDetalladas = new ObservableCollection<DetalleVentaModel>(LotesDetalle.VentasHoy);
+                OnPropertyChanged(nameof(VentasDetalladas));
 
-            var stockActual = new List<StockActualModel>
-            {
-                new StockActualModel { TipoPasta = tiposPasta[0], CantidadDisponible = 70 },
-                new StockActualModel { TipoPasta = tiposPasta[1], CantidadDisponible = 50 },
-                new StockActualModel { TipoPasta = tiposPasta[2], CantidadDisponible = 70 },
-                new StockActualModel { TipoPasta = tiposPasta[3], CantidadDisponible = 50 }
-            };
+                // Lotes antiguos con ventas hoy
+                var LotesAntiguosConVentasHoy = LotesDetalle.LotesAntiguosConVentasHoy;
 
-            TipoPastaLabels = tiposPasta.Select(t => t.Nombre).ToList();
+                // 🔹 Lista fusionada con cantidad vendida hoy
+                LotesResumenVentasHoy = LotesProduccion
+                    .Select(l =>
+                    {
+                        l.TipoLote = "Hoy";
+                        l.CantidadVendidaHoy = VentasDetalladas
+                            .Where(v => v.IdLote == l.IdLote)
+                            .Sum(v => v.Cantidad);
+                        return l;
+                    })
+                    .Concat(LotesAntiguosConVentasHoy.Select(l =>
+                    {
+                        l.TipoLote = "Stock";
+                        l.CantidadVendidaHoy = VentasDetalladas
+                            .Where(v => v.IdLote == l.IdLote)
+                            .Sum(v => v.Cantidad);
+                        return l;
+                    }))
+                    .ToList();
 
-            // Gráfico
-            var produccionPorTipo = tiposPasta.Select(t => (double)lotes.Where(l => l.TipoPasta.Nombre == t.Nombre).Sum(l => l.CantidadDisponible)).ToList();
-            var ventasPorTipo = tiposPasta.Select(t => (double)ventasGlobal.Where(v => v.Lote.TipoPasta.Nombre == t.Nombre).Sum(v => v.Cantidad)).ToList();
-            var stockPorTipo = tiposPasta.Select(t => (double)stockActual.Where(s => s.TipoPasta.Nombre == t.Nombre).Sum(s => s.CantidadDisponible)).ToList();
+                // 🔹 Inicialmente mostrar todos los lotes
+                LotesFiltrados = new ObservableCollection<LoteDetalleViewModel1>(
+                    LotesResumenVentasHoy
+                        .OrderByDescending(l => l.TipoLote)
+                        .ThenBy(l => l.TipoPasta)
+                        .ToList()
+                );
+                OnPropertyChanged(nameof(LotesFiltrados));
 
-            MyChart.Series = new SeriesCollection
-            {
-                new ColumnSeries { Title="Producción", Values = new ChartValues<double>(produccionPorTipo)},
-                new ColumnSeries { Title="Ventas", Values = new ChartValues<double>(ventasPorTipo)},
-                new ColumnSeries { Title="Stock", Values = new ChartValues<double>(stockPorTipo)}
-            };
+                // 🔹 Preparar datos para gráfico
+                BalanceDiarioModel = LotesResumenVentasHoy
+                    .GroupBy(l => l.TipoPasta)
+                    .Select(g => new BalanceDiarioModel
+                    {
+                        TipoPasta = g.Key,
+                        CantidadProducida = g.Where(x => x.TipoLote == "Hoy").Sum(x => x.CantidadProduccion),
+                        CantidadVendida = g.Sum(x => x.VentasTotales),
+                        StockActual = g.First()?.Stock ?? 0
+                    })
+                    .ToList();
 
-            FormatoCantidad = value => value.ToString("N0");
+                TipoPastaLabels = BalanceDiarioModel.Select(b => b.TipoPasta).ToList();
+                FormatoCantidad = val => val.ToString("N0");
 
-            // Lotes detalle individual
-            LotesDetalle = lotes.Select(l => new LoteDetalleViewModel1
-            {
-                IdLote = l.IdLote,
-                TipoPasta = l.TipoPasta.Nombre,
-                CantidadProduccion = l.CantidadDisponible,
-                FechaProduccion = l.FechaProduccion,
-                FechaVencimiento = l.FechaVencimiento,
-                Stock = (decimal)stockActual.Where(s => s.TipoPasta.Nombre == l.TipoPasta.Nombre).Sum(s => s.CantidadDisponible),
-                VentasTotales = (decimal)ventasGlobal.Where(v => v.Lote.IdLote == l.IdLote).Sum(v => v.Cantidad),
-                VentasAsociadas = ventasGlobal.Where(v => v.Lote.IdLote == l.IdLote).ToList(),
-                Estado = l.Estado
-            }).ToList();
-
-            // Lotes resumidos por tipo de pasta
-            LotesDetallePorTipo = LotesDetalle
-                .GroupBy(l => l.TipoPasta)
-                .Select(g => new LoteDetalleViewModel1
+                // 🔹 Configurar gráfico
+                MyChart.Series = new SeriesCollection
                 {
-                    TipoPasta = g.Key,
-                    CantidadProduccion = g.Sum(x => x.CantidadProduccion),
-                    Stock = g.Sum(x => x.Stock),
-                    VentasTotales = g.Sum(x => x.VentasTotales)
-                }).ToList();
+                    new ColumnSeries { Title = "Producción", Values = new ChartValues<decimal>(BalanceDiarioModel.Select(b => b.CantidadProducida)) },
+                    new ColumnSeries { Title = "Ventas", Values = new ChartValues<decimal>(BalanceDiarioModel.Select(b => b.CantidadVendida)) },
+                    new ColumnSeries { Title = "Stock", Values = new ChartValues<decimal>(BalanceDiarioModel.Select(b => b.StockActual)) }
+                };
 
-            LotesFiltrados = new List<LoteDetalleViewModel1>();
-        }
-
-        private void TipoPasta_Click(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is Border border && border.DataContext is LoteDetalleViewModel1 lote)
+                MyChart.AxisX[0].Labels = TipoPastaLabels;
+                MyChart.AxisY[0].LabelFormatter = FormatoCantidad;
+            }
+            catch (Exception ex)
             {
-                SelectedTipoPasta = lote.TipoPasta;
-                LotesFiltrados = LotesDetalle.Where(l => l.TipoPasta == SelectedTipoPasta).ToList();
-                DataContext = null;
-                DataContext = this;
+                System.Windows.MessageBox.Show($"Error al cargar balance: {ex.Message}");
             }
         }
 
-        private void BuscarTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void NuevoLote_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is TextBox tb)
+            var ventana = new CrearLoteProducFormWindow();
+            ventana.Owner = Window.GetWindow(this);
+            ventana.ShowDialog();
+
+            AppEvents.NotificarEliminado();
+
+        }
+
+        private void NuevaVenta_Click(object sender, RoutedEventArgs e)
+        {
+            var ventana = new CrearVentaProducFormWindow();
+            ventana.Owner = Window.GetWindow(this);
+            ventana.ShowDialog();
+
+            AppEvents.NotificarEliminado();
+        }
+
+        // 🔹 Filtrado al hacer click en el gráfico
+        private void MyChart_DataClick(object sender, LiveCharts.ChartPoint chartPoint)
+        {
+            int index = (int)chartPoint.Key;
+            if (index < 0 || index >= TipoPastaLabels.Count) return;
+
+            string tipoSeleccionado = TipoPastaLabels[index];
+
+            // 🔹 Filtrar la lista fusionada
+            LotesFiltrados = new ObservableCollection<LoteDetalleViewModel1>(
+                LotesResumenVentasHoy
+                    .Where(l => l.TipoPasta == tipoSeleccionado)
+                    .OrderByDescending(l => l.TipoLote)
+                    .ToList()
+            );
+            OnPropertyChanged(nameof(LotesFiltrados));
+        }
+
+        private void Cancelar_Click(object sender, RoutedEventArgs e)
+        {
+            Window.GetWindow(this)?.Close();
+        }
+
+        private void BtnVerTodos_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            // 🔹 Volver a mostrar todos los lotes
+            LotesFiltrados = new ObservableCollection<LoteDetalleViewModel1>(
+                LotesResumenVentasHoy
+                    .OrderByDescending(l => l.TipoLote)
+                    .ThenBy(l => l.TipoPasta)
+                    .ToList()
+            );
+            OnPropertyChanged(nameof(LotesFiltrados));
+        }
+
+        private void EliminarDetalleVenta_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is DetalleVentaModel detalle)
             {
-                var filtro = tb.Text.ToLower();
-                TarjetasLotes.ItemsSource = LotesDetallePorTipo
-                    .Where(l => l.TipoPasta.ToLower().Contains(filtro))
+                var dbContext = new FidelandiaDbContext();
+                var stockService = new StockService(dbContext);
+                var ventaService = new VentaService(dbContext, stockService);
+
+                var ventana = new EliminarDetalleVentaWindow(detalle, ventaService, stockService);
+                ventana.Owner = Window.GetWindow(this);
+                ventana.ShowDialog();
+
+                AppEvents.NotificarEliminado();
+            }
+        }
+
+        private void EliminarProduccion_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is LoteDetalleViewModel1 loteSeleccionado)
+            {
+                loteSeleccionado.VentasAsociadas = LotesDetalle.VentasHoy
+                    .Where(v => v.IdLote == loteSeleccionado.IdLote)
                     .ToList();
+
+                var dbContext = new FidelandiaDbContext();
+                var loteService = new LoteProduccionService(dbContext);
+                var stockService = new StockService(dbContext);
+                var ventaService = new VentaService(dbContext, stockService);
+
+                var ventana = new EliminarProduccionWindow(loteSeleccionado, loteService, stockService, ventaService);
+                ventana.Owner = Window.GetWindow(this);
+                ventana.ShowDialog();
+
+                AppEvents.NotificarEliminado();
             }
         }
     }
 
+    // Modelo de vista
     public class LoteDetalleViewModel1
     {
         public int IdLote { get; set; }
         public string TipoPasta { get; set; }
         public decimal CantidadProduccion { get; set; }
+        public decimal CantidadDisponible { get; set; }
         public DateTime FechaProduccion { get; set; }
         public DateTime FechaVencimiento { get; set; }
         public decimal Stock { get; set; }
         public decimal VentasTotales { get; set; }
         public List<DetalleVentaModel> VentasAsociadas { get; set; }
         public string Estado { get; set; }
+
+        public string TipoLote { get; set; }
+        public decimal CantidadVendidaHoy { get; set; }
     }
 }

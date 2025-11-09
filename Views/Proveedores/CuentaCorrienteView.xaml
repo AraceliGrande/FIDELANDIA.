@@ -12,104 +12,141 @@
         <DockPanel LastChildFill="True">
 
             <!-- Botones abajo -->
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,20,0,0">
-                <Button Content="➕ Nuevo Movimiento" Style="{StaticResource PrimaryButton}" 
-                        Margin="0,0,12,0" x:Name="BtnNuevoMovimiento" Width="165" Height="32"
-                        Click="BtnNuevaTransaccion_Click"/>
-                <Button Content="⬇ Exportar CSV" Style="{StaticResource SecondaryButton}" Height="32" Width="163"/>
+            <StackPanel Orientation="Vertical" DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="0,5,0,0" >
+                <!-- Fila 1: paginación -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,2">
+                    <!-- ComboBox para seleccionar cantidad de registros por página -->
+                    <ComboBox x:Name="CbTamanoPagina" Width="60" SelectionChanged="CbTamanoPagina_SelectionChanged" Height="20" Background="#FFF" Margin="10,0,20,0">
+                        <ComboBoxItem Content="5"/>
+                        <ComboBoxItem Content="12"/>
+                        <ComboBoxItem Content="25"/>
+                        <ComboBoxItem Content="50"/>
+                        <ComboBoxItem Content="100"/>
+                    </ComboBox>
+
+                    <Border Padding="8" Background="Transparent">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Button Content="⬅" Width="28" Height="28" Margin="0,0,8,0"
+                        Click="BtnPaginaAnterior_Click"
+                        x:Name="BtnAnterior"
+                        Background="#FFF"
+                        Foreground="#555"
+                        FontWeight="SemiBold"/>
+
+                            <TextBlock x:Name="TxtPaginaActual" Text="Página 1 / 1"
+                           VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12"
+                           Margin="20,5,35,5"/>
+
+                            <Button Content="⮕" Width="28" Height="28"
+                        Click="BtnPaginaSiguiente_Click"
+                        x:Name="BtnSiguiente"
+                        Background="#FFF"
+                        Foreground="#555"
+                        FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Fila 2: botones de acción -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                    <Button Content="➕ Nuevo Movimiento" Style="{StaticResource PrimaryButton}"
+                Margin="0,0,12,0" x:Name="BtnNuevoMovimiento" Width="165" Height="32"
+                Click="BtnNuevaTransaccion_Click"/>
+                    <Button Content="⬇ Exportar CSV" Style="{StaticResource SecondaryButton}"
+                Height="32" Width="163"/>
+                </StackPanel>
             </StackPanel>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto"
- HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel>
+
                 <StackPanel>
 
-                    <StackPanel>
+                    <!-- ENCABEZADO - Datos del proveedor -->
+                    <Border Background="#fdfdfd" CornerRadius="8" Padding="9" BorderBrush="#ddd" BorderThickness="1" Margin="0,0,0,10">
+                        <Grid Margin="1,1,1,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4*"/>
+                                <!-- Expander -->
+                                <ColumnDefinition Width="2*"/>
+                                <!-- Saldo -->
+                            </Grid.ColumnDefinitions>
 
-                        <!-- ENCABEZADO - Datos del proveedor -->
-                        <Border Background="#fdfdfd" CornerRadius="8" Padding="9" BorderBrush="#ddd" BorderThickness="1" Margin="0,0,0,10">
-                            <Grid Margin="1,1,1,16">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="4*"/>
-                                    <!-- Expander -->
-                                    <ColumnDefinition Width="2*"/>
-                                    <!-- Saldo -->
-                                </Grid.ColumnDefinitions>
-
-                                <!-- EXPANDER: Datos del proveedor -->
-                                <Expander Grid.Column="0" IsExpanded="False" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,0,16,0">
-                                    <Expander.Header>
-                                        <DockPanel LastChildFill="True">
-                                            <TextBlock Text="  Cuenta Corriente: " 
+                            <!-- EXPANDER: Datos del proveedor -->
+                            <Expander Grid.Column="0" IsExpanded="False" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,0,16,0">
+                                <Expander.Header>
+                                    <DockPanel LastChildFill="True">
+                                        <TextBlock Text="  Cuenta Corriente: " 
                                                FontSize="14" 
                                                Foreground="#a34c00" 
                                                FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="DetalleNombre" 
+                                        <TextBlock x:Name="DetalleNombre" 
                                                Text="Nombre del proveedor"
                                                FontSize="14" 
                                                Foreground="#a34c00" 
                                                FontWeight="Bold"
                                                TextTrimming="CharacterEllipsis"/>
-                                        </DockPanel>
-                                    </Expander.Header>
+                                    </DockPanel>
+                                </Expander.Header>
 
-                                    <!-- Contenido del Expander -->
-                                    <StackPanel Margin="20,10,0,0">
-                                        <Grid Margin="0,10,0,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="2*" />
-                                                <ColumnDefinition Width="2*" />
-                                            </Grid.ColumnDefinitions>
+                                <!-- Contenido del Expander -->
+                                <StackPanel Margin="20,10,0,0">
+                                    <Grid Margin="0,10,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition Width="2*" />
+                                        </Grid.ColumnDefinitions>
 
-                                            <!-- Primera columna -->
-                                            <StackPanel Grid.Column="0" Margin="0,0,16,0">
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="📋 CUIT: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleCuit" Text="00-00000000-0" Foreground="#555"/>
-                                                </StackPanel>
-
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="📞 Teléfono: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleTelefono" Text="(000) 0000-0000" Foreground="#555"/>
-                                                </StackPanel>
-
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="📧 Email: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleEmail" Text="emailProveedor@mail.com" Foreground="#555"/>
-                                                </StackPanel>
+                                        <!-- Primera columna -->
+                                        <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                <TextBlock Text="📋 CUIT: " FontWeight="SemiBold" Width="90"/>
+                                                <TextBlock x:Name="DetalleCuit" Text="00-00000000-0" Foreground="#555"/>
                                             </StackPanel>
 
-                                            <!-- Segunda columna -->
-                                            <StackPanel Grid.Column="1" Margin="16,0,0,0">
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="🗂 Categoría: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleCategoria" Text="N/A" Foreground="#555"/>
-                                                </StackPanel>
-
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="💰 Límite: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleLimiteCredito" Text="$0,00" Foreground="#555"/>
-                                                </StackPanel>
-
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="⚡ Activo: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleActivo" Text="Sí" Foreground="#555"/>
-                                                </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                <TextBlock Text="📞 Teléfono: " FontWeight="SemiBold" Width="90"/>
+                                                <TextBlock x:Name="DetalleTelefono" Text="(000) 0000-0000" Foreground="#555"/>
                                             </StackPanel>
-                                        </Grid>
-                                    </StackPanel>
-                                </Expander>
 
-                                <!-- SALDO: visible siempre -->
-                                <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">
-                                    <TextBlock Text="Saldo Actual" FontSize="14" Foreground="#777" TextAlignment="Right"/>
-                                    <TextBlock x:Name="DetalleSaldo" FontSize="28" FontWeight="Bold" Foreground="#2e7d32" TextAlignment="Right"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                <TextBlock Text="📧 Email: " FontWeight="SemiBold" Width="90"/>
+                                                <TextBlock x:Name="DetalleEmail" Text="emailProveedor@mail.com" Foreground="#555"/>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <!-- Segunda columna -->
+                                        <StackPanel Grid.Column="1" Margin="16,0,0,0">
+                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                <TextBlock Text="🗂 Categoría: " FontWeight="SemiBold" Width="90"/>
+                                                <TextBlock x:Name="DetalleCategoria" Text="N/A" Foreground="#555"/>
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                <TextBlock Text="💰 Límite: " FontWeight="SemiBold" Width="90"/>
+                                                <TextBlock x:Name="DetalleLimiteCredito" Text="$0,00" Foreground="#555"/>
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                <TextBlock Text="⚡ Activo: " FontWeight="SemiBold" Width="90"/>
+                                                <TextBlock x:Name="DetalleActivo" Text="Sí" Foreground="#555"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
                                 </StackPanel>
-                            </Grid>
+                            </Expander>
+
+                            <!-- SALDO: visible siempre -->
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">
+                                <TextBlock Text="Saldo Actual" FontSize="14" Foreground="#777" TextAlignment="Right"/>
+                                <TextBlock x:Name="DetalleSaldo" FontSize="28" FontWeight="Bold" Foreground="#2e7d32" TextAlignment="Right"/>
+                            </StackPanel>
+                        </Grid>
 
 
-                        </Border>
+                    </Border>
 
-
+                    <Grid MaxHeight="329">
                         <!-- TABLA DE MOVIMIENTOS -->
                         <DataGrid x:Name="MovimientosGrid"
                           AutoGenerateColumns="False"
@@ -122,7 +159,8 @@
                           GridLinesVisibility="Horizontal"
                           VerticalGridLinesBrush="#EEE"
                           RowHeaderWidth="0"
-                          BorderThickness="0">
+                          BorderThickness="0"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
 
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha}" Width="80"/>
@@ -134,45 +172,9 @@
                                 <DataGridTextColumn Header="Factura" Binding="{Binding Factura}" Width="120"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                        <!-- PAGINACIÓN -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,0">
-                            <!-- ComboBox para seleccionar cantidad de registros por página -->
-                            <ComboBox x:Name="CbTamanoPagina" Width="60" SelectionChanged="CbTamanoPagina_SelectionChanged" Height="20" Background="#FFF"
-Margin="10,0,20,0">
-                                <ComboBoxItem Content="5"/>
-                                <ComboBoxItem Content="12"/>
-                                <ComboBoxItem Content="25"/>
-                                <ComboBoxItem Content="50"/>
-                                <ComboBoxItem Content="70"/>
-                            </ComboBox>
-
-                            <Border DockPanel.Dock="Bottom" Padding="8" Background="Transparent">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Button Content="⬅" Width="28" Height="28" Margin="0,0,8,0" 
-                                Click="BtnPaginaAnterior_Click"
-                                x:Name="BtnAnterior"
-                                Background="#FFF"
-                                Foreground="#555"
-                                FontWeight="SemiBold"
-                                />
-
-                                    <TextBlock x:Name="TxtPaginaActual" Text="Página 1 / 1"
-                                VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12"
-                                Margin="20,5,35,5"/>
-
-                                    <Button Content="⮕" Width="28" Height="28" Margin="0,0,0,0" 
-                                Click="BtnPaginaSiguiente_Click"
-                                x:Name="BtnSiguiente"
-                                Background="#FFF"
-                                Foreground="#555"
-                                FontWeight="SemiBold"
-                                />
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </StackPanel>
-            </ScrollViewer>
+            </StackPanel>
         </DockPanel>
     </Border>
 </UserControl>

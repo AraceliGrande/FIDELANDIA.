@@ -1,4 +1,5 @@
 ﻿using FIDELANDIA.Data;
+using FIDELANDIA.Helpers;
 using FIDELANDIA.Models;
 using FIDELANDIA.Services;
 using FIDELANDIA.Windows;
@@ -156,12 +157,18 @@ namespace FIDELANDIA.Views
             }
 
             var ventana = new TransaccionesProveedorFormWindow(_proveedorActual);
-            ventana.Owner = Window.GetWindow(this);
-            ventana.ShowDialog();
+            ventana.Owner = Window.GetWindow(this);           
 
-            // Refrescar la tabla después de guardar
+            bool? resultado = ventana.ShowDialog();
+
             ultimosSaldosPorPagina.Clear();
             MostrarProveedor(_proveedorActual, paginaActual, tamanoPagina);
+
+            if (resultado == true)
+            {
+                // Disparar evento global pasando el proveedor que acaba de modificarse
+                AppEvents.OnTransaccionCreada(_proveedorActual.ProveedorID);
+            }
         }
     }
 }

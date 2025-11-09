@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
+using FIDELANDIA.Helpers;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -79,11 +79,7 @@ namespace FIDELANDIA.Views.Proveedores
                 MessageBox.Show("Transacción registrada correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 // Limpiar campos
-                TxtConcepto.Clear();
-                TxtDebe.Clear();
-                TxtFactura.Clear();
-                CbTipo.SelectedIndex = 0;
-                DpFecha.SelectedDate = DateTime.Now;
+                AppEvents.OnTransaccionCreada(_proveedorActual.ProveedorID);
 
                 Window.GetWindow(this)?.Close();
 

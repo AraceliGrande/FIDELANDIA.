@@ -77,5 +77,91 @@ namespace FIDELANDIA.Services
             }
         }
 
+        public async Task<bool> EliminarDetalleVentaAsync(int idVenta, int idLote)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Buscar detalle de venta
+                var ventaDetalle = await _context.DetalleVenta
+                    .Include(v => v.Lote)
+                        .ThenInclude(l => l.TipoPasta)
+                    .FirstOrDefaultAsync(v => v.IdVenta == idVenta && v.IdLote == idLote);
+
+                if (ventaDetalle == null)
+                    throw new Exception("No se encontró el detalle de venta.");
+
+                // Buscar lote
+                var lote = await _context.LoteProduccion
+                    .Include(l => l.StockActual)
+                    .FirstOrDefaultAsync(l => l.IdLote == ventaDetalle.IdLote);
+
+                if (lote == null)
+                    throw new Exception("No se encontró el lote asociado a esta venta.");
+
+                // Buscar stock correspondiente
+                var stock = await _context.StockActual
+                    .Include(s => s.LotesDisponibles)
+                    .FirstOrDefaultAsync(s => s.IdTipoPasta == lote.IdTipoPasta);
+
+                // Crear stock si no existe
+                if (stock == null)
+                {
+                    stock = new StockActualModel
+                    {
+                        IdTipoPasta = lote.IdTipoPasta,
+                        CantidadDisponible = 0,
+                        UltimaActualizacion = DateTime.Now
+                    };
+                    _context.StockActual.Add(stock);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Revertir stock y lote
+                lote.CantidadDisponible += ventaDetalle.Cantidad;
+                stock.CantidadDisponible += ventaDetalle.Cantidad;
+                stock.UltimaActualizacion = DateTime.Now;
+
+                // Vincular lote si no está vinculado
+                if (!stock.LotesDisponibles.Any(l => l.IdLote == lote.IdLote))
+                {
+                    stock.LotesDisponibles.Add(lote);
+                    lote.IdStockActual = stock.IdStock;
+                    lote.StockActual = stock;
+                }
+
+                // Eliminar el detalle
+                _context.DetalleVenta.Remove(ventaDetalle);
+
+                // Verificar si quedan otros detalles de la venta
+                bool hayOtrosDetalles = await _context.DetalleVenta.AnyAsync(d => d.IdVenta == idVenta);
+
+                // Si no quedan otros detalles, eliminar la venta completa
+                if (!hayOtrosDetalles)
+                {
+                    var venta = await _context.Venta.FindAsync(idVenta);
+                    if (venta != null)
+                    {
+                        _context.Venta.Remove(venta);
+                    }
+                }
+
+                // Guardar todos los cambios
+                await _context.SaveChangesAsync();
+
+                // Si todo sale bien, confirmar transacción
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Si hay cualquier error, volver todo atrás
+                await transaction.RollbackAsync();
+                throw new Exception($"No se pudo eliminar el detalle de venta. Se canceló la operación.\n\nDetalles: {ex.Message}");
+            }
+        }
+
     }
 }

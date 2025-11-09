@@ -17,6 +17,7 @@ namespace FIDELANDIA.Models
         public virtual VentaModel Venta { get; set; }
         public virtual LoteProduccionModel Lote { get; set; }
 
+        public DateTime Fecha => Venta?.Fecha ?? DateTime.MinValue;
 
     }
 }

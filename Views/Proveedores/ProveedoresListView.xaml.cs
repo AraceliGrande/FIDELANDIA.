@@ -31,7 +31,7 @@ namespace FIDELANDIA.Views
 
         public event Action<ProveedorModel> ProveedorSeleccionado;
 
-        private void CargarProveedores()
+        public void CargarProveedores()
         {
             try
             {
@@ -75,6 +75,28 @@ namespace FIDELANDIA.Views
             catch (Exception ex)
             {
                 MessageBox.Show($"Error al seleccionar el proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void SeleccionarProveedor(int proveedorId)
+        {
+            try
+            {
+                if (ProveedoresListBox.ItemsSource == null) return;
+
+                var proveedor = ProveedoresListBox.ItemsSource
+                    .OfType<ProveedorModel>()
+                    .FirstOrDefault(p => p.ProveedorID == proveedorId);
+
+                if (proveedor != null)
+                {
+                    ProveedoresListBox.SelectedItem = proveedor;
+                    ProveedoresListBox.ScrollIntoView(proveedor);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al seleccionar proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

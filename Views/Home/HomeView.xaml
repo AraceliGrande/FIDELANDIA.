@@ -4,35 +4,41 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             Background="#F9F9F9">
-
+             Background="Transparent">
+    
+  
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="32">
+        <StackPanel Margin="0">
 
             <!-- Bienvenida -->
-            <Grid Margin="0,0,0,20">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <Grid Margin="0,0,0,30">
+                <Border Background="#80FFFFFF" Opacity="1" Padding="7" Margin="0,27,0,0">
+                    <Border.Effect>
+                        <DropShadowEffect Color="White" BlurRadius="100" ShadowDepth="0" Opacity="0.4"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                <!-- Texto de bienvenida -->
-                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                    <TextBlock Text="¡Bienvenido!" 
-                               FontSize="28" FontWeight="Bold" 
-                               Foreground="#333333"/>
-                    <TextBlock Text="Aplicación para gestión de proveedores y stock." 
-                               FontSize="16" Foreground="#666666" Margin="0,8,0,0"/>
-                </StackPanel>
+                        <!-- Texto de bienvenida -->
+                        <StackPanel VerticalAlignment="Center" Margin="50,0,0,0">
+                            <TextBlock Text="¡Bienvenido nuevamente!" FontSize="23" FontWeight="Bold" Foreground="#e27a14" Margin="0,0,0,10"/>
+                            <TextBlock Text="Gestión de proveedores y stock" FontSize="11" Foreground="Gray" FontWeight="SemiBold"/>
+                        </StackPanel>
 
-                <!-- Foto del usuario -->
-                <Border Grid.Column="1" Width="130" Height="130" CornerRadius="60" Background="#F2F2F2" HorizontalAlignment="Right">
-                    <Image Source="/Resources/icono.ico" Stretch="UniformToFill" ClipToBounds="True"/>
+                        <!-- Foto del usuario -->
+                        <Border Grid.Column="1" Width="90" Height="90" CornerRadius="65" Background="White" Margin="0,0,40,10" VerticalAlignment="Center" HorizontalAlignment="Right" >
+                            <Image Source="/Resources/icono.ico" Stretch="UniformToFill" ClipToBounds="True" Margin="10"/>
+                        </Border>
+                    </Grid>
                 </Border>
+
             </Grid>
 
             <!-- Cards principales -->
-            <WrapPanel HorizontalAlignment="Center" ItemHeight="170" ItemWidth="260" Margin="0,0,0,20">
+            <WrapPanel HorizontalAlignment="Center" ItemHeight="170" ItemWidth="260" Margin="20,30,20,20">
 
                 <!-- Ver proveedores -->
                 <Border Background="White" CornerRadius="12" Padding="16" Margin="15"

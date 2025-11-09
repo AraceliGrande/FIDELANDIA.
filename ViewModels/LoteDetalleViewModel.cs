@@ -9,6 +9,7 @@ namespace FIDELANDIA.ViewModels
         private DateTime _fechaProduccion;
         private DateTime _fechaVencimiento;
         private decimal _cantidadDisponible;
+        private decimal _cantidadProducida; // Nueva propiedad
         private string _estado;
 
         public int IdLote
@@ -33,6 +34,12 @@ namespace FIDELANDIA.ViewModels
         {
             get => _cantidadDisponible;
             set { _cantidadDisponible = value; OnPropertyChanged(nameof(CantidadDisponible)); }
+        }
+
+        public decimal CantidadProducida
+        {
+            get => _cantidadProducida;
+            set { _cantidadProducida = value; OnPropertyChanged(nameof(CantidadProducida)); }
         }
 
         public string Estado

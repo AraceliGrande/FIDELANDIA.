@@ -10,8 +10,8 @@ namespace FIDELANDIA.Models
     {
         public int IdLote { get; set; }
         public int IdTipoPasta { get; set; }  // FK a TipoPasta
-
         public decimal CantidadDisponible { get; set; }
+        public decimal CantidadProducida { get; set; }
         public DateTime FechaProduccion { get; set; }
         public DateTime FechaVencimiento { get; set; }
         public string Estado { get; set; }

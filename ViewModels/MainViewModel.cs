@@ -1,5 +1,6 @@
 ﻿using FIDELANDIA.Commands;
 using FIDELANDIA.Helpers;
+using FIDELANDIA.Models;
 using FIDELANDIA.Views;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -49,6 +50,40 @@ namespace FIDELANDIA.ViewModels
                 }
 
             };
+
+
+            AppEvents.TransaccionCreada += proveedorId =>
+            {
+                // Si estamos en la vista de proveedores
+                if (CurrentView is Views.ProveedoresView)
+                {
+                    // Crear una nueva instancia (para recargar todo)
+                    var nuevaVista = new Views.ProveedoresView();
+                    CurrentView = nuevaVista;
+
+                    // Ejecutar después de que la UI se actualice
+                    Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        try
+                        {
+                            // Selecciona automáticamente el proveedor
+                            nuevaVista.ListaProveedores.SeleccionarProveedor(proveedorId);
+
+                            // Obtener el proveedor seleccionado
+                            var proveedorSeleccionado = nuevaVista.ListaProveedores.ProveedoresListBox.SelectedItem as Models.ProveedorModel;
+
+                            // Mostrar su cuenta corriente si existe
+                            if (proveedorSeleccionado != null)
+                                nuevaVista.CuentaCorriente.MostrarProveedor(proveedorSeleccionado, resetearEstado: true);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error al recargar vista del proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }, System.Windows.Threading.DispatcherPriority.Background);
+                }
+            };
+
         }
 
         private void ToggleSidebar()

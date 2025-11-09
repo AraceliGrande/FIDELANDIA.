@@ -31,37 +31,8 @@ namespace FIDELANDIA.Views.Produccion
                 return;
             }
 
-            // Crear ViewModel
-            var produccionVM = new ProduccionDatos();
-            produccionVM.Secciones.Clear(); // importante si se reutiliza
-
-            foreach (var stock in datos.Secciones)
-            {
-                var seccionVM = new StockSeccionViewModel
-                {
-                    NombreTipoPasta = stock.Nombre,
-                    CantidadDisponible = stock.CantidadDisponible,
-                    Lotes = new ObservableCollection<LoteDetalleViewModel>(
-                        stock.Filas.Select(f => new LoteDetalleViewModel
-                        {
-                            IdLote = int.Parse(f[0]),
-                            FechaProduccion = DateTime.Parse(f[1]),
-                            FechaVencimiento = DateTime.Parse(f[2]),
-                            CantidadDisponible = decimal.Parse(f[3].Replace(" paquetes", "")),
-                            Estado = "Disponible"
-                        }))
-                };
-
-                produccionVM.Secciones.Add(seccionVM);
-            }
-
-            // Actualizar indicadores
-            produccionVM.TotalTipos = produccionVM.Secciones.Count;
-            produccionVM.StockTotal = (int)produccionVM.Secciones.Sum(s => s.CantidadDisponible);
-            produccionVM.ProduccionTotal = (int)produccionVM.Secciones.Sum(s => s.Lotes.Sum(l => l.CantidadDisponible));
-            produccionVM.VentasDia = 0;
-
-            this.DataContext = produccionVM;
+            // Directamente asignamos el ViewModel completo que devuelve el servicio
+            this.DataContext = datos;
         }
 
 
@@ -81,7 +52,7 @@ namespace FIDELANDIA.Views.Produccion
 
         private void BtnNuevoTipoPasta_Click(object sender, RoutedEventArgs e)
         {
-            var ventana = new CrearLoteProducFormWindow();
+            var ventana = new CrearTipoPastaWindow();
             ventana.Owner = Window.GetWindow(this);
             ventana.ShowDialog();
         }
@@ -98,6 +69,7 @@ namespace FIDELANDIA.Views.Produccion
         {
             if (sender is Button button && button.DataContext is StockSeccionViewModel stock)
             {
+                TablaDetalle.DataContext = null;
                 TablaDetalle.DataContext = stock;
             }
         }

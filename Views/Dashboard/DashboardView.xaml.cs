@@ -115,15 +115,20 @@ namespace FIDELANDIA.Views
                 StockPromedio = resumen.StockPromedio;
                 TicketPromedio = resumen.TicketPromedio;
 
-                // Simulación de variaciones (comparativo simple)
-                VariacionProduccionText = Variacion(resumen.CantidadProducida, resumen.CantidadProducida * 0.9m, out Brush col1);
-                VariacionProduccionColor = col1;
-                VariacionVentasText = Variacion(resumen.VentasTotales, resumen.VentasTotales * 0.85m, out Brush col2);
-                VariacionVentasColor = col2;
-                VariacionStockText = Variacion(resumen.StockPromedio, resumen.StockPromedio * 0.95m, out Brush col3);
-                VariacionStockColor = col3;
-                VariacionTicketText = Variacion(resumen.TicketPromedio, resumen.TicketPromedio * 0.9m, out Brush col4);
-                VariacionTicketColor = col4;
+                // ========== VARIACIONES REALES ==========
+
+                VariacionProduccionText = $"{resumen.VariacionCantidadProducida:+0.0;-0.0;0.0}%";
+                VariacionProduccionColor = resumen.VariacionCantidadProducida >= 0 ? Brushes.ForestGreen : Brushes.Red;
+
+                VariacionVentasText = $"{resumen.VariacionVentasTotales:+0.0;-0.0;0.0}%";
+                VariacionVentasColor = resumen.VariacionVentasTotales >= 0 ? Brushes.ForestGreen : Brushes.Red;
+
+                VariacionStockText = $"{resumen.VariacionStockPromedio:+0.0;-0.0;0.0}%";
+                VariacionStockColor = resumen.VariacionStockPromedio >= 0 ? Brushes.ForestGreen : Brushes.Red;
+
+                VariacionTicketText = $"{resumen.VariacionTicketPromedio:+0.0;-0.0;0.0}%";
+                VariacionTicketColor = resumen.VariacionTicketPromedio >= 0 ? Brushes.ForestGreen : Brushes.Red;
+
 
                 // ========== PRODUCCIÓN / VENTAS / STOCK ==========
                 TipoPastaLabels = resumen.ProduccionPorTipo.Keys.ToList();
@@ -132,7 +137,7 @@ namespace FIDELANDIA.Views
                 {
                     new ColumnSeries { Title = "Producción", Values = new ChartValues<double>(resumen.ProduccionPorTipo.Values.Select(v => (double)v)) },
                     new ColumnSeries { Title = "Ventas", Values = new ChartValues<double>(resumen.VentasPorTipo.Values.Select(v => (double)v)) },
-                    new ColumnSeries { Title = "Stock", Values = new ChartValues<double>(resumen.StockPorTipo.Values.Select(v => (double)v)) }
+                    new ColumnSeries { Title = "Diferencia", Values = new ChartValues<double>(resumen.StockPorTipo.Values.Select(v => (double)v)) }
                 };
 
                 // ========== PARTICIPACIÓN EN VENTAS ==========

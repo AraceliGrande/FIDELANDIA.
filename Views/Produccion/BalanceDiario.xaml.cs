@@ -7,6 +7,7 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -210,6 +211,27 @@ namespace FIDELANDIA.Views.Produccion
                 AppEvents.NotificarEliminado();
             }
         }
+
+        private void BtnExportarExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var excelService = new ExcelExportService();
+
+                var datasets = new Dictionary<string, IEnumerable>
+        {
+            { "Producción", LotesProduccion },
+            { "Ventas", VentasDetalladas },
+            { "Resumen", LotesFiltrados }
+        };
+
+                excelService.ExportarMultiplesHojas(datasets);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
 
         private void EliminarProduccion_Click(object sender, RoutedEventArgs e)
         {

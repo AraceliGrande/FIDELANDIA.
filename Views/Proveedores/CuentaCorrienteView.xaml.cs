@@ -26,7 +26,7 @@ namespace FIDELANDIA.Views
     {
         private readonly ProveedorService _service;
         private int paginaActual = 1;
-        private int tamanoPagina = 13;
+        private int tamanoPagina = 14;
         private int totalPaginas = 1; // se calcula según la cantidad total de transacciones
         private ProveedorModel _proveedorActual; // ← variable de instancia
 
@@ -60,7 +60,7 @@ namespace FIDELANDIA.Views
             }
         }
 
-        public void MostrarProveedor(ProveedorModel proveedor, int pagina = 1, int tamanoPagina = 13, bool resetearEstado = false)
+        public void MostrarProveedor(ProveedorModel proveedor, int pagina = 1, int tamanoPagina = 14, bool resetearEstado = false)
         {
             if (proveedor == null) return;
 
@@ -69,7 +69,7 @@ namespace FIDELANDIA.Views
             if (resetearEstado)
             {
                 paginaActual = 1;
-                tamanoPagina = 13; 
+                tamanoPagina = 14; 
                 ultimosSaldosPorPagina.Clear();
 
                 // if (CbTamanoPagina != null)
@@ -170,6 +170,38 @@ namespace FIDELANDIA.Views
                 AppEvents.OnTransaccionCreada(_proveedorActual.ProveedorID);
             }
         }
+
+        private readonly ExcelExportService _excelExportService = new ExcelExportService();
+
+        private void BtnExportarExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (MovimientosGrid.ItemsSource == null)
+                {
+                    MessageBox.Show("No hay datos para exportar.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Convertimos los elementos actuales del DataGrid en una lista de objetos
+                var datos = MovimientosGrid.ItemsSource.Cast<object>().ToList();
+
+                if (datos.Count == 0)
+                {
+                    MessageBox.Show("No hay registros para exportar.", "Información", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                // Llamamos al servicio para exportar
+                _excelExportService.ExportarAExcel(datos, $"CuentaCorriente_{_proveedorActual?.Nombre ?? "Proveedor"}");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al exportar a Excel: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
     }
 }
 

@@ -4,11 +4,11 @@
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:local="clr-namespace:FIDELANDIA.Views">
 
-    <Border Background="#F4F6F8" CornerRadius="12" Padding="10">
+    <Border CornerRadius="12" Padding="10">
 
         <DockPanel LastChildFill="True">
 
-            <Border DockPanel.Dock="Top" CornerRadius="16" Background="White" Opacity="1" Padding="7" Margin="0,0,0,0">
+            <Border VerticalAlignment="Center" DockPanel.Dock="Top" CornerRadius="10" Background="White" BorderBrush="Orange" BorderThickness="0.5" Opacity="1" Padding="20" Margin="0,0,0,0">
                 <Border.Effect>
                     <DropShadowEffect Color="White" BlurRadius="100" ShadowDepth="0" Opacity="0.4"/>
                 </Border.Effect>
@@ -19,36 +19,29 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel VerticalAlignment="Center" Margin="10">
-                        <TextBlock Text="Tablero de control de producción" FontSize="23" FontWeight="Bold" Foreground="#eA7a14" Margin="0,0,0,10"/>
+                        <TextBlock Text="Tablero de control de producción" FontSize="17" FontWeight="Bold" Foreground="#8C3000"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10,0,0,0">
-                        <Border Background="#F8F9FA" CornerRadius="8" Padding="6,3" Margin="0,0,6,0" BorderBrush="#ddd" BorderThickness="1">
+                        <Border Margin="0,0,6,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <TextBlock Text="Desde:" VerticalAlignment="Center" Foreground="#666" FontSize="12" Margin="0,0,4,0"/>
-                                <DatePicker x:Name="FechaDesdePicker"
+                                <DatePicker x:Name="FechaDesdePicker"  Style="{StaticResource UnderlineDatePicker}"
                          SelectedDate="{Binding FechaDesde, Mode=TwoWay}"
-                         Width="120" Background="White"/>
+                         Width="120"/>
                             </StackPanel>
                         </Border>
 
-                        <Border Background="#F8F9FA" CornerRadius="8" Padding="6,3" Margin="0,0,6,0" BorderBrush="#ddd" BorderThickness="1">
+                        <Border Margin="35,0,35,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <TextBlock Text="Hasta:" VerticalAlignment="Center" Foreground="#666" FontSize="12" Margin="0,0,4,0"/>
-                                <DatePicker x:Name="FechaHastaPicker"
+                                <DatePicker x:Name="FechaHastaPicker"  Style="{StaticResource UnderlineDatePicker}"
                          SelectedDate="{Binding FechaHasta, Mode=TwoWay}"
-                         Width="120" Background="White"/>
+                         Width="120"/>
                             </StackPanel>
                         </Border>
 
-                        <Button Content="Filtrar" Click="Filtrar_Click" Style="{StaticResource PrimaryButton}" Cursor="Hand" Width="100"  Height="30">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" CornerRadius="6">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                        <Button Content="Filtrar" Click="Filtrar_Click" Style="{StaticResource PrimaryButton}" Cursor="Hand" Width="100"  Height="35" />
+                            
                     </StackPanel>
 
                 </Grid>
@@ -89,7 +82,7 @@
                         <!-- Stock Promedio -->
                         <Border Background="White" CornerRadius="16" Padding="6" Margin="5" BorderBrush="#eee" BorderThickness="1">
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="Stock Promedio" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                <TextBlock Text="Diferencia Promedio" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
                                 <TextBlock Text="{Binding StockPromedio, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
                                 <TextBlock Text="{Binding VariacionStockText}" Foreground="{Binding VariacionStockColor}" FontSize="12" TextAlignment="Center"/>
                             </StackPanel>
@@ -120,14 +113,19 @@
                                        FontWeight="SemiBold"
                                        Margin="0,0,0,10"
                                        Foreground="#333"/>
-                                <lvc:CartesianChart Series="{Binding ProduccionPorTipoSeries}" LegendLocation="Right" Height="180" Foreground="#333">
+                                <lvc:CartesianChart Series="{Binding ProduccionPorTipoSeries}" Width="650" Height="180" Foreground="#333">
                                     <lvc:CartesianChart.AxisX>
-                                        <lvc:Axis Labels="{Binding TipoPastaLabels}" Title="Tipo de pasta"/>
+                                        <lvc:Axis Labels="{Binding TipoPastaLabels}" Title="Tipo de pasta">
+                                            <lvc:Axis.Separator>
+                                                <lvc:Separator Step="1" />
+                                            </lvc:Axis.Separator>
+                                        </lvc:Axis>
                                     </lvc:CartesianChart.AxisX>
                                     <lvc:CartesianChart.AxisY>
                                         <lvc:Axis Title="Kg / $" />
                                     </lvc:CartesianChart.AxisY>
                                 </lvc:CartesianChart>
+
                             </StackPanel>
                         </Border>
 

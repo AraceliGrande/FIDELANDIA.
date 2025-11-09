@@ -21,7 +21,7 @@
                 <TextBlock Text="Ingrese los datos que se solicitan a continuación para dar de alta un nuevo proveedor."
                            FontSize="11"
                            FontWeight="SemiBold"
-                           Foreground="DarkSeaGreen"
+                           Foreground="gray"
                            TextWrapping="Wrap"
                            Margin="0,0,0,20"/>
 

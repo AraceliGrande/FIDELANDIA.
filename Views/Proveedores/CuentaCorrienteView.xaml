@@ -18,7 +18,7 @@
                     <!-- ComboBox para seleccionar cantidad de registros por página -->
                     <ComboBox x:Name="CbTamanoPagina" Width="60" SelectionChanged="CbTamanoPagina_SelectionChanged" Height="20" Background="#FFF" Margin="10,0,20,0">
                         <ComboBoxItem Content="5"/>
-                        <ComboBoxItem Content="12"/>
+                        <ComboBoxItem Content="14"/>
                         <ComboBoxItem Content="25"/>
                         <ComboBoxItem Content="50"/>
                         <ComboBoxItem Content="100"/>
@@ -35,7 +35,7 @@
 
                             <TextBlock x:Name="TxtPaginaActual" Text="Página 1 / 1"
                            VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12"
-                           Margin="20,5,35,5"/>
+                           Margin="20,5,35,5" Foreground="#555"/>
 
                             <Button Content="⮕" Width="28" Height="28"
                         Click="BtnPaginaSiguiente_Click"
@@ -52,7 +52,7 @@
                     <Button Content="➕ Nuevo Movimiento" Style="{StaticResource PrimaryButton}"
                 Margin="0,0,12,0" x:Name="BtnNuevoMovimiento" Width="165" Height="32"
                 Click="BtnNuevaTransaccion_Click"/>
-                    <Button Content="⬇ Exportar CSV" Style="{StaticResource SecondaryButton}"
+                    <Button Content="⬇ Exportar Excel" Style="{StaticResource SecondaryButton}" Click="BtnExportarExcel_Click"
                 Height="32" Width="163"/>
                 </StackPanel>
             </StackPanel>
@@ -146,13 +146,14 @@
 
                     </Border>
 
-                    <Grid MaxHeight="329">
+                    <Grid MaxHeight="400">
                         <!-- TABLA DE MOVIMIENTOS -->
                         <DataGrid x:Name="MovimientosGrid"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False"
                           HeadersVisibility="Column"
                           RowHeight="25"
+                          Margin="0"
                           Background="White"
                           AlternatingRowBackground="#FFF8F8F8"
                           HorizontalGridLinesBrush="#EEE"
@@ -161,7 +162,6 @@
                           RowHeaderWidth="0"
                           BorderThickness="0"
                           ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
-
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha}" Width="80"/>
                                 <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="80"/>

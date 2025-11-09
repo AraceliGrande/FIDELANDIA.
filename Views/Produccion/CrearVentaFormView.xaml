@@ -66,66 +66,84 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border CornerRadius="12"
-                                    Background="White"
-                                    Padding="12"
-                                    Margin="0,0,12,12"
-                                    MinWidth="300"
-                                    HorizontalAlignment="Stretch"
-                                    Effect="{DynamicResource DropShadow}">
+                                Background="White"
+                                Padding="12"
+                                Margin="0,0,12,12"
+                                MinWidth="300"
+                                HorizontalAlignment="Stretch"
+                                Effect="{DynamicResource DropShadow}">  
 
-                                <StackPanel VerticalAlignment="Stretch">
+                                <!-- Usamos Grid en lugar de StackPanel -->
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <!-- Encabezado -->
+                                        <RowDefinition Height="*"/>
+                                        <!-- Lotes: ocupa todo el espacio posible -->
+                                        <RowDefinition Height="Auto"/>
+                                        <!-- Selector abajo -->
+                                    </Grid.RowDefinitions>
 
-                                    <!-- Nombre Tipo de Pasta -->
-                                    <TextBlock Text="{Binding TipoPasta.Nombre}"
-                                               FontSize="14"
-                                               FontWeight="Bold"
-                                               Foreground="#2E2E2E"
-                                               Margin="0,0,0,10"/>
-
-                                    <!-- Tabla de Lotes -->
-                                    <Grid Margin="0,0,0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <TextBlock Text="Producción" FontWeight="SemiBold" FontSize="10" Foreground="#777" Grid.Column="0"/>
-                                        <TextBlock Text="Vencimiento" FontWeight="SemiBold" FontSize="10" Foreground="#777" Grid.Column="1"/>
-                                        <TextBlock Text="Disponible" FontWeight="SemiBold" FontSize="10" Foreground="#777" Grid.Column="2" HorizontalAlignment="Center"/>
-                                    </Grid>
-
-                                    <ItemsControl ItemsSource="{Binding Lotes}" Margin="0,1,0,6">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid Margin="0,1,0,1">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <TextBlock Text="{Binding FechaProduccion, StringFormat={}{0:d}}" Grid.Column="0" FontSize="12" Foreground="#555"/>
-                                                    <TextBlock Text="{Binding FechaVencimiento, StringFormat={}{0:d}}" Grid.Column="1" FontSize="12" Foreground="#555"/>
-                                                    <TextBlock Text="{Binding CantidadDisponible}" Grid.Column="2" FontSize="12" Foreground="#2E7D32" HorizontalAlignment="Center"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-
-                                    <!-- Selector cantidad a vender -->
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,4,0,0">
-                                        <TextBlock Text="Cantidad:" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="13" Margin="0,0,4,0"/>
-                                        <ComboBox Width="50"
-                                                  Loaded="CantidadComboBox_Loaded"
-                                                  SelectionChanged="CantidadComboBox_SelectionChanged"
-                                                  Background="#F5F5F5"
-                                                  BorderBrush="#CCC"
-                                                  Foreground="#2E2E2E"
-                                                  HorizontalContentAlignment="Center"/>
+                                    <!-- Nombre y contenido -->
+                                    <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                                        <TextBlock Text="{Binding TipoPasta.Nombre}"
+                                           FontSize="15"
+                                           FontWeight="Bold"
+                                           Foreground="#2E2E2E"
+                                           Margin="0,2,0,3"/>
+                                        <TextBlock Text="{Binding TipoPasta.ContenidoEnvase, StringFormat={}Contenido: {0} Kg}"
+                                           FontWeight="SemiBold"
+                                           FontSize="11"
+                                           Foreground="Gray"
+                                           Margin="0,0,0,5"/>
+                                        <Separator Background="#EEE" Height="1" Margin="0,6,0,6"/>
                                     </StackPanel>
 
-                                </StackPanel>
+                                    <!-- Tabla de Lotes (ocupa el alto disponible) -->
+                                    <StackPanel Grid.Row="1">
+                                        <Grid Margin="0,0,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="Producción" FontWeight="SemiBold" FontSize="10" Foreground="#777" Grid.Column="0"/>
+                                            <TextBlock Text="Vencimiento" FontWeight="SemiBold" FontSize="10" Foreground="#777" Grid.Column="1"/>
+                                            <TextBlock Text="Disponible" FontWeight="SemiBold" FontSize="10" Foreground="#777" Grid.Column="2" HorizontalAlignment="Center"/>
+                                        </Grid>
+
+                                        <ItemsControl ItemsSource="{Binding Lotes}" Margin="0,1,0,6">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,1,0,1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <TextBlock Text="{Binding FechaProduccion, StringFormat={}{0:d}}" Grid.Column="0" FontSize="12" Foreground="#555"/>
+                                                        <TextBlock Text="{Binding FechaVencimiento, StringFormat={}{0:d}}" Grid.Column="1" FontSize="12" Foreground="#555"/>
+                                                        <TextBlock Text="{Binding CantidadDisponible}" Grid.Column="2" FontSize="12" Foreground="#2E7D32" HorizontalAlignment="Center"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+
+                                    <!-- Selector de cantidad (abajo de todo) -->
+                                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                                        <TextBlock Text="Cantidad:" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="13" Margin="0,0,4,0"/>
+                                        <ComboBox Width="50"
+                                              Loaded="CantidadComboBox_Loaded"
+                                              SelectionChanged="CantidadComboBox_SelectionChanged"
+                                              Background="#F5F5F5"
+                                              BorderBrush="#CCC"
+                                              Foreground="#2E2E2E"
+                                              HorizontalContentAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

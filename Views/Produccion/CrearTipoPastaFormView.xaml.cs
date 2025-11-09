@@ -1,6 +1,9 @@
 ﻿using FIDELANDIA.Data;
+using FIDELANDIA.Models;
 using FIDELANDIA.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -16,6 +19,12 @@ namespace FIDELANDIA.Views.Produccion
             InitializeComponent();
             _dbContext = new FidelandiaDbContext();
             _tipoPastaService = new TipoPastaService(_dbContext);
+            CargarTiposDePasta();
+        }
+
+        private void CargarTiposDePasta()
+        {
+            TablaTiposPasta.ItemsSource = _tipoPastaService.ObtenerTodos();
         }
 
         private void Cancelar_Click(object sender, RoutedEventArgs e)
@@ -52,8 +61,12 @@ namespace FIDELANDIA.Views.Produccion
 
                 if (exito)
                 {
-                    MessageBox.Show("Tipo de pasta creado correctamente.");
-                    Window.GetWindow(this)?.Close();
+                    MessageBox.Show("✅ Tipo de pasta creado correctamente.");
+                    CargarTiposDePasta();
+                    TxtNombre.Clear();
+                    TxtDescripcion.Clear();
+                    TxtContenido.Clear();
+                    TxtCosto.Clear();
                 }
             }
             catch (Exception ex)
@@ -61,5 +74,40 @@ namespace FIDELANDIA.Views.Produccion
                 MessageBox.Show($"Error al crear tipo de pasta: {ex.Message}");
             }
         }
+
+        private void Actualizar_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var lista = TablaTiposPasta.ItemsSource as IEnumerable<TipoPastaModel>;
+                if (lista == null) return;
+
+                bool huboCambios = false;
+
+                foreach (var item in lista)
+                {
+                    bool actualizado = _tipoPastaService.ActualizarTipoPasta(item.IdTipoPasta, item.CostoActual, item.ContenidoEnvase);
+                    if (actualizado)
+                        huboCambios = true;
+                }
+
+                if (huboCambios)
+                {
+                    _tipoPastaService.GuardarCambios(); // guarda todo junto
+                    MessageBox.Show("✅ Todos los cambios fueron guardados correctamente.");
+                }
+                else
+                {
+                    MessageBox.Show("No se detectaron cambios para guardar.");
+                }
+
+                CargarTiposDePasta();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"❌ Error al actualizar tipos de pasta: {ex.Message}");
+            }
+        }
+
     }
 }

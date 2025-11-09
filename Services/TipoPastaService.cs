@@ -73,5 +73,35 @@ namespace FIDELANDIA.Services
                 return null; 
             }
         }
+
+        // Actualizar costo y contenido del tipo de pasta
+        // Actualizar costo y contenido del tipo de pasta
+        public bool ActualizarTipoPasta(int idTipoPasta, decimal nuevoCosto, decimal nuevoContenido)
+        {
+            try
+            {
+                var tipoPasta = _dbContext.TiposPasta.FirstOrDefault(tp => tp.IdTipoPasta == idTipoPasta);
+                if (tipoPasta == null)
+                    return false;
+
+                if (nuevoCosto <= 0 || nuevoContenido <= 0)
+                    return false;
+
+                tipoPasta.CostoActual = nuevoCosto;
+                tipoPasta.ContenidoEnvase = nuevoContenido;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // Guardar todos los cambios juntos (mejor práctica)
+        public void GuardarCambios()
+        {
+            _dbContext.SaveChanges();
+        }
+
     }
 }

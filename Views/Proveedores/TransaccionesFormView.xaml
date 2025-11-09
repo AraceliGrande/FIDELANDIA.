@@ -19,7 +19,7 @@
             <TextBlock Text="Ingrese los datos asociados a esta nueva transferencia."
                 FontSize="11"
                 FontWeight="SemiBold"
-                Foreground="DarkOliveGreen"
+                Foreground="Gray"
                 TextWrapping="Wrap"
                         Margin="0,0,0,20"/>
 

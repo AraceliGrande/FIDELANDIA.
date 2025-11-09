@@ -44,6 +44,7 @@ namespace FIDELANDIA.Services
                 var seccion = new StockSeccionViewModel
                 {
                     NombreTipoPasta = stock.TipoPasta.Nombre,
+                    ContenidoEnvase = stock.TipoPasta.ContenidoEnvase,
                     CantidadDisponible = Math.Truncate(stock.CantidadDisponible),
                     UltimaActualizacion = stock.UltimaActualizacion,
                     Lotes = new ObservableCollection<LoteDetalleViewModel>(

@@ -13,6 +13,7 @@ namespace FIDELANDIA.Models
         public DateTime UltimaActualizacion { get; set; } = DateTime.Now;
 
         public virtual TipoPastaModel TipoPasta { get; set; }
+
         public virtual ICollection<LoteProduccionModel> LotesDisponibles { get; set; } = new List<LoteProduccionModel>();
 
     }

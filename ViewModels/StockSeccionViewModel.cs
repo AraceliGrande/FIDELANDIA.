@@ -9,6 +9,7 @@ namespace FIDELANDIA.ViewModels
     {
         private string _nombreTipoPasta;
         private decimal _cantidadDisponible;
+        private decimal _contenidoEnvase;
         private DateTime _ultimaActualizacion;
         private ObservableCollection<LoteDetalleViewModel> _lotes;
 
@@ -35,6 +36,19 @@ namespace FIDELANDIA.ViewModels
                 {
                     _cantidadDisponible = value;
                     OnPropertyChanged(nameof(CantidadDisponible));
+                }
+            }
+        }
+
+        public decimal ContenidoEnvase
+        {
+            get => _contenidoEnvase;
+            set
+            {
+                if (_contenidoEnvase != value)
+                {
+                    _contenidoEnvase = value;
+                    OnPropertyChanged(nameof(ContenidoEnvase));
                 }
             }
         }

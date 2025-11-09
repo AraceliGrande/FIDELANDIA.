@@ -62,9 +62,9 @@
 
                 <!-- Cards -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto"
-              HorizontalScrollBarVisibility="Disabled"
-              MaxHeight="230"
-              Margin="0">
+                      HorizontalScrollBarVisibility="Disabled"
+                      MaxHeight="230"
+                      Margin="0">
                     <ItemsControl x:Name="CardTipoPasta" ItemsSource="{Binding TiposPasta}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -75,18 +75,20 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <ToggleButton Style="{StaticResource CardToggleButton}"
-                              Width="165"
-                              Height="80"
-                              Margin="5"
-                              Tag="{Binding IdTipoPasta}"
-                              Checked="CardTipoPasta_Checked"
-                              Unchecked="CardTipoPasta_Unchecked">
+                                      Width="165"
+                                      Height="80"
+                                      Margin="5"
+                                      Tag="{Binding IdTipoPasta}"
+                                      Checked="CardTipoPasta_Checked"
+                                      Unchecked="CardTipoPasta_Unchecked">
                                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Nombre}"
-                                   FontWeight="Bold"
-                                   FontSize="14"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
+                                            FontWeight="Bold"
+                                            FontSize="14"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding ContenidoEnvase, StringFormat={}Contenido: {0} Kg}" FontWeight="SemiBold" FontSize="11" Foreground="#777" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+
                                     </StackPanel>
                                 </ToggleButton>
                             </DataTemplate>

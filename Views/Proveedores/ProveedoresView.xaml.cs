@@ -32,6 +32,7 @@ namespace FIDELANDIA.Views
                 return;
 
             // Ocultar la pagina inicial
+            PaginaInicial.Visibility = Visibility.Collapsed;
 
             // Cargar los datos del proveedor
             CuentaCorriente.MostrarProveedor(proveedor, resetearEstado: true);
@@ -39,6 +40,14 @@ namespace FIDELANDIA.Views
             // Mostrar la cuenta corriente
             CuentaCorriente.Visibility = Visibility.Visible;
         }
+
+        private void MostrarResumen_Click(object sender, RoutedEventArgs e)
+        {
+            PaginaInicial.Visibility = Visibility.Visible;
+            BtnMostrarResumen.Visibility = Visibility.Collapsed;
+            CuentaCorriente.Visibility = Visibility.Collapsed; 
+        }
+
 
     }
 }

@@ -88,16 +88,31 @@ namespace FIDELANDIA.Services
         {
             return _dbContext.Transacciones.Count(t => t.ProveedorID == proveedorId);
         }
-        public List<TransaccionModel> ObtenerTransaccionesPaginadas(int proveedorId, int pagina = 1, int tamanoPagina = 9, decimal saldoInicial = 0)
+        public List<TransaccionModel> ObtenerTransaccionesPaginadas(int proveedorId, int pagina = 1, int tamanoPagina = 9, decimal saldoInicial = 0, bool traerTodos = false)
         {
             try
             {
-                var transaccionesPagina = _dbContext.Transacciones
-                    .Where(t => t.ProveedorID == proveedorId)
-                    .OrderBy(t => t.Fecha)
-                    .Skip((pagina - 1) * tamanoPagina)
-                    .Take(tamanoPagina)
-                    .ToList();
+                List<TransaccionModel> transaccionesPagina;
+
+                if (traerTodos)
+                {
+                    // Traer todas las transacciones sin aplicar paginación
+                    transaccionesPagina = _dbContext.Transacciones
+                        .Where(t => t.ProveedorID == proveedorId)
+                        .OrderBy(t => t.Fecha)
+                        .ToList(); // importante hacer ToList()
+                }
+                else
+                {
+                    // Aplicar paginación normal
+                    transaccionesPagina = _dbContext.Transacciones
+                        .Where(t => t.ProveedorID == proveedorId)
+                        .OrderBy(t => t.Fecha)
+                        .Skip((pagina - 1) * tamanoPagina)
+                        .Take(tamanoPagina)
+                        .ToList();
+                }
+
 
                 decimal saldoAcumulado = saldoInicial;
                 foreach (var t in transaccionesPagina)
@@ -118,7 +133,72 @@ namespace FIDELANDIA.Services
                 return new List<TransaccionModel>();
             }
         }
-    
+
+        public List<TransaccionModel> ObtenerTransaccionesPorFechas(int proveedorId, DateTime? fechaDesde, DateTime? fechaHasta)
+        {
+            try
+            {
+                // Normalizamos las fechas
+                DateTime? hastaInclusive = fechaHasta?.Date.AddDays(1).AddTicks(-1);
+
+                // Base de la consulta
+                var baseQuery = _dbContext.Transacciones
+                    .Where(t => t.ProveedorID == proveedorId);
+
+                if (fechaDesde.HasValue)
+                    baseQuery = baseQuery.Where(t => t.Fecha >= fechaDesde.Value.Date);
+
+                if (hastaInclusive.HasValue)
+                    baseQuery = baseQuery.Where(t => t.Fecha <= hastaInclusive.Value);
+
+                // ✅ Obtenemos las transacciones del rango ordenadas
+                var transacciones = baseQuery
+                    .OrderBy(t => t.Fecha)
+                    .ThenBy(t => t.TransaccionID)
+                    .AsNoTracking() // ⚡ evita trackeo innecesario
+                    .ToList();
+
+                // ✅ Calculamos el saldo inicial directamente en SQL (sin traer todos los anteriores)
+                decimal saldoInicial = 0;
+                if (fechaDesde.HasValue)
+                {
+                    var saldoDebe = _dbContext.Transacciones
+                        .Where(t => t.ProveedorID == proveedorId
+                                    && t.Fecha < fechaDesde.Value.Date
+                                    && t.TipoTransaccion.ToLower() == "debe")
+                        .Sum(t => (decimal?)t.Monto) ?? 0;
+
+                    var saldoHaber = _dbContext.Transacciones
+                        .Where(t => t.ProveedorID == proveedorId
+                                    && t.Fecha < fechaDesde.Value.Date
+                                    && t.TipoTransaccion.ToLower() == "haber")
+                        .Sum(t => (decimal?)t.Monto) ?? 0;
+
+                    saldoInicial = saldoDebe - saldoHaber;
+                }
+
+                // ✅ Calculamos el saldo acumulado
+                decimal saldoAcumulado = saldoInicial;
+                foreach (var t in transacciones)
+                {
+                    saldoAcumulado += string.Equals(t.TipoTransaccion, "debe", StringComparison.OrdinalIgnoreCase)
+                        ? t.Monto
+                        : -t.Monto;
+
+                    t.Saldo = saldoAcumulado;
+                }
+
+                return transacciones;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al obtener transacciones por fecha: {ex.Message}");
+                return new List<TransaccionModel>();
+            }
+        }
+
+
+
 
         public List<CategoriaProveedorModel> ObtenerCategorias()
         {

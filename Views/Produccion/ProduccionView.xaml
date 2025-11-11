@@ -89,7 +89,7 @@
                         </StackPanel>
 
                         <!-- Botones al fondo -->
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,10,0,0">
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,10,0,0">
                             <Button Content="➕ Nuevo lote" Style="{StaticResource SecondaryButton}" Height="30" Width="170" Margin="10,0" Click="NuevoLote_Click"/>
                             <Button Content="💰 Nueva venta" Style="{StaticResource SecondaryButton}" Height="30" Width="170" Margin="10,0" Click="NuevaVenta_Click"/>
                         </StackPanel>
@@ -100,7 +100,7 @@
 
                 <!-- DERECHA: CARD DE RESUMEN Y DETALLE -->
                 <Border Grid.Column="1" Background="White" CornerRadius="12" BorderBrush="#EEE" BorderThickness="1" Padding="20" Margin="2,0,0,0"  Effect="{StaticResource DropShadow}">
-                    <Grid>
+                    <Grid Cursor="">
                         <!-- Definimos dos filas: contenido y botones -->
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -160,14 +160,14 @@
                                         </StackPanel>
 
                                         <!-- DataGrid scrollable -->
-                                        <DataGrid ItemsSource="{Binding Lotes}"
+                                        <DataGrid ItemsSource="{Binding Lotes, FallbackValue='', Mode=OneWay}" 
                                                   AutoGenerateColumns="False"
                                                   HeadersVisibility="Column"
                                                   CanUserAddRows="False"
                                                   CanUserDeleteRows="False"
                                                   CanUserResizeRows="False"
                                                   CanUserSortColumns="False"
-                                                  IsReadOnly="True"
+                                                  IsReadOnly="False"
                                                   SelectionMode="Single"
                                                   SelectionUnit="FullRow"
                                                   GridLinesVisibility="Horizontal"
@@ -177,7 +177,7 @@
                                                   BorderThickness="0"
                                                   Background="Transparent"
                                                   VerticalScrollBarVisibility="Auto"
-                                                  Height="250">     
+                                                  Height="220">
 
                                             <!-- Quitar interacción y selección -->
                                             <DataGrid.RowStyle>
@@ -187,7 +187,6 @@
                                                     <Setter Property="Foreground" Value="#3B3A3A"/>
                                                     <Setter Property="BorderBrush" Value="Transparent"/>
                                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                                                    <Setter Property="IsHitTestVisible" Value="False"/>
                                                 </Style>
                                             </DataGrid.RowStyle>
 
@@ -208,8 +207,26 @@
                                                 <DataGridTextColumn Header="Producción" Binding="{Binding FechaProduccion, StringFormat=dd/MM/yyyy}" Width="*"/>
                                                 <DataGridTextColumn Header="Vencimiento" Binding="{Binding FechaVencimiento, StringFormat=dd/MM/yyyy}" Width="*"/>
                                                 <DataGridTextColumn Header="Cantidad" Binding="{Binding CantidadDisponible}" Width="*"/>
+
+                                                <!-- Nueva columna editable -->
+                                                <DataGridTemplateColumn Header="Remover" Width="*">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding CantidadDefectuosa}" HorizontalAlignment="Center"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                                        <DataTemplate>
+                                                            <TextBox Text="{Binding CantidadDefectuosa, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                                 HorizontalAlignment="Center" Width="70"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                                </DataGridTemplateColumn>
                                             </DataGrid.Columns>
                                         </DataGrid>
+                                        <Grid Margin="0,10,0,10">
+                                            <Button Content="Registrar defectos" HorizontalAlignment="Right" Style="{StaticResource TertiaryButton}" Width="150" Height="30" Click="RegistrarDefectos_Click"/>
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>

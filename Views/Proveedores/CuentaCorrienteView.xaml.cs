@@ -25,13 +25,15 @@ namespace FIDELANDIA.Views
     public partial class CuentaCorrienteView : UserControl
     {
         private readonly ProveedorService _service;
+        private bool traerTodos = false;
         private int paginaActual = 1;
-        private int tamanoPagina = 14;
+        private int tamanoPagina = 15;
         private int totalPaginas = 1; // se calcula según la cantidad total de transacciones
         private ProveedorModel _proveedorActual; // ← variable de instancia
 
         private Dictionary<int, decimal> ultimosSaldosPorPagina = new Dictionary<int, decimal>();
 
+        private bool _modoFiltrado = false;
 
         public CuentaCorrienteView()
         {
@@ -60,7 +62,7 @@ namespace FIDELANDIA.Views
             }
         }
 
-        public void MostrarProveedor(ProveedorModel proveedor, int pagina = 1, int tamanoPagina = 14, bool resetearEstado = false)
+        public void MostrarProveedor(ProveedorModel proveedor, int pagina = 1, int tamanoPagina = 15, bool resetearEstado = false, bool traerTodos = false)
         {
             if (proveedor == null) return;
 
@@ -69,59 +71,121 @@ namespace FIDELANDIA.Views
             if (resetearEstado)
             {
                 paginaActual = 1;
-                tamanoPagina = 14; 
+                tamanoPagina = 15;
                 ultimosSaldosPorPagina.Clear();
-
-                // if (CbTamanoPagina != null)
                 CbTamanoPagina.SelectedIndex = 1;
             }
 
             try
             {
                 // Detalles del proveedor
-                DetalleNombre.Text = proveedor.Nombre;
-                DetalleCuit.Text = proveedor.Cuit;
-                DetalleTelefono.Text = proveedor.Telefono;
-                DetalleEmail.Text = proveedor.Email;
-                DetalleCategoria.Text = proveedor.Categoria?.Nombre ?? "N/A";
-                DetalleLimiteCredito.Text = proveedor.LimiteCredito.ToString("C2");
-                DetalleActivo.Text = proveedor.IsActivo ? "Sí" : "No";
+                DetalleNombre.Text = proveedor.Nombre ?? "(Sin nombre)";
                 DetalleSaldo.Text = proveedor.SaldoActual.ToString("C2");
 
-                // Total de páginas
-                int totalTransacciones = _service.ContarTransacciones(proveedor.ProveedorID);
-                totalPaginas = (int)Math.Ceiling((double)totalTransacciones / tamanoPagina);
+                DetalleNombre.Background = Brushes.Transparent;
 
-                // Obtener saldo inicial desde el diccionario
-                decimal saldoAnterior = 0;
-                if (pagina > 1 && ultimosSaldosPorPagina.ContainsKey(pagina - 1))
-                    saldoAnterior = ultimosSaldosPorPagina[pagina - 1];
-
-                // Traer transacciones de la página
-                var transacciones = _service.ObtenerTransaccionesPaginadas(proveedor.ProveedorID, pagina, tamanoPagina, saldoAnterior);
-
-                // Guardar saldo final de la página
-                if (transacciones.Any())
+                // Construyo el contenido del tooltip
+                var tooltipPanel = new StackPanel { Margin = new Thickness(6) };
+                tooltipPanel.Children.Add(new TextBlock
                 {
-                    decimal saldoFinalPagina = transacciones.Last().Saldo;
-                    ultimosSaldosPorPagina[pagina] = saldoFinalPagina;
+                    Text = $"Datos del proveedor",
+                    FontWeight = FontWeights.SemiBold,
+                    Margin = new Thickness(0, 2, 0, 6)
+                });
+                tooltipPanel.Children.Add(new TextBlock
+                {
+                    Text = $"📋 CUIT: {proveedor.Cuit ?? "N/A"}  |  📞 Teléfono: {proveedor.Telefono ?? "N/A"}  |  📧 Email: {proveedor.Email ?? "N/A"}",
+                    Margin = new Thickness(0, 2, 0, 2)
+                });
+                tooltipPanel.Children.Add(new TextBlock
+                {
+                    Text = $"🗂 Categoría: {proveedor.Categoria?.Nombre ?? "N/A"}  |  💰 Límite crédito: {proveedor.LimiteCredito.ToString("C2")}  |  ⚡ Activo: {(proveedor.IsActivo ? "Sí" : "No")}",
+                    Margin = new Thickness(0, 2, 0, 2)
+                });
+
+                var tooltipBorder = new Border
+                {
+                    CornerRadius = new CornerRadius(8),
+                    Padding = new Thickness(10),
+                    Background = Brushes.White,
+                    BorderBrush = Brushes.Transparent,
+                    BorderThickness = new Thickness(0),
+                    Child = tooltipPanel,
+                    Effect = new System.Windows.Media.Effects.DropShadowEffect
+                    {
+                        Color = Colors.Black,
+                        BlurRadius = 6,
+                        ShadowDepth = 2,
+                        Opacity = 0.25
+                    }
+                };
+
+                var tt = new ToolTip
+                {
+                    Content = tooltipBorder,
+                    Placement = System.Windows.Controls.Primitives.PlacementMode.Mouse,
+                    Background = Brushes.Transparent,
+                    BorderBrush = Brushes.Transparent,
+                    BorderThickness = new Thickness(0),
+                    HasDropShadow = false
+                };
+
+                DetalleNombre.ToolTip = tt;
+                ToolTipService.SetInitialShowDelay(DetalleNombre, 50);
+                ToolTipService.SetShowDuration(DetalleNombre, 20000);
+
+                // --- Aquí manejamos traerTodos ---
+                if (traerTodos)
+                {
+                    // Traigo todas las transacciones sin paginación
+                    var transacciones = _service.ObtenerTransaccionesPaginadas(proveedor.ProveedorID, 1, int.MaxValue, 0, true);
+
+                    MovimientosGrid.ItemsSource = transacciones.Select(t => new
+                    {
+                        Fecha = t.Fecha.ToShortDateString(),
+                        Tipo = t.TipoTransaccion,
+                        Concepto = t.Detalle,
+                        Debe = t.TipoTransaccion == "Debe" ? $"+ {t.Monto:C2}" : "",
+                        Haber = t.TipoTransaccion == "Haber" ? $"- {t.Monto:C2}" : "",
+                        Saldo = t.Saldo >= 0 ? $"+ {t.Saldo:C2}" : $"- {Math.Abs(t.Saldo):C2}"
+                    }).ToList();
+
+                    TxtPaginaActual.Text = $"Mostrando todos los registros ({transacciones.Count})";
+                    BtnAnterior.Visibility = Visibility.Collapsed;
+                    BtnSiguiente.Visibility = Visibility.Collapsed;
                 }
-
-                // Llenar DataGrid
-                MovimientosGrid.ItemsSource = transacciones.Select(t => new
+                else
                 {
-                    Fecha = t.Fecha.ToShortDateString(),
-                    Tipo = t.TipoTransaccion,
-                    Concepto = t.Detalle,
-                    Debe = t.TipoTransaccion == "Debe" ? $"+ {t.Monto:C2}" : "",
-                    Haber = t.TipoTransaccion == "Haber" ? $"- {t.Monto:C2}" : "",
-                    Saldo = t.Saldo >= 0 ? $"+ {t.Saldo:C2}" : $"- {Math.Abs(t.Saldo):C2}"
-                }).ToList();
+                    // Lógica de paginación original
+                    int totalTransacciones = _service.ContarTransacciones(proveedor.ProveedorID);
+                    totalPaginas = (int)Math.Ceiling((double)totalTransacciones / tamanoPagina);
 
-                // Actualizar paginación
-                TxtPaginaActual.Text = $"Página {paginaActual} / {totalPaginas}";
-                BtnAnterior.IsEnabled = paginaActual > 1;
-                BtnSiguiente.IsEnabled = paginaActual < totalPaginas;
+                    decimal saldoAnterior = 0;
+                    if (pagina > 1 && ultimosSaldosPorPagina.ContainsKey(pagina - 1))
+                        saldoAnterior = ultimosSaldosPorPagina[pagina - 1];
+
+                    var transacciones = _service.ObtenerTransaccionesPaginadas(proveedor.ProveedorID, pagina, tamanoPagina, saldoAnterior, false);
+
+                    if (transacciones.Any())
+                    {
+                        decimal saldoFinalPagina = transacciones.Last().Saldo;
+                        ultimosSaldosPorPagina[pagina] = saldoFinalPagina;
+                    }
+
+                    MovimientosGrid.ItemsSource = transacciones.Select(t => new
+                    {
+                        Fecha = t.Fecha.ToShortDateString(),
+                        Tipo = t.TipoTransaccion,
+                        Concepto = t.Detalle,
+                        Debe = t.TipoTransaccion == "Debe" ? $"+ {t.Monto:C2}" : "",
+                        Haber = t.TipoTransaccion == "Haber" ? $"- {t.Monto:C2}" : "",
+                        Saldo = t.Saldo >= 0 ? $"+ {t.Saldo:C2}" : $"- {Math.Abs(t.Saldo):C2}"
+                    }).ToList();
+
+                    TxtPaginaActual.Text = $"Página {paginaActual} / {totalPaginas}";
+                    BtnAnterior.Visibility = Visibility.Visible;
+                    BtnSiguiente.Visibility = Visibility.Visible;
+                }
             }
             catch (Exception ex)
             {
@@ -130,22 +194,113 @@ namespace FIDELANDIA.Views
         }
 
 
+        private void BtnQuitarFiltro_Click(object sender, RoutedEventArgs e)
+        {
+            FechaDesdePicker.SelectedDate = null;
+            FechaHastaPicker.SelectedDate = null;
+            MostrarProveedor(_proveedorActual, pagina: 1, tamanoPagina: 0, traerTodos: true);
+        }
+
+        private void BtnCerrarFiltro_Click(object sender, RoutedEventArgs e)
+        {
+            PanelFiltros.Visibility = PanelFiltros.Visibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+            tamanoPagina = 15;
+            traerTodos = false;
+            ActualizarEstadoPaginacion(estaFiltrado: false);
+            MostrarProveedor(_proveedorActual, 1, tamanoPagina, traerTodos: false);
+        }
+
+        private void BtnMostrarFiltros_Click(object sender, RoutedEventArgs e)
+        {
+            // Alternar visibilidad del panel de filtros
+            PanelFiltros.Visibility = PanelFiltros.Visibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+
+            // Cuando se muestra el panel, ocultar paginación
+            if (PanelFiltros.Visibility == Visibility.Visible)
+            {
+                _modoFiltrado = true;
+                ActualizarEstadoPaginacion(estaFiltrado: true);
+                MostrarProveedor(_proveedorActual, pagina: 1, tamanoPagina: 0, traerTodos: true);
+            }
+            else
+            {
+                _modoFiltrado = false;
+                ActualizarEstadoPaginacion(estaFiltrado: false);
+                MostrarProveedor(_proveedorActual, paginaActual, tamanoPagina, traerTodos: false);
+            }
+        }
+
+
+        private void BtnBuscarPorFecha_Click(object sender, RoutedEventArgs e)
+        {
+            if (_proveedorActual == null)
+            {
+                MessageBox.Show("Debe seleccionar un proveedor primero.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DateTime? fechaDesde = FechaDesdePicker.SelectedDate;
+            DateTime? fechaHasta = FechaHastaPicker.SelectedDate;
+
+            var transacciones = _service.ObtenerTransaccionesPorFechas(_proveedorActual.ProveedorID, fechaDesde, fechaHasta);
+
+            MovimientosGrid.ItemsSource = transacciones.Select(t => new
+            {
+                Fecha = t.Fecha.ToShortDateString(),
+                Tipo = t.TipoTransaccion,
+                Concepto = t.Detalle,
+                Debe = t.TipoTransaccion == "Debe" ? $"+ {t.Monto:C2}" : "",
+                Haber = t.TipoTransaccion == "Haber" ? $"- {t.Monto:C2}" : "",
+                Saldo = t.Saldo >= 0 ? $"+ {t.Saldo:C2}" : $"- {Math.Abs(t.Saldo):C2}"
+            }).ToList();
+
+            // 🔒 Deshabilitar paginación mientras haya filtro
+            _modoFiltrado = true;
+            ActualizarEstadoPaginacion(estaFiltrado: true);
+
+            TxtPaginaActual.Text = $"Filtrado ({transacciones.Count}) resultados";
+        }
+
+        private void ActualizarEstadoPaginacion(bool estaFiltrado = false)
+        {
+            var visibilidad = estaFiltrado ? Visibility.Collapsed : Visibility.Visible;
+
+            CbTamanoPagina.Visibility = visibilidad;
+            BtnNuevoMovimiento.Visibility = visibilidad;
+            BtnAnterior.Visibility = visibilidad;
+            BtnSiguiente.Visibility = visibilidad;
+            BtnMostrarFiltros.Visibility = visibilidad;
+        }
+
         private void CbTamanoPagina_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (CbTamanoPagina.SelectedItem is ComboBoxItem item)
             {
-                if (int.TryParse(item.Content.ToString(), out int nuevoTamano))
+                string contenido = item.Content.ToString();
+
+                if (contenido == "Todos")
+                {
+                    ultimosSaldosPorPagina.Clear();
+
+                    // Llamamos al método con traerTodos = true
+                    MostrarProveedor(_proveedorActual, pagina: 1, tamanoPagina: 0, traerTodos: true);
+                }
+                else if (int.TryParse(contenido, out int nuevoTamano))
                 {
                     tamanoPagina = nuevoTamano;
                     paginaActual = 1;
-
-                    // ✅ Reiniciar array de saldos al cambiar tamaño de página
                     ultimosSaldosPorPagina.Clear();
 
-                    MostrarProveedor(_proveedorActual, paginaActual, tamanoPagina);
+                    MostrarProveedor(_proveedorActual, paginaActual, tamanoPagina, traerTodos: false);
                 }
             }
         }
+
+
 
 
         private void BtnNuevaTransaccion_Click(object sender, System.Windows.RoutedEventArgs e)

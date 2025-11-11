@@ -56,8 +56,9 @@ namespace FIDELANDIA.Services
                                  FechaProduccion = l.FechaProduccion,
                                  FechaVencimiento = l.FechaVencimiento,
                                  CantidadDisponible = Math.Truncate(l.CantidadDisponible),
-                                 CantidadProducida = Math.Truncate(l.CantidadProducida), // ✔ Nueva propiedad
-                                 Estado = l.Estado
+                                 CantidadProducida = Math.Truncate(l.CantidadProducida), 
+                                 Estado = l.Estado,
+                                 CantidadDefectuosa = 0
                              })
                     )
                 };
@@ -206,6 +207,55 @@ namespace FIDELANDIA.Services
             catch (Exception ex)
             {
                 MessageBox.Show($"❌ Error al descontar stock:\n{ex.Message}");
+                return false;
+            }
+        }
+
+        public bool ConfirmarBalanceDiario()
+        {
+            try
+            {
+                // Buscar todos los lotes con estado "Creados" sin importar la fecha
+                var lotesPorConfirmar = _dbContext.LoteProduccion
+                    .Where(l => l.Estado == "Creados")
+                    .ToList();
+
+                if (!lotesPorConfirmar.Any())
+                {
+                    MessageBox.Show(
+                        "No hay lotes pendientes de confirmar.",
+                        "Información",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+                    return false;
+                }
+
+                // Cambiar estado a "Confirmado"
+                foreach (var lote in lotesPorConfirmar)
+                {
+                    lote.Estado = "Confirmado";
+                }
+
+                _dbContext.SaveChanges();
+
+                MessageBox.Show(
+                    $"Se confirmaron {lotesPorConfirmar.Count} lote(s) correctamente.",
+                    "Balance confirmado",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al confirmar el balance: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
                 return false;
             }
         }

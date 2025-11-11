@@ -64,7 +64,7 @@
                         <!-- Producción Total -->
                         <Border Background="White" CornerRadius="16" Padding="6" Margin="5" BorderBrush="#eee" BorderThickness="1">
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="Producción Total" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                <TextBlock Text="Producción (Envases)" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
                                 <TextBlock Text="{Binding CantidadProducida, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
                                 <TextBlock Text="{Binding VariacionProduccionText}" Foreground="{Binding VariacionProduccionColor}" FontSize="12" TextAlignment="Center"/>
                             </StackPanel>
@@ -74,7 +74,7 @@
                         <Border Background="White" CornerRadius="16" Padding="6" Margin="5" BorderBrush="#eee" BorderThickness="1">
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <TextBlock Text="Ventas Totales" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
-                                <TextBlock Text="{Binding VentasTotales, StringFormat=C}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VentasTotales, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
                                 <TextBlock Text="{Binding VariacionVentasText}" Foreground="{Binding VariacionVentasColor}" FontSize="12" TextAlignment="Center"/>
                             </StackPanel>
                         </Border>
@@ -82,9 +82,9 @@
                         <!-- Stock Promedio -->
                         <Border Background="White" CornerRadius="16" Padding="6" Margin="5" BorderBrush="#eee" BorderThickness="1">
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="Diferencia Promedio" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
-                                <TextBlock Text="{Binding StockPromedio, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
-                                <TextBlock Text="{Binding VariacionStockText}" Foreground="{Binding VariacionStockColor}" FontSize="12" TextAlignment="Center"/>
+                                <TextBlock Text="Produccion (Kg)" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding CantidadProducidaKg, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VariacionCantidadProduccionKgText}" Foreground="{Binding VariacionCantidadProduccionKgColor}" FontSize="12" TextAlignment="Center"/>
                             </StackPanel>
                         </Border>
 
@@ -108,7 +108,7 @@
                         <!-- Gráfico principal -->
                         <Border Grid.Column="0" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
                             <StackPanel>
-                                <TextBlock Text="Producción / Ventas / Stock por tipo de pasta"
+                                <TextBlock Text=" Producción y ventas por tipo de pasta"
                                        FontSize="13"
                                        FontWeight="SemiBold"
                                        Margin="0,0,0,10"

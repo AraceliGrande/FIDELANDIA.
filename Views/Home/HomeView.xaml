@@ -38,7 +38,7 @@
             </Grid>
 
             <!-- Cards principales -->
-            <WrapPanel HorizontalAlignment="Center" ItemHeight="170" ItemWidth="260" Margin="20,30,20,20">
+            <WrapPanel HorizontalAlignment="Center" ItemHeight="170" ItemWidth="260" Margin="0">
 
                 <!-- Ver proveedores -->
                 <Border Background="White" CornerRadius="12" Padding="16" Margin="15"
@@ -83,11 +83,7 @@
                         <TextBlock Text="Dashboard" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Border>
-
-
             </WrapPanel>
-
-
         </StackPanel>
     </ScrollViewer>
 </UserControl>

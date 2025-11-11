@@ -34,11 +34,11 @@ namespace FIDELANDIA.Views
             set { _ventasTotales = value; OnPropertyChanged(nameof(VentasTotales)); }
         }
 
-        private decimal _stockPromedio;
-        public decimal StockPromedio
+        private decimal _cantidadProducidaKg;
+        public decimal CantidadProducidaKg
         {
-            get => _stockPromedio;
-            set { _stockPromedio = value; OnPropertyChanged(nameof(StockPromedio)); }
+            get => _cantidadProducidaKg; // ✅ devuelve el campo privado
+            set { _cantidadProducidaKg = value; OnPropertyChanged(nameof(CantidadProducidaKg)); }
         }
 
         private decimal _ticketPromedio;
@@ -54,8 +54,8 @@ namespace FIDELANDIA.Views
         public string VariacionVentasText { get; set; }
         public Brush VariacionVentasColor { get; set; }
 
-        public string VariacionStockText { get; set; }
-        public Brush VariacionStockColor { get; set; }
+        public string VariacionCantidadProduccionKgText { get; set; }
+        public Brush VariacionCantidadProduccionKgColor { get; set; }
 
         public string VariacionTicketText { get; set; }
         public Brush VariacionTicketColor { get; set; }
@@ -97,8 +97,24 @@ namespace FIDELANDIA.Views
         // =====================================================
         private void Filtrar_Click(object sender, RoutedEventArgs e)
         {
+            // 🔹 Validar que el rango no supere 4 meses
+            var mesesDiferencia = ((FechaHasta.Year - FechaDesde.Year) * 12) + (FechaHasta.Month - FechaDesde.Month);
+
+            if (mesesDiferencia > 4)
+            {
+                MessageBox.Show(
+                    "El rango de fechas no puede superar 4 meses. Ajuste las fechas seleccionadas.",
+                    "Rango demasiado grande",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
+                return; // 
+            }
+
+            // 🔹 Si es válido, cargar dashboard
             CargarDashboardDesdeBD();
         }
+
 
         // =====================================================
         // CARGA PRINCIPAL DEL DASHBOARD
@@ -112,7 +128,7 @@ namespace FIDELANDIA.Views
                 // ========== INDICADORES ==========
                 CantidadProducida = resumen.CantidadProducida;
                 VentasTotales = resumen.VentasTotales;
-                StockPromedio = resumen.StockPromedio;
+                CantidadProducidaKg = resumen.ProduccionKg;
                 TicketPromedio = resumen.TicketPromedio;
 
                 // ========== VARIACIONES REALES ==========
@@ -123,8 +139,8 @@ namespace FIDELANDIA.Views
                 VariacionVentasText = $"{resumen.VariacionVentasTotales:+0.0;-0.0;0.0}%";
                 VariacionVentasColor = resumen.VariacionVentasTotales >= 0 ? Brushes.ForestGreen : Brushes.Red;
 
-                VariacionStockText = $"{resumen.VariacionStockPromedio:+0.0;-0.0;0.0}%";
-                VariacionStockColor = resumen.VariacionStockPromedio >= 0 ? Brushes.ForestGreen : Brushes.Red;
+                VariacionCantidadProduccionKgText = $"{resumen.VariacionProduccionKg:+0.0;-0.0;0.0}%";
+                VariacionCantidadProduccionKgColor = resumen.VariacionProduccionKg >= 0 ? Brushes.ForestGreen : Brushes.Red;
 
                 VariacionTicketText = $"{resumen.VariacionTicketPromedio:+0.0;-0.0;0.0}%";
                 VariacionTicketColor = resumen.VariacionTicketPromedio >= 0 ? Brushes.ForestGreen : Brushes.Red;
@@ -137,7 +153,15 @@ namespace FIDELANDIA.Views
                 {
                     new ColumnSeries { Title = "Producción", Values = new ChartValues<double>(resumen.ProduccionPorTipo.Values.Select(v => (double)v)) },
                     new ColumnSeries { Title = "Ventas", Values = new ChartValues<double>(resumen.VentasPorTipo.Values.Select(v => (double)v)) },
-                    new ColumnSeries { Title = "Diferencia", Values = new ChartValues<double>(resumen.StockPorTipo.Values.Select(v => (double)v)) }
+                    new ColumnSeries
+                    {
+                        Title = "Diferencia",
+                        Values = new ChartValues<double>(
+                            resumen.ProduccionPorTipo.Keys
+                                    .Select(k => (double)(resumen.ProduccionPorTipo[k] -
+                                                            (resumen.VentasPorTipo.ContainsKey(k) ? resumen.VentasPorTipo[k] : 0)))
+                        )
+                    }               
                 };
 
                 // ========== PARTICIPACIÓN EN VENTAS ==========
@@ -154,21 +178,37 @@ namespace FIDELANDIA.Views
                 }
 
                 // ========== SERIES DIARIAS ==========
-                MesesLabels = resumen.ProduccionDiaria.Keys.ToList();
+                // Labels por día
+                MesesLabels = resumen.ProduccionDiariaEnvases.Keys.ToList();
 
-                // Evolución de producción (por día)
+                // Evolución de producción en envases
                 ProduccionTotalSeries = new SeriesCollection
-{
+                    {
                         new LineSeries
                         {
-                            Title = "Producción diaria",
-                            Values = new ChartValues<double>(resumen.ProduccionDiaria.Values.Select(v => (double)v)),
+                            Title = "Producción diaria (envases)",
+                            Values = new ChartValues<double>(resumen.ProduccionDiariaEnvases.Values.Select(v => (double)v)),
                             Stroke = Brushes.SteelBlue,
                             Fill = new SolidColorBrush(Color.FromArgb(60, 70, 130, 180)),
                             PointGeometrySize = 6,
                             LineSmoothness = 0.4
                         }
                     };
+
+                // Evolución de producción en kilogramos
+                LoteComparativoSeries = new SeriesCollection
+                    {
+                        new LineSeries
+                        {
+                            Title = "Producción diaria (kg)",
+                            Values = new ChartValues<double>(resumen.ProduccionDiariaKg.Values.Select(v => (double)v)),
+                            Stroke = Brushes.DarkOrange,
+                            Fill = new SolidColorBrush(Color.FromArgb(60, 255, 165, 0)),
+                            PointGeometrySize = 6,
+                            LineSmoothness = 0.4
+                        }
+                    };
+
 
                 // Evolución de ventas (por día)
                 RendimientoSeries = new SeriesCollection
@@ -183,16 +223,7 @@ namespace FIDELANDIA.Views
                             LineSmoothness = 0.4
                         }
                     };
-                LoteComparativoSeries = new SeriesCollection
-                {
-                    new LineSeries
-                    {
-                        Title = "Kg producidos",
-                        Values = new ChartValues<double>(resumen.ProduccionDiaria.Values.Select(v => (double)v)),
-                        Stroke = Brushes.DarkOrange,
-                        Fill = new SolidColorBrush(Color.FromArgb(60, 255, 165, 0))
-                    }
-                };
+
 
                 TipoSeries = new SeriesCollection
                 {
@@ -213,21 +244,6 @@ namespace FIDELANDIA.Views
             }
         }
 
-        // =====================================================
-        // FUNCIÓN AUXILIAR DE VARIACIÓN
-        // =====================================================
-        private string Variacion(decimal actual, decimal anterior, out Brush color)
-        {
-            if (anterior == 0)
-            {
-                color = Brushes.Gray;
-                return "0%";
-            }
-
-            var diff = (actual - anterior) / anterior * 100;
-            color = diff >= 0 ? Brushes.ForestGreen : Brushes.Red;
-            return $"{diff:+0.0;-0.0;0.0}%";
-        }
 
         // =====================================================
         // NOTIFICADOR DE CAMBIOS

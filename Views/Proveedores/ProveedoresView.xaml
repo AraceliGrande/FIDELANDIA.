@@ -4,7 +4,7 @@
              xmlns:views="clr-namespace:FIDELANDIA.Views"
               Background="Transparent" Cursor="">
 
-    <Grid Margin="15,8,15,8">
+    <Grid Margin="15,8,0,8">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="265"/>
             <ColumnDefinition Width="*"/>
@@ -13,7 +13,10 @@
         <!-- Lista de Proveedores -->
         <views:ProveedoresListView x:Name="ListaProveedores" Grid.Column="0"/>
 
-        <!-- Detalle Cuenta Corriente -->
-        <views:CuentaCorrienteView x:Name="CuentaCorriente" Grid.Column="1"/>
+        <!-- Contenedor para los detalles del proveedor -->
+        <Grid Grid.Column="1">
+            <!-- Cuenta corriente (oculto al inicio) -->
+            <views:CuentaCorrienteView x:Name="CuentaCorriente" Visibility="Collapsed"/>
+        </Grid>
     </Grid>
 </UserControl>

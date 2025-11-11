@@ -25,18 +25,20 @@ namespace FIDELANDIA.Services
             // ===================== CONSULTAS =====================
             var lotes = _dbContext.LoteProduccion
                 .Include(l => l.TipoPasta)
-                .Where(l => l.FechaProduccion >= desdeAnterior && l.FechaProduccion <= hasta)
+                .Where(l => l.FechaProduccion >= desdeAnterior && l.FechaProduccion <= hasta
+                            && (l.Estado == "Creado" || l.Estado == "Confirmado"))
                 .ToList();
 
             var ventas = _dbContext.DetalleVenta
                 .Include(d => d.Venta)
                 .Include(d => d.Lote)
                     .ThenInclude(l => l.TipoPasta)
-                .Where(d => d.Venta.Fecha >= desdeAnterior && d.Venta.Fecha <= hasta)
+                .Where(d => d.Venta.Fecha >= desdeAnterior && d.Venta.Fecha <= hasta
+                            && (d.Lote.Estado == "Creado" || d.Lote.Estado == "Confirmado"))
                 .ToList();
 
             // ===================== INDICADORES =====================
-            // Cantidad Producida
+            // Cantidad producida en envases
             decimal cantidadProducidaActual = lotes
                 .Where(l => l.FechaProduccion >= desde && l.FechaProduccion <= hasta)
                 .Sum(l => l.CantidadProducida);
@@ -44,6 +46,15 @@ namespace FIDELANDIA.Services
             decimal cantidadProducidaAnterior = lotes
                 .Where(l => l.FechaProduccion >= desdeAnterior && l.FechaProduccion < desde)
                 .Sum(l => l.CantidadProducida);
+
+            // Producción en kilogramos
+            decimal produccionKgActual = lotes
+                .Where(l => l.FechaProduccion >= desde && l.FechaProduccion <= hasta)
+                .Sum(l => l.CantidadProducida * l.TipoPasta.ContenidoEnvase);
+
+            decimal produccionKgAnterior = lotes
+                .Where(l => l.FechaProduccion >= desdeAnterior && l.FechaProduccion < desde)
+                .Sum(l => l.CantidadProducida * l.TipoPasta.ContenidoEnvase);
 
             // Ventas Totales
             decimal ventasTotalesActual = ventas
@@ -58,8 +69,13 @@ namespace FIDELANDIA.Services
             var ventasActuales = ventas.Where(v => v.Venta.Fecha >= desde && v.Venta.Fecha <= hasta).ToList();
             var ventasAnteriores = ventas.Where(v => v.Venta.Fecha >= desdeAnterior && v.Venta.Fecha < desde).ToList();
 
-            decimal ticketPromedioActual = ventasActuales.Any() ? ventasActuales.Average(v => v.CostoUnitario * v.Cantidad) : 0;
-            decimal ticketPromedioAnterior = ventasAnteriores.Any() ? ventasAnteriores.Average(v => v.CostoUnitario * v.Cantidad) : 0;
+            decimal ticketPromedioActual = ventasActuales.Any()
+                ? ventasActuales.Sum(d => d.Cantidad * d.CostoUnitario) / ventasActuales.Count
+                : 0;
+
+            decimal ticketPromedioAnterior = ventasAnteriores.Any()
+                ? ventasAnteriores.Sum(d => d.Cantidad * d.CostoUnitario) / ventasAnteriores.Count
+                : 0;
 
             // ===================== STOCK =====================
             var stockActualPorTipo = lotes
@@ -104,53 +120,81 @@ namespace FIDELANDIA.Services
                                        .Select(offset => desde.AddDays(offset))
                                        .ToList();
 
-            var produccionDiariaRaw = lotes
+            // Producción diaria en envases
+            var produccionDiariaEnvasesRaw = lotes
                 .Where(l => l.FechaProduccion >= desde && l.FechaProduccion <= hasta)
                 .GroupBy(l => l.FechaProduccion.Date)
                 .ToDictionary(g => g.Key, g => g.Sum(l => l.CantidadProducida));
 
-            var produccionDiaria = rangoFechas
-                .Select(f => new { Fecha = f, Cantidad = produccionDiariaRaw.ContainsKey(f) ? produccionDiariaRaw[f] : 0 })
-                .ToDictionary(x => x.Fecha.ToString("dd/MM"), x => x.Cantidad);
+            var produccionDiariaEnvases = rangoFechas
+                .OrderBy(f => f)
+                .ToDictionary(
+                    f => f.ToString("dd/MM"),
+                    f => produccionDiariaEnvasesRaw.ContainsKey(f.Date) ? produccionDiariaEnvasesRaw[f.Date] : 0
+                );
 
+            // Producción diaria en kg
+            var produccionDiariaKgRaw = lotes
+                .Where(l => l.FechaProduccion >= desde && l.FechaProduccion <= hasta)
+                .GroupBy(l => l.FechaProduccion.Date)
+                .ToDictionary(g => g.Key, g => g.Sum(l => l.CantidadProducida * l.TipoPasta.ContenidoEnvase));
+
+            var produccionDiariaKg = rangoFechas
+                .OrderBy(f => f)
+                .ToDictionary(
+                    f => f.ToString("dd/MM"),
+                    f => produccionDiariaKgRaw.ContainsKey(f.Date) ? produccionDiariaKgRaw[f.Date] : 0
+                );
+
+            // Ventas diarias
             var ventasDiariaRaw = ventas
                 .Where(v => v.Venta.Fecha >= desde && v.Venta.Fecha <= hasta)
                 .GroupBy(v => v.Venta.Fecha.Date)
                 .ToDictionary(g => g.Key, g => g.Sum(v => v.Cantidad));
 
             var ventasDiaria = rangoFechas
-                .Select(f => new { Fecha = f, Cantidad = ventasDiariaRaw.ContainsKey(f) ? ventasDiariaRaw[f] : 0 })
-                .ToDictionary(x => x.Fecha.ToString("dd/MM"), x => x.Cantidad);
+                .OrderBy(f => f)
+                .ToDictionary(
+                    f => f.ToString("dd/MM"),
+                    f => ventasDiariaRaw.ContainsKey(f.Date) ? ventasDiariaRaw[f.Date] : 0
+                );
 
+            // Recaudación diaria
             var recaudacionDiariaRaw = ventas
                 .Where(v => v.Venta.Fecha >= desde && v.Venta.Fecha <= hasta)
                 .GroupBy(v => v.Venta.Fecha.Date)
                 .ToDictionary(g => g.Key, g => g.Sum(v => v.Cantidad * v.CostoUnitario));
 
             var recaudacionDiaria = rangoFechas
-                .Select(f => new { Fecha = f, Monto = recaudacionDiariaRaw.ContainsKey(f) ? recaudacionDiariaRaw[f] : 0 })
-                .ToDictionary(x => x.Fecha.ToString("dd/MM"), x => x.Monto);
+                .OrderBy(f => f)
+                .ToDictionary(
+                    f => f.ToString("dd/MM"),
+                    f => recaudacionDiariaRaw.ContainsKey(f.Date) ? recaudacionDiariaRaw[f.Date] : 0
+                );
 
             // ===================== RESULTADO =====================
             return new DashboardResumen
             {
-                CantidadProducida = cantidadProducidaActual,
+                CantidadProducida = cantidadProducidaActual,         // en envases
                 VentasTotales = ventasTotalesActual,
-                StockPorTipo = stockActualPorTipo,
+                ProduccionKg = produccionKgActual,                  // en kg
                 TicketPromedio = ticketPromedioActual,
 
                 VariacionCantidadProducida = Variacion(cantidadProducidaActual, cantidadProducidaAnterior),
                 VariacionVentasTotales = Variacion(ventasTotalesActual, ventasTotalesAnterior),
-                VariacionStockPromedio = Variacion(stockTotalActual, stockTotalAnterior),
+                VariacionProduccionKg = Variacion(produccionKgActual, produccionKgAnterior),
                 VariacionTicketPromedio = Variacion(ticketPromedioActual, ticketPromedioAnterior),
 
                 ProduccionPorTipo = produccionPorTipo,
                 VentasPorTipo = ventasPorTipo,
+                StockPorTipo = stockActualPorTipo,
 
-                ProduccionDiaria = produccionDiaria,
+                ProduccionDiariaEnvases = produccionDiariaEnvases,
+                ProduccionDiariaKg = produccionDiariaKg,
                 VentasDiaria = ventasDiaria,
                 RecaudacionDiaria = recaudacionDiaria
             };
         }
+  
     }
 }

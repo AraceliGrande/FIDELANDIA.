@@ -199,7 +199,19 @@
                                         <DataGridTemplateColumn Header="" Width="40">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <Button Content="❌" Background="Transparent" BorderThickness="0" FontSize="9" Cursor="Hand" Foreground="Gray" Click="EliminarProduccion_Click" />
+                                                    <Button Content="❌" Background="Transparent" BorderThickness="0" FontSize="9" Cursor="Hand" Foreground="Gray" Click="EliminarProduccion_Click">
+                                                        <Button.Style>
+                                                            <Style TargetType="Button">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <!-- Si Estado es Defectuoso, ocultar botón -->
+                                                                    <DataTrigger Binding="{Binding Estado}" Value="Defectuoso">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
@@ -271,6 +283,7 @@
                 Click="Cancelar_Click"/>
                 <Button Content="Confirmar balance"
                 Style="{StaticResource PrimaryButton}"
+                Click="BtnConfirmarBalance_Click"
                 Width="160" Height="30"/>
             </StackPanel>
         </Grid>

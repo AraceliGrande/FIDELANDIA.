@@ -81,25 +81,27 @@ namespace FIDELANDIA.Views.Produccion
                 // Lotes antiguos con ventas hoy
                 var LotesAntiguosConVentasHoy = LotesDetalle.LotesAntiguosConVentasHoy;
 
-                // 🔹 Lista fusionada con cantidad vendida hoy
+                // 🔹 Lista fusionada con cantidad vendida hoy y ajuste de TipoLote
                 LotesResumenVentasHoy = LotesProduccion
                     .Select(l =>
                     {
-                        l.TipoLote = "Hoy";
+                        // Si el lote está defectuoso, mostrar "Defectuoso" en la tabla
+                        l.TipoLote = l.Estado == "Defectuoso" ? "Defectuoso" : "Hoy";
                         l.CantidadVendidaHoy = VentasDetalladas
                             .Where(v => v.IdLote == l.IdLote)
                             .Sum(v => v.Cantidad);
                         return l;
                     })
-                    .Concat(LotesAntiguosConVentasHoy.Select(l =>
+                    .Concat(LotesDetalle.LotesAntiguosConVentasHoy.Select(l =>
                     {
-                        l.TipoLote = "Stock";
+                        l.TipoLote = l.Estado == "Defectuoso" ? "Defectuoso" : "Stock";
                         l.CantidadVendidaHoy = VentasDetalladas
                             .Where(v => v.IdLote == l.IdLote)
                             .Sum(v => v.Cantidad);
                         return l;
                     }))
                     .ToList();
+
 
                 // 🔹 Inicialmente mostrar todos los lotes
                 LotesFiltrados = new ObservableCollection<LoteDetalleViewModel1>(
@@ -252,6 +254,15 @@ namespace FIDELANDIA.Views.Produccion
 
                 AppEvents.NotificarEliminado();
             }
+        }
+
+        private void BtnConfirmarBalance_Click(object sender, RoutedEventArgs e)
+        {
+            var dbContext = new FidelandiaDbContext();
+            var stockService = new StockService(dbContext);
+
+            var confirmado = stockService.ConfirmarBalanceDiario();
+            Window.GetWindow(this)?.Close();
         }
     }
 

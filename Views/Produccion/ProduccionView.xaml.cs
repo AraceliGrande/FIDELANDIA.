@@ -31,8 +31,8 @@ namespace FIDELANDIA.Views.Produccion
                 return;
             }
 
-            // Directamente asignamos el ViewModel completo que devuelve el servicio
             this.DataContext = datos;
+
         }
 
 
@@ -65,13 +65,81 @@ namespace FIDELANDIA.Views.Produccion
             ventana.ShowDialog();
         }
 
+
+        private void RegistrarDefectos_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (DataContext is ProduccionDatos datos)
+                {
+                    // 🔹 Buscar todos los lotes que tengan cantidad defectuosa
+                    var lotesConDefectos = datos.Secciones
+                        .SelectMany(s => s.Lotes)
+                        .Where(l => l.CantidadDefectuosa > 0)
+                        .ToList();
+
+                    if (!lotesConDefectos.Any())
+                    {
+                        MessageBox.Show("No se registraron defectos en ningún lote.",
+                            "Información", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+
+                    // 🔹 Validar cantidades antes de ejecutar cualquier registro
+                    var loteConError = lotesConDefectos
+                        .FirstOrDefault(l => l.CantidadDefectuosa > l.CantidadDisponible);
+
+                    if (loteConError != null)
+                    {
+                        MessageBox.Show(
+                            $"La cantidad defectuosa del lote {loteConError.IdLote} ({loteConError.CantidadDefectuosa}) " +
+                            $"no puede ser mayor a la cantidad disponible ({loteConError.CantidadDisponible}). " +
+                            "Corrija los valores y vuelva a intentarlo.",
+                            "Error", MessageBoxButton.OK, MessageBoxImage.Error
+                        );
+                        return; // ❌ Cancelar toda la operación
+                    }
+
+                    var dbContext = new FidelandiaDbContext();
+                    var loteService = new LoteProduccionService(dbContext);
+
+                    // 🔹 Registrar defectos
+                    foreach (var lote in lotesConDefectos)
+                    {
+                        loteService.RegistrarDefectos(
+                            idLote: lote.IdLote,
+                            cantidadDefectuosa: lote.CantidadDefectuosa
+                        );
+                    }
+
+                    MessageBox.Show("Los defectos se registraron correctamente.",
+                        "Confirmación", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // 🔹 Refrescar los datos
+                    AppEvents.NotificarLoteCreado();
+                }
+                else
+                {
+                    MessageBox.Show("No se encontraron datos de producción.",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al registrar defectos: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
         private void TipoPasta_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is StockSeccionViewModel stock)
             {
                 TablaDetalle.DataContext = null;
-                TablaDetalle.DataContext = stock;
+                TablaDetalle.DataContext = stock; 
             }
         }
+
     }
 }

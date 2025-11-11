@@ -192,6 +192,7 @@ namespace FIDELANDIA.Views.Produccion
                         {
                             IdLote = lote.IdLote,
                             Cantidad = cantLote,
+                            CostoUnitario = lote.TipoPasta.CostoActual
                         });
 
                         cantidadRestante -= cantLote;

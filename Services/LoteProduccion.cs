@@ -146,5 +146,89 @@ namespace FIDELANDIA.Services
                 return (false, $"Error al eliminar producción: {ex.Message}");
             }
         }
+        public bool RegistrarDefectos(int idLote, decimal cantidadDefectuosa)
+        {
+            using var transaction = _dbContext.Database.BeginTransaction(); // Inicia transacción
+            try
+            {
+                var loteOriginal = _dbContext.LoteProduccion
+                    .Include(l => l.TipoPasta)
+                    .Include(l => l.StockActual)
+                    .FirstOrDefault(l => l.IdLote == idLote);
+
+                if (loteOriginal == null)
+                {
+                    MessageBox.Show("No se encontró el lote especificado.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+
+                if (cantidadDefectuosa <= 0)
+                {
+                    MessageBox.Show("La cantidad defectuosa debe ser mayor a 0.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return false;
+                }
+
+                // 1. Restar cantidad defectuosa del lote original
+                loteOriginal.CantidadDisponible -= cantidadDefectuosa;
+                if (loteOriginal.CantidadDisponible < 0)
+                    loteOriginal.CantidadDisponible = 0;
+
+                loteOriginal.CantidadProducida -= cantidadDefectuosa;
+                if (loteOriginal.CantidadProducida < 0)
+                    loteOriginal.CantidadProducida = 0;
+
+                // 2. Restar cantidad del stock general
+                var stock = _dbContext.StockActual
+                    .Include(s => s.LotesDisponibles)
+                    .FirstOrDefault(s => s.IdTipoPasta == loteOriginal.IdTipoPasta);
+
+                if (stock != null)
+                {
+                    stock.CantidadDisponible -= cantidadDefectuosa;
+                    if (stock.CantidadDisponible < 0)
+                        stock.CantidadDisponible = 0;
+
+                    stock.UltimaActualizacion = DateTime.Now;
+
+                    // 3. Desvincular lotes agotados
+                    var lotesAgotados = stock.LotesDisponibles
+                                             .Where(l => l.CantidadDisponible <= 0)
+                                             .ToList();
+
+                    foreach (var lote in lotesAgotados)
+                    {
+                        stock.LotesDisponibles.Remove(lote);
+                    }
+                }
+
+                // 4. Crear lote "Defectuoso"
+                var loteDefectuoso = new LoteProduccionModel
+                {
+                    IdTipoPasta = loteOriginal.IdTipoPasta,
+                    CantidadProducida = cantidadDefectuosa,
+                    CantidadDisponible = 0,
+                    FechaProduccion = loteOriginal.FechaProduccion,
+                    FechaVencimiento = loteOriginal.FechaVencimiento,
+                    Estado = loteOriginal.FechaVencimiento < DateTime.Today ? "Vencido" : "Defectuoso"
+                };
+
+                _dbContext.LoteProduccion.Add(loteDefectuoso);
+
+                // 5. Guardar cambios
+                _dbContext.SaveChanges();
+
+                transaction.Commit(); // Confirma transacción
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback(); // Revertir cambios
+                MessageBox.Show($"Error al registrar defectos: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
+
     }
 }

@@ -30,22 +30,18 @@ namespace FIDELANDIA.Views
         {
             if (proveedor == null)
                 return;
-
-            // Ocultar la pagina inicial
-            PaginaInicial.Visibility = Visibility.Collapsed;
-
+            PlantillaVacia.Visibility = Visibility.Collapsed;
             // Cargar los datos del proveedor
             CuentaCorriente.MostrarProveedor(proveedor, resetearEstado: true);
-
             // Mostrar la cuenta corriente
             CuentaCorriente.Visibility = Visibility.Visible;
+
         }
 
         private void MostrarResumen_Click(object sender, RoutedEventArgs e)
         {
-            PaginaInicial.Visibility = Visibility.Visible;
-            BtnMostrarResumen.Visibility = Visibility.Collapsed;
-            CuentaCorriente.Visibility = Visibility.Collapsed; 
+            PlantillaVacia.Visibility = Visibility.Collapsed;
+            CuentaCorriente.Visibility = Visibility.Collapsed;
         }
 
 

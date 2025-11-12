@@ -187,9 +187,16 @@
                     </StackPanel>
                     
                     <Separator Margin="0,8" Background="#EEE"/>
-                
+                    <StackPanel Margin="0,20,0,0">
+                        <TextBlock Text="Previsualizar QR" FontWeight="Thin" FontSize="10" TextAlignment="Center"/>
+                        <Image x:Name="QrImage" Width="110" Height="110" Margin="5"/>
+                    </StackPanel>
+
+
                 </StackPanel>
+              
             </StackPanel>
+            
         </Border>
 
         <!-- Botones -->

@@ -177,6 +177,97 @@ namespace FIDELANDIA.Services
             return series;
         }
 
+        // Saldo acumulado por mes
+        public SeriesCollection ObtenerSaldoAcumuladoAnual(out List<string> meses)
+        {
+            meses = Enumerable.Range(1, 12)
+                              .Select(m => new DateTime(1, m, 1).ToString("MMM"))
+                              .ToList();
+
+            var valores = new ChartValues<decimal>();
+
+            for (int mes = 1; mes <= 12; mes++)
+            {
+                var saldo = _dbContext.Proveedores.Sum(p =>
+                    p.Transacciones
+                     .Where(t => t.Fecha.Month <= mes)
+                     .Sum(t => t.TipoTransaccion == "debe" ? t.Monto : -t.Monto));
+                valores.Add(saldo);
+            }
+
+            return new SeriesCollection
+    {
+        new LineSeries
+        {
+            Title = "Saldo acumulado",
+            Values = valores,
+            Stroke = Brushes.Orange,
+            Fill = Brushes.Transparent,
+            PointGeometrySize = 6
+        }
+    };
+        }
+
+        // Debe/Haber por mes
+        public SeriesCollection ObtenerDebeHaberAnual(out List<string> meses)
+        {
+            meses = Enumerable.Range(1, 12)
+                              .Select(m => new DateTime(1, m, 1).ToString("MMM"))
+                              .ToList();
+
+            var debe = new ChartValues<decimal>();
+            var haber = new ChartValues<decimal>();
+
+            for (int mes = 1; mes <= 12; mes++)
+            {
+                decimal totalDebe = _dbContext.Transacciones
+                    .Where(t => t.Fecha.Month == mes && t.TipoTransaccion == "debe")
+                    .Sum(t => t.Monto);
+                decimal totalHaber = _dbContext.Transacciones
+                    .Where(t => t.Fecha.Month == mes && t.TipoTransaccion == "haber")
+                    .Sum(t => t.Monto);
+
+                debe.Add(totalDebe);
+                haber.Add(totalHaber);
+            }
+
+            return new SeriesCollection
+    {
+        new ColumnSeries { Title = "Debe", Values = debe, Fill = Brushes.CornflowerBlue },
+        new ColumnSeries { Title = "Haber", Values = haber, Fill = Brushes.Orange }
+    };
+        }
+
+        // Gastos por categoría anual
+        public SeriesCollection ObtenerGastosPorCategoriaAnual(out List<string> categorias)
+        {
+            var categoriasData = _dbContext.CategoriaProveedor
+                .Include(c => c.Proveedores)
+                .ThenInclude(p => p.Transacciones)
+                .AsNoTracking()
+                .ToList();
+
+            categorias = new List<string>();
+            var series = new SeriesCollection();
+
+            foreach (var c in categoriasData)
+            {
+                decimal total = c.Proveedores
+                    .SelectMany(p => p.Transacciones)
+                    .Where(t => t.TipoTransaccion == "debe")
+                    .Sum(t => t.Monto);
+
+                if (total != 0)
+                {
+                    categorias.Add(c.Nombre);
+                    series.Add(new PieSeries { Title = c.Nombre, Values = new ChartValues<decimal> { total } });
+                }
+            }
+
+            return series;
+        }
+
+
         // Gastos por categoría
         public SeriesCollection ObtenerGastosPorCategoria(out List<string> categorias, int mes, int anio)
         {

@@ -1,4 +1,5 @@
-﻿using FIDELANDIA.Data;
+﻿using DocumentFormat.OpenXml.Drawing;
+using FIDELANDIA.Data;
 using FIDELANDIA.Helpers;
 using FIDELANDIA.Models;
 using FIDELANDIA.Services;
@@ -72,6 +73,7 @@ namespace FIDELANDIA.Views.Produccion
             }))
             {
                 LblTipoPastaSeleccionado.Text = "-";
+                PrevisualizarQR();
             }
         }
 
@@ -79,17 +81,20 @@ namespace FIDELANDIA.Views.Produccion
         private void TxtCantidad_TextChanged(object sender, TextChangedEventArgs e)
         {
             LblCantidad.Text = TxtCantidad.Text;
+            PrevisualizarQR();
         }
 
         // Actualizar fechas en el resumen
         private void DpFechaProduccion_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             LblFechaProduccion.Text = DpFechaProduccion.SelectedDate?.ToShortDateString() ?? "-";
+            PrevisualizarQR();
         }
 
         private void DpFechaVencimiento_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             LblFechaVencimiento.Text = DpFechaVencimiento.SelectedDate?.ToShortDateString() ?? "-";
+            PrevisualizarQR();
         }
 
         // Función auxiliar para buscar hijos en el visual tree
@@ -156,19 +161,77 @@ namespace FIDELANDIA.Views.Produccion
                 DateTime fechaVencimiento = DpFechaVencimiento.SelectedDate.Value;
                 string estado = "Creado";
 
-                bool exito = _loteService.CrearLote(idTipoPasta, cantidad, fechaProduccion, fechaVencimiento, estado);
-
-                if (exito)
+                var loteCreado = _loteService.CrearLote(idTipoPasta, cantidad, fechaProduccion, fechaVencimiento, estado);
+                if (loteCreado != null)
                 {
+                    // Creamos una lista con tantos elementos como cantidad producida
+                    List<LoteProduccionModel> lotesAImprimir = new List<LoteProduccionModel>();
+                    for (int i = 0; i < (int)loteCreado.CantidadProducida; i++)
+                    {
+                        lotesAImprimir.Add(loteCreado);
+                    }
+
+                    // Llamamos al helper que imprime todos los QR
+                    ImpresionHelper.ImprimirQRs(lotesAImprimir);
+
                     MessageBox.Show("Lote de producción creado correctamente.");
                     AppEvents.NotificarLoteCreado();
                     Window.GetWindow(this)?.Close();
                 }
+
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ocurrió un error al crear el lote de producción: {ex.Message}");
             }
         }
+        private void CrearQR(LoteProduccionModel nuevoLote)
+        {
+            // Convertimos las propiedades del objeto a texto
+            string textoQr = $"Fidelandia - Pastas Frescas\n\n" +
+                             $"Identificador Unico: {nuevoLote.IdLote}\n" +
+                             $"Tipo de pasta: {nuevoLote.TipoPasta.Nombre}\n" +
+                             $"Cantidad producida: {nuevoLote.CantidadProducida}\n" +
+                             $"Fecha de produccion: {nuevoLote.FechaProduccion:dd/MM/yyyy}\n" +
+                             $"Fecha de vencimiento: {nuevoLote.FechaVencimiento:dd/MM/yyyy}\n";
+            // Pasamos el texto al helper
+            QrImage.Source = QrHelper.GenerarQr(textoQr);
+        }
+
+        private void PrevisualizarQR()
+        {
+            if (
+                decimal.TryParse(TxtCantidad.Text, out decimal cantidad) &&
+                DpFechaProduccion.SelectedDate.HasValue &&
+                DpFechaVencimiento.SelectedDate.HasValue)
+
+            {
+                var selectedCard = CardTipoPasta.Items
+                    .Cast<object>()
+                    .FirstOrDefault(item =>
+                    {
+                        var container = CardTipoPasta.ItemContainerGenerator.ContainerFromItem(item) as ContentPresenter;
+                        var toggleButton = FindVisualChild<ToggleButton>(container);
+                        return toggleButton != null && toggleButton.IsChecked == true;
+                    });
+
+                if (selectedCard != null)
+                {
+                    // Obtenemos el objeto TipoPastaModel desde el DataContext del selectedCard
+                    var tipoPasta = selectedCard;
+                    string nombreTipoPasta = tipoPasta.GetType().GetProperty("Nombre")?.GetValue(tipoPasta)?.ToString() ?? "-";
+
+                    string textoQr = $"Fidelandia - Pastas Frescas\n\n" +
+                                     $"Tipo de pasta: {nombreTipoPasta}\n" +
+                                     $"Cantidad producida: {cantidad}\n" +
+                                     $"Fecha de produccion: {DpFechaProduccion.SelectedDate.Value:dd/MM/yyyy}\n" +
+                                     $"Fecha de vencimiento: {DpFechaVencimiento.SelectedDate.Value:dd/MM/yyyy}\n";
+
+                    QrImage.Source = QrHelper.GenerarQr(textoQr);
+                }
+            }
+        }
+
     }
 }

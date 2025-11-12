@@ -8,10 +8,8 @@
 
         <DockPanel LastChildFill="True">
 
-            <Border VerticalAlignment="Center" DockPanel.Dock="Top" CornerRadius="10" Background="White" BorderBrush="Orange" BorderThickness="0.5" Opacity="1" Padding="20" Margin="0,0,0,0">
-                <Border.Effect>
-                    <DropShadowEffect Color="White" BlurRadius="100" ShadowDepth="0" Opacity="0.4"/>
-                </Border.Effect>
+            <Border VerticalAlignment="Center" Effect="{StaticResource DropShadow}" DockPanel.Dock="Top" CornerRadius="10" Background="White"  BorderBrush="#eee" BorderThickness="0.5" Opacity="1" Padding="20" Margin="6,0,6,10">
+                
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>

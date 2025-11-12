@@ -88,7 +88,7 @@ namespace FIDELANDIA.ViewModels
 
         private void ToggleSidebar()
         {
-            SidebarWidth = _isExpanded ? new GridLength(60) : new GridLength(220);
+            SidebarWidth = _isExpanded ? new GridLength(60) : new GridLength(240);
             _isExpanded = !_isExpanded;
         }
 
@@ -101,7 +101,7 @@ namespace FIDELANDIA.ViewModels
                 case "Home":    
                     CurrentView = new Views.Home.HomeView();
                     break;
-                case "Dashboard":
+                case "Dashboard_Produccion":
                     CurrentView = new DashboardView();
                     break;
                 case "Proveedores":
@@ -110,6 +110,10 @@ namespace FIDELANDIA.ViewModels
                 case "Produccion":
                     CurrentView = new Views.Produccion.ProduccionView();
                     break;
+                case "Dashboard_Proveedores":
+                    CurrentView = new Views.Proveedores.ProveedoresResumen();
+                    break;
+
             }
         }
 

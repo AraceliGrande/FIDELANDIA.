@@ -29,6 +29,11 @@ namespace FIDELANDIA.Views.Proveedores
         public List<string> ProveedoresLabels { get; set; }
         public List<string> DiasDelMes { get; set; }
 
+        public SeriesCollection SaldoAcumuladoAnualSeries { get; set; }
+        public SeriesCollection DebeHaberAnualSeries { get; set; }
+        public SeriesCollection GastosPorCategoriaAnualSeries { get; set; }
+        public List<string> MesesLabels { get; set; }
+
         // ================= Formato =================
         public Func<double, string> FormatoSaldo { get; set; }
 
@@ -99,10 +104,37 @@ namespace FIDELANDIA.Views.Proveedores
             DeudaPorCategoriaSeries = service.ObtenerDeudaPorCategoria(out _, MesSeleccionado, AnioSeleccionado);
             GastosPorCategoriaSeries = service.ObtenerGastosPorCategoria(out _, MesSeleccionado, AnioSeleccionado);
 
+            // ==== Evolución anual ====
+            SaldoAcumuladoAnualSeries = service.ObtenerSaldoAcumuladoAnual(out var mesesLabels);
+            DebeHaberAnualSeries = service.ObtenerDebeHaberAnual(out _);
+            MesesLabels = mesesLabels;
+
+
             FormatoSaldo = v => v.ToString("C0");
 
             OnPropertyChanged(null);
         }
+
+        private void DebeHaberAnualChart_DataClick(object sender, ChartPoint chartPoint)
+        {
+            // chartPoint.X devuelve el índice de la barra clickeada (0..11)
+            int mesSeleccionado = (int)chartPoint.X + 1; // +1 porque Enero=0 índice
+            MesSeleccionado = mesSeleccionado;
+            AnioSeleccionado = DateTime.Now.Year;
+
+            // Actualizar datos del card de transacciones
+            CargarDatos();
+
+            // Hacer visible el card de transacciones
+            CardTransaccionesMes.Visibility = System.Windows.Visibility.Visible;
+
+            OnPropertyChanged(nameof(TotalTransaccionesMes));
+            OnPropertyChanged(nameof(MesSeleccionadoTexto));
+
+            // Optional: Scroll hasta el card
+            CardTransaccionesMes.BringIntoView();
+        }
+
 
         private void CbMes_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -121,6 +153,25 @@ namespace FIDELANDIA.Views.Proveedores
                 CargarDatos();
             }
         }
+
+        private void MovimientoAcumuladoChart_DataClick(object sender, ChartPoint chartPoint)
+        {
+            int mesSeleccionado = (int)chartPoint.X + 1; // +1 porque Enero=0 índice
+            MesSeleccionado = mesSeleccionado;
+            AnioSeleccionado = DateTime.Now.Year;
+
+            CargarDatos();
+
+            CardTransaccionesMes.Visibility = System.Windows.Visibility.Visible;
+
+            // Actualizar los bindings
+            OnPropertyChanged(nameof(TotalTransaccionesMes));
+            OnPropertyChanged(nameof(MesSeleccionadoTexto));
+
+            // Optional: Scroll hasta el card
+            CardTransaccionesMes.BringIntoView();
+        }
+
 
         private void OnPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

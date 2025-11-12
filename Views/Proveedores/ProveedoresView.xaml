@@ -10,24 +10,25 @@
             <ColumnDefinition Width="265"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-
+        <Border Grid.Column="0" >
+            <views:ProveedoresListView x:Name="ListaProveedores" Grid.Column="0" />
+        </Border>
         <!-- Lista de Proveedores -->
-        <views:ProveedoresListView x:Name="ListaProveedores" Grid.Column="0" />
 
         <!-- Contenedor para los detalles del proveedor -->
         <Grid Grid.Column="1">
-            <Button Content="Mostrar Resumen"
-                x:Name="BtnMostrarResumen"
-                Width="130" Height="30"
-                Margin="20"
-                HorizontalAlignment="Right"
-                Style="{StaticResource SecondaryButton}"    
-                VerticalAlignment="Bottom"
-                Click="MostrarResumen_Click"/>
 
-            <subViews:ProveedoresResumen x:Name="PaginaInicial" Visibility="Collapsed"/>
-            <!-- Cuenta corriente (oculto al inicio) -->
+            <!-- Plantilla vacía de fondo -->
+            <Border Background="White" CornerRadius="15"
+            Effect="{StaticResource DropShadow}" 
+            BorderBrush="#eee" BorderThickness="2" 
+            Opacity="0.6"
+            Margin="5,0,20,0" x:Name="PlantillaVacia"/>
+
+            <!-- Cuenta corriente -->
             <views:CuentaCorrienteView x:Name="CuentaCorriente" Visibility="Collapsed"/>
+
         </Grid>
+
     </Grid>
 </UserControl>

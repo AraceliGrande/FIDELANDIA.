@@ -2,179 +2,267 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf">
-    <Border Background="White" CornerRadius="12" Padding="1" 
-         BorderBrush="#eee" BorderThickness="1" Margin="0,0,10,0">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Foreground="#333">
-            <Grid Margin="5,0,5,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <!-- KPIs -->
-                    <RowDefinition Height="*"/>
-                    <!-- Gráficos grandes y pequeños -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- KPIs -->
-                    <RowDefinition Height="*"/>
-                    <!-- Gráficos grandes y pequeños -->
-                </Grid.RowDefinitions>
 
-                <Border Background="#f0f0f0" Grid.Row="0" Margin="1,5" CornerRadius="5" Opacity="0.6" >
-                    <TextBlock Text="Análisis mensual de proveedores: saldos, gastos y transacciones"
-                           FontSize="10" FontWeight="Bold"
-                           Foreground="#b65601"
-                           Margin="10,0"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Left"/>
+    <Grid Margin="15,2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Título -->
+            <RowDefinition Height="*"/>
+            <!-- Scrollable content -->
+        </Grid.RowDefinitions>
+
+        <!-- Título -->
+        <Border VerticalAlignment="Center" Effect="{StaticResource DropShadow}" DockPanel.Dock="Top" CornerRadius="10" Background="White"  BorderBrush="#eee" BorderThickness="0.5" Opacity="1" Padding="10" Margin="1,10,0,10">
+            <TextBlock Text="Dashboard proveedores"
+                       FontSize="15" FontWeight="Bold"
+                       Foreground="#8C3000"
+                       Padding="10,0"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"/>
+        </Border>
+
+        <!-- Scrollable content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Foreground="#333">
+            <StackPanel>
+
+                <!-- ================= CARD 1: KPIs y gráficos principales ================= -->
+                <Border Background="#80FFFFFF" CornerRadius="12" Padding="0" BorderBrush="#eee" BorderThickness="1" Margin="0,0,0,10">
+                    <Expander Margin="4,2" IsExpanded="True" Background="Transparent" BorderThickness="0">
+                        <!-- Header -->
+                        <Expander.Header>
+                            <TextBlock Text="Resumen actual de cuenta corriente de proveedores"
+                       FontSize="12" FontWeight="Bold" Foreground="#b65601"
+                       Padding="10"/>
+                        </Expander.Header>
+
+                        <!-- Contenido -->
+                        <StackPanel Margin="10,5,10,20">
+                            <!-- ================= KPIs ================= -->
+                            <UniformGrid Columns="4" Margin="0,0,0,0">
+                                <!-- Total proveedores -->
+                                <Border Background="White" CornerRadius="16" Padding="10" Margin="3" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="Total proveedores" FontSize="11" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                        <TextBlock Text="{Binding TotalProveedores}" FontSize="19" FontWeight="Bold" TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                                <!-- Saldo total -->
+                                <Border Background="White" CornerRadius="16" Padding="12" Margin="3" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="Saldo total actual (Debe)" FontSize="11" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                        <TextBlock Text="{Binding SaldoTotal, StringFormat=C}" FontSize="19" FontWeight="Bold" TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                                <!-- Mayor saldo -->
+                                <Border Background="White" CornerRadius="16" Padding="12" Margin="3" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="Mayor saldo (Debe)" FontSize="11" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                        <TextBlock Text="{Binding MayorSaldo, StringFormat=C}" FontSize="19" FontWeight="Bold" TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                                <!-- Proveedores críticos -->
+                                <Border Background="White" CornerRadius="16" Padding="12" Margin="3" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="Proveedores críticos (Debe)" FontSize="11" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                        <TextBlock Text="{Binding TotalProveedoresCriticos}" FontSize="19" FontWeight="Bold" TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
+
+                            <!-- ================= Gráficos: Saldo y Deuda por categoría ================= -->
+                            <Grid Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Saldo por Proveedor -->
+                                <Border Grid.Column="0" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="Saldo por proveedor - Actualidad" FontSize="12" FontWeight="SemiBold" Foreground="#333" Margin="0,4,10,10"/>
+                                        <lvc:CartesianChart Series="{Binding SaldoPorProveedorSeries}" Height="300" HorizontalAlignment="Stretch" Margin="4">
+                                            <lvc:CartesianChart.AxisX>
+                                                <lvc:Axis Labels="{Binding ProveedoresLabels}" ShowLabels="True" Foreground="#333"/>
+                                            </lvc:CartesianChart.AxisX>
+                                            <lvc:CartesianChart.AxisY>
+                                                <lvc:Axis Title="Saldo" LabelFormatter="{Binding FormatoSaldo}" Foreground="#333"/>
+                                            </lvc:CartesianChart.AxisY>
+                                        </lvc:CartesianChart>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Deuda por Categoría -->
+                                <Border Grid.Column="1" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="Proporción de saldo (Debe) - Actualidad" FontSize="12" FontWeight="SemiBold" Foreground="#333" Margin="0,4,10,10"/>
+                                        <lvc:PieChart Series="{Binding GastosPorCategoriaSeries}" LegendLocation="Bottom" MinHeight="130" VerticalAlignment="Stretch"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Expander>
                 </Border>
 
 
-                <!-- ================= KPIs ================= -->
-                <UniformGrid Columns="4" Margin="0,0,0,5" Grid.Row="1">
-                    <Border Background="White" CornerRadius="16" Padding="7" Margin="3" BorderBrush="#eee" BorderThickness="1">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="Total proveedores" FontSize="11" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
-                            <TextBlock Text="{Binding TotalProveedores}" FontSize="19" FontWeight="Bold" TextAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
+                <!-- ================= CARD 2: Evolución Anual ================= -->
+                <Border Background="#80FFFFFF" CornerRadius="12" Padding="0" BorderBrush="#eee" BorderThickness="1" Margin="0,0,0,10">
+                    <Expander Margin="4,1" IsExpanded="False" Background="Transparent" BorderThickness="0">
+                        <!-- Header -->
+                        <Expander.Header>
+                            <TextBlock Text="Evolución anual de proveedores"
+                       FontSize="12" FontWeight="Bold" Foreground="#b65601"
+                       Padding="10"/>
+                        </Expander.Header>
 
-                    <Border Background="White" CornerRadius="16" Padding="7" Margin="3" BorderBrush="#eee" BorderThickness="1">
-                       <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="Saldo total actual (Debe)" FontSize="11" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
-                            <TextBlock Text="{Binding SaldoTotal, StringFormat=C}" FontSize="19" FontWeight="Bold" TextAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
+                        <!-- Contenido del Expander -->
+                        <Grid Margin="5,0,5,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                    <Border Background="White" CornerRadius="16" Padding="7" Margin="3" BorderBrush="#eee" BorderThickness="1">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="Mayor saldo (Debe)" FontSize="11" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
-                            <TextBlock Text="{Binding MayorSaldo, StringFormat=C}" FontSize="19" FontWeight="Bold" TextAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Background="White" CornerRadius="16" Padding="7" Margin="3" BorderBrush="#eee" BorderThickness="1">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="Proveedores criticos (Debe)" FontSize="11" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
-                            <TextBlock Text="{Binding TotalProveedoresCriticos}" FontSize="19" FontWeight="Bold" TextAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="3*"/>
+                                </Grid.ColumnDefinitions>
 
-                </UniformGrid>
+                                <!-- Saldo acumulado por mes -->
+                                <Border Grid.Column="0" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="Saldo acumulado por mes" FontSize="11" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
+                                        <lvc:CartesianChart Series="{Binding SaldoAcumuladoAnualSeries}" Height="170" HorizontalAlignment="Stretch" Margin="4" DataClick="MovimientoAcumuladoChart_DataClick">
+                                            <lvc:CartesianChart.AxisX>
+                                                <lvc:Axis Labels="{Binding MesesLabels}" ShowLabels="True" Foreground="#333"/>
+                                            </lvc:CartesianChart.AxisX>
+                                            <lvc:CartesianChart.AxisY>
+                                                <lvc:Axis Title="Saldo" LabelFormatter="{Binding FormatoSaldo}" Foreground="#333"/>
+                                            </lvc:CartesianChart.AxisY>
+                                        </lvc:CartesianChart>
+                                    </StackPanel>
+                                </Border>
 
-                <!-- ================= Gráficos: Saldo, Movimiento y Debe/Haber ================= -->
-                <Grid Grid.Row="2" Margin="0">
+                                <!-- Debe/Haber por mes -->
+                                <Border Grid.Column="1" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="Debe / Haber por mes" FontSize="11" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
+                                        <lvc:CartesianChart Series="{Binding DebeHaberAnualSeries}" DataClick="DebeHaberAnualChart_DataClick" Height="170" HorizontalAlignment="Stretch" Margin="4">
+                                            <lvc:CartesianChart.AxisX>
+                                                <lvc:Axis Labels="{Binding MesesLabels}" ShowLabels="True" Foreground="#333"/>
+                                            </lvc:CartesianChart.AxisX>
+                                            <lvc:CartesianChart.AxisY>
+                                                <lvc:Axis Title="Monto" LabelFormatter="{Binding FormatoSaldo}" Foreground="#333"/>
+                                            </lvc:CartesianChart.AxisY>
+                                        </lvc:CartesianChart>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+                </Border>
 
-                    <!-- Fila 0: Saldo por proveedor | Deuda por categoría -->
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="4*"/>
-                            <ColumnDefinition Width="2*"/>
-                        </Grid.ColumnDefinitions>
 
-                        <!-- Saldo por Proveedor -->
-                        <Border Grid.Column="0" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="Saldo por proveedor - Actualidad" FontSize="12" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
-                                <lvc:CartesianChart Series="{Binding SaldoPorProveedorSeries}" Height="170" Width="550" >
-                                    <lvc:CartesianChart.AxisX>
-                                        <lvc:Axis Labels="{Binding ProveedoresLabels}" ShowLabels="True" Foreground="#333"/>
-                                    </lvc:CartesianChart.AxisX>
-                                    <lvc:CartesianChart.AxisY>
-                                        <lvc:Axis Title="Saldo" LabelFormatter="{Binding FormatoSaldo}" Foreground="#333"/>
-                                    </lvc:CartesianChart.AxisY>
-                                </lvc:CartesianChart>
-                            </StackPanel>
-                        </Border>
+                <!-- ================= CARD 3: Indicadores, filtros y gráficos de abajo ================= -->
+                <Border x:Name="CardTransaccionesMes" Visibility="Collapsed" Background="#B3FFFFFF" CornerRadius="12" Padding="0" BorderBrush="#eee" BorderThickness="1" Margin="0,0,0,10">
+                    <Expander Margin="4,1" IsExpanded="True" Background="Transparent" BorderThickness="0">
+                        <!-- Header -->
+                        <Expander.Header>
+                            <TextBlock Text="Transacciones mes seleccionado" 
+                       FontSize="12" FontWeight="Bold" Foreground="#b65601"
+                       Padding="10"/>
+                        </Expander.Header>
 
-                        <!-- Deuda por Categoría -->
-                        <Border Grid.Column="1" Grid.ColumnSpan="2" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="Proporción de saldo (Debe) - Actualidad" FontSize="12" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
-                                <lvc:PieChart Series="{Binding GastosPorCategoriaSeries}" LegendLocation="Bottom" Height="120"/>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Grid>
+                        <!-- Contenido del Expander -->
+                        <Grid Margin="5,0,5,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                <UniformGrid Columns="2" Margin="0" Grid.Row="3">
-                    <Border Background="White" CornerRadius="16" Padding="7" Margin="3" BorderBrush="#eee" BorderThickness="1">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
-                            <TextBlock Text="{Binding MesSeleccionadoTexto, StringFormat='Cantidad de transacciones en {0}:   '}" FontSize="12" Foreground="#777" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding TotalTransaccionesMes}" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
-                        </StackPanel>
+                            <!-- Filtros de mes y año -->
+                            <UniformGrid Columns="2" Margin="0" Grid.Row="0">
+                                <Border Background="White" CornerRadius="16" Padding="7" Margin="3" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding MesSeleccionadoTexto, StringFormat='Cantidad de transacciones en {0}:   '}" FontSize="12" Foreground="#777" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding TotalTransaccionesMes}" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
 
-                    </Border>
-                    <Border Background="White" CornerRadius="16" Padding="7" Margin="3" BorderBrush="#eee" BorderThickness="1">
-                      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,5,0,10" VerticalAlignment="Top">
-                            <TextBlock Text="Mes:" VerticalAlignment="Center" Margin="0,0,15,0"/>
-                            <ComboBox x:Name="CbMes" Width="80" SelectionChanged="CbMes_SelectionChanged" Margin="0,0,15,0">
-                                <ComboBoxItem Content="Enero" Tag="1"/>
-                                <ComboBoxItem Content="Febrero" Tag="2"/>
-                                <ComboBoxItem Content="Marzo" Tag="3"/>
-                                <ComboBoxItem Content="Abril" Tag="4"/>
-                                <ComboBoxItem Content="Mayo" Tag="5"/>
-                                <ComboBoxItem Content="Junio" Tag="6"/>
-                                <ComboBoxItem Content="Julio" Tag="7"/>
-                                <ComboBoxItem Content="Agosto" Tag="8"/>
-                                <ComboBoxItem Content="Septiembre" Tag="9"/>
-                                <ComboBoxItem Content="Octubre" Tag="10"/>
-                                <ComboBoxItem Content="Noviembre" Tag="11"/>
-                                <ComboBoxItem Content="Diciembre" Tag="12"/>
-                            </ComboBox>
+                                <Border Background="White" CornerRadius="16" Padding="7" Margin="3" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,5,0,10" VerticalAlignment="Top">
+                                        <TextBlock Text="Mes:" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                                        <ComboBox x:Name="CbMes" Width="80" SelectionChanged="CbMes_SelectionChanged" Margin="0,0,15,0">
+                                            <ComboBoxItem Content="Enero" Tag="1"/>
+                                            <ComboBoxItem Content="Febrero" Tag="2"/>
+                                            <ComboBoxItem Content="Marzo" Tag="3"/>
+                                            <ComboBoxItem Content="Abril" Tag="4"/>
+                                            <ComboBoxItem Content="Mayo" Tag="5"/>
+                                            <ComboBoxItem Content="Junio" Tag="6"/>
+                                            <ComboBoxItem Content="Julio" Tag="7"/>
+                                            <ComboBoxItem Content="Agosto" Tag="8"/>
+                                            <ComboBoxItem Content="Septiembre" Tag="9"/>
+                                            <ComboBoxItem Content="Octubre" Tag="10"/>
+                                            <ComboBoxItem Content="Noviembre" Tag="11"/>
+                                            <ComboBoxItem Content="Diciembre" Tag="12"/>
+                                        </ComboBox>
 
-                            <TextBlock Text="Año:" VerticalAlignment="Center" Margin="15,0,15,0" />
-                            <TextBox x:Name="TbAnio" Width="60" TextChanged="TbAnio_TextChanged" Margin="0,0,15,0" Style="{StaticResource UnderlineTextBox}"/>
-                        </StackPanel>
+                                        <TextBlock Text="Año:" VerticalAlignment="Center" Margin="15,0,15,0" />
+                                        <TextBox x:Name="TbAnio" Width="60" TextChanged="TbAnio_TextChanged" Margin="0,0,15,0" Style="{StaticResource UnderlineTextBox}"/>
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
 
-                    </Border>
-                </UniformGrid>
-                <Grid Grid.Row="4">
-                    <!-- Fila 1: Movimiento acumulado | Debe/Haber | Gastos por categoría -->
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*"/>
-                            <ColumnDefinition Width="4*"/>
-                            <ColumnDefinition Width="2*"/>
-                        </Grid.ColumnDefinitions>
+                            <!-- Gráficos de transacciones -->
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
 
-                        <!-- Movimiento Acumulativo -->
-                        <Border Grid.Column="0" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="{Binding MesSeleccionadoTexto, StringFormat='Transacciones acumulativo - {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
-                                <lvc:CartesianChart Series="{Binding MovimientoAcumuladoSeries}" Height="160" Width="260">
-                                    <lvc:CartesianChart.AxisX>
-                                        <lvc:Axis Title="Día" Labels="{Binding DiasDelMes}" ShowLabels="False" Foreground="#333"/>
-                                    </lvc:CartesianChart.AxisX>
-                                    <lvc:CartesianChart.AxisY>
-                                        <lvc:Axis Title="Monto Acumulado" LabelFormatter="{Binding FormatoSaldo}" Foreground="#333"/>
-                                    </lvc:CartesianChart.AxisY>
-                                </lvc:CartesianChart>
-                            </StackPanel>
-                        </Border>
+                                <!-- Movimiento Acumulativo -->
+                                <Border Grid.Column="0" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding MesSeleccionadoTexto, StringFormat='Transacciones acumulativo - {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
+                                        <lvc:CartesianChart Series="{Binding MovimientoAcumuladoSeries}" Height="160" Width="260">
+                                            <lvc:CartesianChart.AxisX>
+                                                <lvc:Axis Title="Día" Labels="{Binding DiasDelMes}" ShowLabels="False" Foreground="#333"/>
+                                            </lvc:CartesianChart.AxisX>
+                                            <lvc:CartesianChart.AxisY>
+                                                <lvc:Axis Title="Monto Acumulado" LabelFormatter="{Binding FormatoSaldo}" Foreground="#333"/>
+                                            </lvc:CartesianChart.AxisY>
+                                        </lvc:CartesianChart>
+                                    </StackPanel>
+                                </Border>
 
-                        <!-- Debe/Haber por proveedor -->
-                        <Border Grid.Column="1" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="{Binding MesSeleccionadoTexto, StringFormat='Debe / haber por proveedor - {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
-                                <lvc:CartesianChart Series="{Binding DebeHaberSeries}" Height="160" Width="350">
-                                    <lvc:CartesianChart.AxisX>
-                                        <lvc:Axis Labels="{Binding ProveedoresLabels}" ShowLabels="True" Foreground="#333"/>
-                                    </lvc:CartesianChart.AxisX>
-                                    <lvc:CartesianChart.AxisY>
-                                        <lvc:Axis Title="Monto" LabelFormatter="{Binding FormatoSaldo}" Foreground="#333"/>
-                                    </lvc:CartesianChart.AxisY>
-                                </lvc:CartesianChart>
-                            </StackPanel>
-                        </Border>
+                                <!-- Debe/Haber por proveedor -->
+                                <Border Grid.Column="1" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding MesSeleccionadoTexto, StringFormat='Debe / haber por proveedor - {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
+                                        <lvc:CartesianChart Series="{Binding DebeHaberSeries}" Height="160" Width="350">
+                                            <lvc:CartesianChart.AxisX>
+                                                <lvc:Axis Labels="{Binding ProveedoresLabels}" ShowLabels="True" Foreground="#333"/>
+                                            </lvc:CartesianChart.AxisX>
+                                            <lvc:CartesianChart.AxisY>
+                                                <lvc:Axis Title="Monto" LabelFormatter="{Binding FormatoSaldo}" Foreground="#333"/>
+                                            </lvc:CartesianChart.AxisY>
+                                        </lvc:CartesianChart>
+                                    </StackPanel>
+                                </Border>
 
-                        <!-- Gastos por Categoría -->
-                        <Border Grid.Column="2" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="{Binding MesSeleccionadoTexto, StringFormat='Gastos (Debe) - {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
-                                <lvc:PieChart Series="{Binding DeudaPorCategoriaSeries}" LegendLocation="Bottom" Height="140"/>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Grid>
-            </Grid>
+                                <!-- Gastos por Categoría -->
+                                <Border Grid.Column="2" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding MesSeleccionadoTexto, StringFormat='Gastos (Debe) - {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
+                                        <lvc:PieChart Series="{Binding DeudaPorCategoriaSeries}" LegendLocation="Bottom" Height="140"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+                </Border>
+            </StackPanel>
         </ScrollViewer>
-    </Border>
+    </Grid>
 </UserControl>
+

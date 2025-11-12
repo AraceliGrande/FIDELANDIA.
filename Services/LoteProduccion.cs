@@ -22,7 +22,7 @@ namespace FIDELANDIA.Services
         }
 
         // Crear un nuevo lote de producción
-        public bool CrearLote(int idTipoPasta, decimal cantidadDisponible, DateTime fechaProduccion,
+        public LoteProduccionModel CrearLote(int idTipoPasta, decimal cantidadDisponible, DateTime fechaProduccion,
                               DateTime fechaVencimiento, string estado)
         {
             try
@@ -43,14 +43,14 @@ namespace FIDELANDIA.Services
                 
                 _stockService.AgregarLoteAlStock(lote);
 
-                return true;
+                return lote;
             }
             catch (Exception ex)
             {
                 // fallback general
                 var detalle = ex.Message + Environment.NewLine + (ex.InnerException?.Message ?? "");
                 MessageBox.Show($"Error al crear tipo de pasta:{Environment.NewLine}{detalle}");
-                return false;
+                return null;
             }
         }
 

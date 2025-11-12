@@ -88,6 +88,11 @@
                             Command="{Binding NavigateCommand}"
                             CommandParameter="Proveedores"/>
 
+                        <Button Style="{StaticResource SidebarButton}"
+                             FontWeight="SemiBold"
+                             Content="📈  Dashboard Proveedores"
+                             Command="{Binding NavigateCommand}"
+                             CommandParameter="Dashboard_Proveedores"/>
 
                         <Button Style="{StaticResource SidebarButton}"
                             FontWeight="SemiBold"
@@ -97,10 +102,10 @@
 
                         <Button Style="{StaticResource SidebarButton}"
                              FontWeight="SemiBold"
-                             Content="📈  Dashboard"
+                             Content="📊  Dashboard Producción"
                              Command="{Binding NavigateCommand}"
-                             CommandParameter="Dashboard"/>
-
+                             CommandParameter="Dashboard_Produccion"/>
+                        
                     </StackPanel>
                 </StackPanel>
             </Border>

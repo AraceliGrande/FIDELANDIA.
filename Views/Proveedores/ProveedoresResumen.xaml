@@ -73,7 +73,7 @@
                             <Grid Margin="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="4*"/>
-                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Saldo por Proveedor -->
@@ -93,11 +93,17 @@
 
                                 <!-- Deuda por Categoría -->
                                 <Border Grid.Column="1" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
-                                    <StackPanel>
-                                        <TextBlock Text="Proporción de saldo (Debe) - Actualidad" FontSize="12" FontWeight="SemiBold" Foreground="#333" Margin="0,4,10,10"/>
-                                        <lvc:PieChart Series="{Binding GastosPorCategoriaSeries}" LegendLocation="Bottom" MinHeight="130" VerticalAlignment="Stretch"/>
-                                    </StackPanel>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Text="Proporción de saldo (Debe) - Actualidad" FontSize="12" FontWeight="SemiBold" Foreground="#333" Margin="0,4,10,10"/>
+                                        <lvc:PieChart Grid.Row="1" Series="{Binding GastosPorCategoriaSeries}" LegendLocation="Bottom" MinHeight="180" InnerRadius="15" VerticalAlignment="Stretch" Margin="17,20"/>
+                                    </Grid>
                                 </Border>
+
+
                             </Grid>
                         </StackPanel>
                     </Expander>
@@ -224,7 +230,7 @@
                                 <Border Grid.Column="0" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
                                     <StackPanel>
                                         <TextBlock Text="{Binding MesSeleccionadoTexto, StringFormat='Transacciones acumulativo - {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
-                                        <lvc:CartesianChart Series="{Binding MovimientoAcumuladoSeries}" Height="160" Width="260">
+                                        <lvc:CartesianChart Series="{Binding MovimientoAcumuladoSeries}" Height="160" HorizontalAlignment="Stretch">
                                             <lvc:CartesianChart.AxisX>
                                                 <lvc:Axis Title="Día" Labels="{Binding DiasDelMes}" ShowLabels="False" Foreground="#333"/>
                                             </lvc:CartesianChart.AxisX>
@@ -239,7 +245,7 @@
                                 <Border Grid.Column="1" Background="White" CornerRadius="16" Padding="15" Margin="5" BorderBrush="#eee" BorderThickness="1">
                                     <StackPanel>
                                         <TextBlock Text="{Binding MesSeleccionadoTexto, StringFormat='Debe / haber por proveedor - {0}'}" FontSize="11" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,8"/>
-                                        <lvc:CartesianChart Series="{Binding DebeHaberSeries}" Height="160" Width="350">
+                                        <lvc:CartesianChart Series="{Binding DebeHaberSeries}" Height="160" HorizontalAlignment="Stretch">
                                             <lvc:CartesianChart.AxisX>
                                                 <lvc:Axis Labels="{Binding ProveedoresLabels}" ShowLabels="True" Foreground="#333"/>
                                             </lvc:CartesianChart.AxisX>

@@ -35,6 +35,8 @@ namespace FIDELANDIA.Views
 
         private bool _modoFiltrado = false;
 
+        public ICommand AbrirComprobanteCommand { get; }
+
         public CuentaCorrienteView()
         {
             InitializeComponent();
@@ -42,6 +44,45 @@ namespace FIDELANDIA.Views
             var dbContext = new FidelandiaDbContext();
             _service = new ProveedorService(dbContext);
 
+            AbrirComprobanteCommand = new RelayCommand<string>(AbrirComprobante);
+            DataContext = this; // importante
+        }
+
+        private void BtnVerComprobante_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            string ruta = btn?.CommandParameter as string;
+
+            AbrirComprobante(ruta); 
+        }
+
+        private void AbrirComprobante(string ruta)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(ruta))
+                {
+                    MessageBox.Show("No hay comprobante disponible para esta transacción.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                if (!System.IO.File.Exists(ruta))
+                {
+                    MessageBox.Show("No se encontró el archivo: " + ruta);
+                    return;
+                }
+
+                // Abrir con el visor de imágenes predeterminado del sistema
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = ruta,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al abrir el comprobante: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnPaginaAnterior_Click(object sender, RoutedEventArgs e)
@@ -81,6 +122,9 @@ namespace FIDELANDIA.Views
                 // Detalles del proveedor
                 DetalleNombre.Text = proveedor.Nombre ?? "(Sin nombre)";
                 DetalleSaldo.Text = proveedor.SaldoActual.ToString("C2");
+
+                NombreProveedor_Busqueda.Text = proveedor.Nombre ?? "(Sin nombre)";
+                DetalleSaldoProveedor_Busqueda.Text = proveedor.SaldoActual.ToString("C2");
 
                 DetalleNombre.Background = Brushes.Transparent;
 
@@ -147,7 +191,8 @@ namespace FIDELANDIA.Views
                         Concepto = t.Detalle,
                         Debe = t.TipoTransaccion == "Debe" ? $"+ {t.Monto:C2}" : "",
                         Haber = t.TipoTransaccion == "Haber" ? $"- {t.Monto:C2}" : "",
-                        Saldo = t.Saldo >= 0 ? $"+ {t.Saldo:C2}" : $"- {Math.Abs(t.Saldo):C2}"
+                        Saldo = t.Saldo >= 0 ? $"+ {t.Saldo:C2}" : $"- {Math.Abs(t.Saldo):C2}",
+                        ComprobanteRuta = t.ComprobanteRuta
                     }).ToList();
 
                     TxtPaginaActual.Text = $"Mostrando todos los registros ({transacciones.Count})";
@@ -179,7 +224,8 @@ namespace FIDELANDIA.Views
                         Concepto = t.Detalle,
                         Debe = t.TipoTransaccion == "Debe" ? $"+ {t.Monto:C2}" : "",
                         Haber = t.TipoTransaccion == "Haber" ? $"- {t.Monto:C2}" : "",
-                        Saldo = t.Saldo >= 0 ? $"+ {t.Saldo:C2}" : $"- {Math.Abs(t.Saldo):C2}"
+                        Saldo = t.Saldo >= 0 ? $"+ {t.Saldo:C2}" : $"- {Math.Abs(t.Saldo):C2}",
+                        ComprobanteRuta = t.ComprobanteRuta
                     }).ToList();
 
                     TxtPaginaActual.Text = $"Página {paginaActual} / {totalPaginas}";
@@ -193,7 +239,6 @@ namespace FIDELANDIA.Views
             }
         }
 
-
         private void BtnQuitarFiltro_Click(object sender, RoutedEventArgs e)
         {
             FechaDesdePicker.SelectedDate = null;
@@ -206,6 +251,12 @@ namespace FIDELANDIA.Views
             PanelFiltros.Visibility = PanelFiltros.Visibility == Visibility.Visible
                 ? Visibility.Collapsed
                 : Visibility.Visible;
+            EncabezadoCuentaCorriente.Visibility = PanelFiltros.Visibility == Visibility.Visible
+              ? Visibility.Collapsed
+              : Visibility.Visible;
+            EncabezadoInfo.Visibility = PanelFiltros.Visibility != Visibility.Visible
+             ? Visibility.Collapsed
+             : Visibility.Visible;
             tamanoPagina = 15;
             traerTodos = false;
             ActualizarEstadoPaginacion(estaFiltrado: false);
@@ -218,6 +269,12 @@ namespace FIDELANDIA.Views
             PanelFiltros.Visibility = PanelFiltros.Visibility == Visibility.Visible
                 ? Visibility.Collapsed
                 : Visibility.Visible;
+            EncabezadoCuentaCorriente.Visibility = PanelFiltros.Visibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+            EncabezadoInfo.Visibility = PanelFiltros.Visibility != Visibility.Visible
+             ? Visibility.Collapsed
+             : Visibility.Visible;
 
             // Cuando se muestra el panel, ocultar paginación
             if (PanelFiltros.Visibility == Visibility.Visible)
@@ -255,7 +312,8 @@ namespace FIDELANDIA.Views
                 Concepto = t.Detalle,
                 Debe = t.TipoTransaccion == "Debe" ? $"+ {t.Monto:C2}" : "",
                 Haber = t.TipoTransaccion == "Haber" ? $"- {t.Monto:C2}" : "",
-                Saldo = t.Saldo >= 0 ? $"+ {t.Saldo:C2}" : $"- {Math.Abs(t.Saldo):C2}"
+                Saldo = t.Saldo >= 0 ? $"+ {t.Saldo:C2}" : $"- {Math.Abs(t.Saldo):C2}",
+                ComprobanteRuta = t.ComprobanteRuta
             }).ToList();
 
             // 🔒 Deshabilitar paginación mientras haya filtro

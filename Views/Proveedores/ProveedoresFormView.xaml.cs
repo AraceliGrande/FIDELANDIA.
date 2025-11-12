@@ -84,7 +84,7 @@ namespace FIDELANDIA.Views
                     TxtEmail.Text,
                     (int)CmbCategoria.SelectedValue,
                     limite,
-                    ChkActivo.IsChecked ?? true
+                    true
                 );
 
                 if (resultado)

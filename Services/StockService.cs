@@ -217,7 +217,7 @@ namespace FIDELANDIA.Services
             {
                 // Buscar todos los lotes con estado "Creados" sin importar la fecha
                 var lotesPorConfirmar = _dbContext.LoteProduccion
-                    .Where(l => l.Estado == "Creados")
+                    .Where(l => l.Estado == "Creado")
                     .ToList();
 
                 if (!lotesPorConfirmar.Any())

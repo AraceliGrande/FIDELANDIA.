@@ -7,9 +7,14 @@
         mc:Ignorable="d"
         Title="Nuevo transaccion de proveedor"
         Icon="/Resources/logo.ico"
-        MaxWidth="800"
-        SizeToContent="Height"
-        WindowStartupLocation="CenterScreen"
-        Background="#f0f2f5">
-
+        WindowStartupLocation="Manual"
+        Loaded="Window_Loaded"
+        AllowsTransparency="True"
+        Background="#26000000"
+        BorderBrush="LightGray"
+        BorderThickness="0.5"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        >
+    
 </Window>

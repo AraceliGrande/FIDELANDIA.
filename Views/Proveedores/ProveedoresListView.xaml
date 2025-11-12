@@ -27,7 +27,7 @@
                             <Border CornerRadius="10" BorderThickness="1" Padding="12" Width="Auto" Margin="0,2,0,2">
                                 <StackPanel>
                                     <TextBlock Text="{Binding Nombre}" FontWeight="Bold" Foreground="#333"/>
-                                    <TextBlock FontSize="11" Foreground="#666" Margin="0,4,0,0" FontWeight="Regular" Text="{Binding SaldoActual, StringFormat='Saldo Actual: {0}'}"/>
+                                    <TextBlock FontSize="11" Foreground="#666" Margin="0,4,0,0" FontWeight="Regular" Text="{Binding SaldoActual, StringFormat='Saldo Actual: {0:C2}'}"/>
                                     <Separator Background="Orange" Margin="0,5,0,0"/>
                                 </StackPanel>
                             </Border>

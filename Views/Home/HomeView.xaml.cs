@@ -55,7 +55,7 @@ namespace FIDELANDIA.Views.Home
         private void DashboardBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (DataContext is MainViewModel vm)
-                vm.NavigateCommand.Execute("Dashboard");
+                vm.NavigateCommand.Execute("Dashboard_Produccion");
         }
     }
 }

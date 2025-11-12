@@ -31,6 +31,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Remove="Resources\CargarImagen.png" />
 		<None Remove="Resources\Dashboard.ico" />
 		<None Remove="Resources\fidelandia_fondo.png" />
 		<None Remove="Resources\iconImage.png" />
@@ -47,6 +48,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Resource Include="Resources\CargarImagen.png" />
 		<Resource Include="Resources\Dashboard.ico" />
 	</ItemGroup>
 

@@ -3,13 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:FIDELANDIA.Views"
         Title="Nuevo Proveedor"
-        MaxWidth="800"
-        SizeToContent="Height"
         Icon="/Resources/logo.ico"
-        WindowStartupLocation="CenterScreen"
-        Background="#f0f2f5">
-
-    <Grid Background="#f0f2f5">
+        WindowStartupLocation="Manual"
+        Loaded="Window_Loaded"
+        AllowsTransparency="True"
+        Background="#26000000"
+        BorderBrush="LightGray"
+        BorderThickness="0.5"
+        WindowStyle="None"
+        ResizeMode="NoResize">
+    <Grid>
         <local:ProveedoresFormView/>
     </Grid>
 </Window>

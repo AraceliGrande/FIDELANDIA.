@@ -10,19 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FIDELANDIA.Views
+namespace FIDELANDIA.Windows
 {
     /// <summary>
-    /// Lógica de interacción para recordView.xaml
+    /// Lógica de interacción para BalanceDiarioWindow.xaml
     /// </summary>
-    public partial class recordView : UserControl
+    public partial class BalanceDiarioWindow : Window
     {
-        public recordView()
+        public BalanceDiarioWindow()
         {
             InitializeComponent();
         }
+       
     }
 }

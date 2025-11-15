@@ -6,173 +6,204 @@
              mc:Ignorable="d"
              d:DesignHeight="500" d:DesignWidth="900">
 
-    <Border Background="White" CornerRadius="12" Padding="20"
-            BorderBrush="#eee" BorderThickness="1" Effect="{StaticResource DropShadow}">
 
-        <DockPanel LastChildFill="True">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!-- 🔍 PANEL DE FILTROS FLOTANTE -->
+        <Border x:Name="PanelFiltros" Grid.Row="0" CornerRadius="10" Background="White" BorderThickness="1" Margin="0,0,15,10" VerticalAlignment="Top" Visibility="Collapsed" Padding="10" Effect="{StaticResource DropShadow}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <!-- Botones abajo -->
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,20,0,0">
-                <Button Content="➕ Nuevo Movimiento" Style="{StaticResource PrimaryButton}" 
-                        Margin="0,0,12,0" x:Name="BtnNuevoMovimiento" Width="165" Height="32"
-                        Click="BtnNuevaTransaccion_Click"/>
-                <Button Content="⬇ Exportar CSV" Style="{StaticResource SecondaryButton}" Height="32" Width="163"/>
-            </StackPanel>
+                <!-- 🪟 Encabezado -->
+                <Grid Grid.Row="0" Margin="0,0,0,8" Cursor="">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto"
- HorizontalScrollBarVisibility="Disabled">
-                <StackPanel>
+                    <TextBlock Text="📅 Filtros de búsqueda" FontWeight="Bold" Foreground="#BD5704" FontSize="13" VerticalAlignment="Center" Margin="5,0,0,0"/>
 
-                    <StackPanel>
+                    <Button Grid.Column="1" Content="❌" Width="25" Height="25" FontSize="10" ToolTip="Cerrar filtros" Style="{StaticResource TertiaryButton}" Click="BtnCerrarFiltro_Click" Margin="5,0,10,0" BorderBrush="White"/>
+                </Grid>
 
-                        <!-- ENCABEZADO - Datos del proveedor -->
-                        <Border Background="#fdfdfd" CornerRadius="8" Padding="9" BorderBrush="#ddd" BorderThickness="1" Margin="0,0,0,10">
-                            <Grid Margin="1,1,1,16">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="4*"/>
-                                    <!-- Expander -->
-                                    <ColumnDefinition Width="2*"/>
-                                    <!-- Saldo -->
-                                </Grid.ColumnDefinitions>
+                <!-- 📅 Contenido principal -->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                                <!-- EXPANDER: Datos del proveedor -->
-                                <Expander Grid.Column="0" IsExpanded="False" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,0,16,0">
-                                    <Expander.Header>
-                                        <DockPanel LastChildFill="True">
-                                            <TextBlock Text="  Cuenta Corriente: " 
-                                               FontSize="14" 
-                                               Foreground="#a34c00" 
-                                               FontWeight="SemiBold"/>
-                                            <TextBlock x:Name="DetalleNombre" 
-                                               Text="Nombre del proveedor"
-                                               FontSize="14" 
-                                               Foreground="#a34c00" 
-                                               FontWeight="Bold"
-                                               TextTrimming="CharacterEllipsis"/>
-                                        </DockPanel>
-                                    </Expander.Header>
+                    <!-- Filtros a la izquierda -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <TextBlock Text="Desde:" VerticalAlignment="Center" Margin="10,0,5,0" Foreground="#444" FontWeight="SemiBold"/>
+                        <DatePicker x:Name="FechaDesdePicker" Style="{StaticResource UnderlineDatePicker}" Width="155" Height="30" Margin="0,0,60,0"/>
+                        <TextBlock Text="Hasta:" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="#444" FontWeight="SemiBold"/>
+                        <DatePicker x:Name="FechaHastaPicker" Style="{StaticResource UnderlineDatePicker}" Width="155" Height="30" Margin="0,0,65,0"/>
+                    </StackPanel>
 
-                                    <!-- Contenido del Expander -->
-                                    <StackPanel Margin="20,10,0,0">
-                                        <Grid Margin="0,10,0,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="2*" />
-                                                <ColumnDefinition Width="2*" />
-                                            </Grid.ColumnDefinitions>
+                    <!-- Botones a la derecha -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button x:Name="BtnLimpiar" Content="Limpiar filtro" FontSize="11" Width="130" Height="24" Style="{StaticResource SecondaryButton}" Click="BtnQuitarFiltro_Click" Margin="0,0,10,0"/>
+                        <Button x:Name="BtnBuscar" Content="Buscar" FontSize="11" Width="130" Height="24" Style="{StaticResource SecondaryButton}" Click="BtnBuscarPorFecha_Click" Margin="0,0,10,0"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+        <!-- 🔍 INFORMACION PROVEEDOR-->
+        <Border Grid.Row="1" Background="White" Margin="0,0,15,0" CornerRadius="12" Padding="15" BorderBrush="#eee" BorderThickness="1" Effect="{StaticResource DropShadow}">
+            <DockPanel LastChildFill="True">
 
-                                            <!-- Primera columna -->
-                                            <StackPanel Grid.Column="0" Margin="0,0,16,0">
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="📋 CUIT: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleCuit" Text="00-00000000-0" Foreground="#555"/>
-                                                </StackPanel>
+                <!-- Botones abajo -->
+                <StackPanel Orientation="Vertical" DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="0,5,0,0" >
+                    <!-- Fila 1: paginación -->
+                    <Grid Margin="0,10,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <!-- ComboBox a la izquierda -->
+                            <ColumnDefinition Width="*"/>
+                            <!-- Botones del medio centrados -->
+                            <ColumnDefinition Width="Auto"/>
+                            <!-- Botón Filtros a la derecha -->
+                        </Grid.ColumnDefinitions>
 
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="📞 Teléfono: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleTelefono" Text="(000) 0000-0000" Foreground="#555"/>
-                                                </StackPanel>
+                        <!-- ComboBox a la izquierda -->
+                        <ComboBox x:Name="CbTamanoPagina" Grid.Column="0" Width="60" SelectionChanged="CbTamanoPagina_SelectionChanged" Height="20" Background="#FFF" Margin="0,0,10,0">
+                            <ComboBoxItem>5</ComboBoxItem>
+                            <ComboBoxItem>15</ComboBoxItem>
+                            <ComboBoxItem>25</ComboBoxItem>
+                            <ComboBoxItem>50</ComboBoxItem>
+                            <ComboBoxItem>100</ComboBoxItem>
+                            <ComboBoxItem>Todos</ComboBoxItem>
+                        </ComboBox>
 
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="📧 Email: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleEmail" Text="emailProveedor@mail.com" Foreground="#555"/>
-                                                </StackPanel>
-                                            </StackPanel>
+                        <!-- Botones del medio -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Button Content="⬅" Width="28" Height="28" Margin="0,0,8,0" Click="BtnPaginaAnterior_Click" x:Name="BtnAnterior" Background="#FFF" Foreground="#555" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="TxtPaginaActual" Text="Página 1 / 1" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="11" Margin="5,0,5,0" Foreground="#555" Opacity="0.7"/>
+                            <Button Content="⮕" Width="28" Height="28" Click="BtnPaginaSiguiente_Click" x:Name="BtnSiguiente" Background="#FFF" Foreground="#555" FontWeight="SemiBold"/>
+                        </StackPanel>
 
-                                            <!-- Segunda columna -->
-                                            <StackPanel Grid.Column="1" Margin="16,0,0,0">
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="🗂 Categoría: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleCategoria" Text="N/A" Foreground="#555"/>
-                                                </StackPanel>
+                        <!-- Botón Filtros a la derecha -->
+                        <Button x:Name="BtnMostrarFiltros" Grid.Column="2" Content="Filtros" Width="97" Height="26" Background="#FFF" Foreground="#555" BorderBrush="Transparent" BorderThickness="0" 
+                                FontWeight="SemiBold" Cursor="Hand" FontSize="11" Click="BtnMostrarFiltros_Click" HorizontalAlignment="Right"/>
+                    </Grid>
 
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="💰 Límite: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleLimiteCredito" Text="$0,00" Foreground="#555"/>
-                                                </StackPanel>
+                    <Grid Grid.Row="0" Margin="0,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <!-- Texto a la izquierda -->
+                            <ColumnDefinition Width="Auto"/>
+                            <!-- Botones a la derecha -->
+                        </Grid.ColumnDefinitions>
 
-                                                <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                    <TextBlock Text="⚡ Activo: " FontWeight="SemiBold" Width="90"/>
-                                                    <TextBlock x:Name="DetalleActivo" Text="Sí" Foreground="#555"/>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </Grid>
-                                    </StackPanel>
-                                </Expander>
+                        <!-- Información del proveedor: izquierda -->
+                        <StackPanel x:Name="EncabezadoInfo" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Hidden" Opacity="0.7">
+                            <TextBlock Text="Cuenta Corriente: " FontSize="11" Foreground="#666" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="DetalleNombre" Text="Nombre del proveedor" FontSize="11" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,5,0"/>
+                            <TextBlock Text=" -     Saldo actual: " FontSize="11" Foreground="#666" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="DetalleSaldo" Text="$0,00" FontSize="11" FontWeight="Bold" Foreground="#666" Margin="5,0,10,0"/>
+                        </StackPanel>
 
-                                <!-- SALDO: visible siempre -->
-                                <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">
-                                    <TextBlock Text="Saldo Actual" FontSize="14" Foreground="#777" TextAlignment="Right"/>
-                                    <TextBlock x:Name="DetalleSaldo" FontSize="28" FontWeight="Bold" Foreground="#2e7d32" TextAlignment="Right"/>
-                                </StackPanel>
-                            </Grid>
+                        <!-- Botones: derecha -->
+                        <StackPanel x:Name="EncabezadoBotones" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Button x:Name="BtnNuevoMovimiento" Content="➕ Nuevo Movimiento" Width="165" Height="30" Style="{StaticResource PrimaryButton}" Click="BtnNuevaTransaccion_Click" Margin="0,0,10,0"/>
+                            <Button x:Name="BtnExportarExcel" Content="⬇ Exportar Excel" Width="165" Height="30" Style="{StaticResource SecondaryButton}" Click="BtnExportarExcel_Click"/>
+                        </StackPanel>
+                    </Grid>
 
-
-                        </Border>
+                </StackPanel>
 
 
-                        <!-- TABLA DE MOVIMIENTOS -->
-                        <DataGrid x:Name="MovimientosGrid"
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <!-- Fila del encabezado: auto-ajustable según contenido -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Fila de la tabla: ocupa todo el espacio restante -->
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- ENCABEZADO - Datos del proveedor -->
+                    <Grid Grid.Row="0" Margin="0,0,0,15" x:Name="EncabezadoCuentaCorriente" Visibility="Visible">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="1,4,0,0">
+                            <TextBlock Text="Cuenta Corriente: " FontSize="14" Foreground="#C4620C" FontWeight="Bold" Margin="0,0,5,0"/>
+                            <TextBlock x:Name="NombreProveedor_Busqueda" Text="Nombre del proveedor" FontSize="14" FontWeight="Bold" Foreground="#a34c00" TextTrimming="CharacterEllipsis" ToolTipService.ShowDuration="20000"/>
+                        </StackPanel>
+
+                        <!-- Saldos -->
+                        <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,0">
+                            <TextBlock Text="Saldo actual:" FontSize="11" FontWeight="SemiBold" Foreground="Gray" Margin="0,0,0,2" TextAlignment="Right"/>
+                            <TextBlock x:Name="DetalleSaldoProveedor_Busqueda" FontSize="25" FontWeight="Bold" Foreground="#a34c00" TextAlignment="Right"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- TABLA DE MOVIMIENTOS -->
+                    <DataGrid Grid.Row="1" x:Name="MovimientosGrid"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False"
                           HeadersVisibility="Column"
                           RowHeight="25"
+                          Margin="2,2,0,2"
+                          IsReadOnly="True"
                           Background="White"
-                          AlternatingRowBackground="#FFF8F8F8"
+                          RowBackground="White"
                           HorizontalGridLinesBrush="#EEE"
                           GridLinesVisibility="Horizontal"
                           VerticalGridLinesBrush="#EEE"
                           RowHeaderWidth="0"
-                          BorderThickness="0">
+                          BorderThickness="0"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha}" Width="80"/>
+                            <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="80"/>
+                            <DataGridTextColumn Header="Concepto" Binding="{Binding Concepto}" Width="*"/>
+                            <DataGridTextColumn Header="Debe" Binding="{Binding Debe}" Width="80" ElementStyle="{StaticResource RightAlignStyle}"/>
+                            <DataGridTextColumn Header="Haber" Binding="{Binding Haber}" Width="80" ElementStyle="{StaticResource RightAlignStyle}"/>
+                            <DataGridTextColumn Header="Saldo pendiente" Binding="{Binding Saldo}" Width="100" ElementStyle="{StaticResource RightAlignStyle}"/>
+                            <DataGridTemplateColumn Header="Comprobante" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Ver Imagen"
+                                            Click="BtnVerComprobante_Click"
+                                            CommandParameter="{Binding ComprobanteRuta}"
+                                            Padding="6,2"
+                                            Width="100"
+                                            FontSize="10"
+                                            Height="20"
+                                            ToolTip="Abrir comprobante">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource TertiaryButton}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ComprobanteRuta}" Value="">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ComprobanteRuta}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
 
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha}" Width="80"/>
-                                <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="80"/>
-                                <DataGridTextColumn Header="Concepto" Binding="{Binding Concepto}" Width="*"/>
-                                <DataGridTextColumn Header="Debe" Binding="{Binding Debe}" Width="80" ElementStyle="{StaticResource RightAlignStyle}"/>
-                                <DataGridTextColumn Header="Haber" Binding="{Binding Haber}" Width="80" ElementStyle="{StaticResource RightAlignStyle}"/>
-                                <DataGridTextColumn Header="Saldo pendiente" Binding="{Binding Saldo}" Width="100" ElementStyle="{StaticResource RightAlignStyle}"/>
-                                <DataGridTextColumn Header="Factura" Binding="{Binding Factura}" Width="120"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                        <!-- PAGINACIÓN -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,0">
-                            <!-- ComboBox para seleccionar cantidad de registros por página -->
-                            <ComboBox x:Name="CbTamanoPagina" Width="60" SelectionChanged="CbTamanoPagina_SelectionChanged" Height="20" Background="#FFF"
-Margin="10,0,20,0">
-                                <ComboBoxItem Content="5"/>
-                                <ComboBoxItem Content="12"/>
-                                <ComboBoxItem Content="25"/>
-                                <ComboBoxItem Content="50"/>
-                                <ComboBoxItem Content="70"/>
-                            </ComboBox>
-
-                            <Border DockPanel.Dock="Bottom" Padding="8" Background="Transparent">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Button Content="⬅" Width="28" Height="28" Margin="0,0,8,0" 
-                                Click="BtnPaginaAnterior_Click"
-                                x:Name="BtnAnterior"
-                                Background="#FFF"
-                                Foreground="#555"
-                                FontWeight="SemiBold"
-                                />
-
-                                    <TextBlock x:Name="TxtPaginaActual" Text="Página 1 / 1"
-                                VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12"
-                                Margin="20,5,35,5"/>
-
-                                    <Button Content="⮕" Width="28" Height="28" Margin="0,0,0,0" 
-                                Click="BtnPaginaSiguiente_Click"
-                                x:Name="BtnSiguiente"
-                                Background="#FFF"
-                                Foreground="#555"
-                                FontWeight="SemiBold"
-                                />
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </StackPanel>
-                </StackPanel>
-            </ScrollViewer>
-        </DockPanel>
-    </Border>
+            </DockPanel>
+        </Border>
+    </Grid>
 </UserControl>

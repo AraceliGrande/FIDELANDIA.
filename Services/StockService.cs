@@ -1,14 +1,19 @@
 ﻿using FIDELANDIA.Data;
 using FIDELANDIA.Models;
+using FIDELANDIA.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 
-
 namespace FIDELANDIA.Services
 {
+    /// <summary>
+    /// Servicio para manejar operaciones de stock de producción,
+    /// incluyendo consultas, agregados, descuentos y balances diarios.
+    /// </summary>
     public class StockService
     {
         private readonly FidelandiaDbContext _dbContext;
@@ -18,32 +23,95 @@ namespace FIDELANDIA.Services
             _dbContext = dbContext;
         }
 
-        // Obtener todo el stock actualizado
-        public object ObtenerStocksParaVista()
+
+        // ================= Obtener stocks para la vista =================
+        /// <summary>
+        /// Obtiene el stock actualizado para mostrar en la vista de producción.
+        /// Calcula totales y ventas del día.
+        /// </summary>
+        public ProduccionDatos ObtenerStocksParaVista()
         {
             var stocks = _dbContext.StockActual
                                    .Include(s => s.TipoPasta)
                                    .Include(s => s.LotesDisponibles)
                                    .ToList();
 
-            var secciones = stocks.Select(stock => new
-            {
-                Nombre = stock.TipoPasta.Nombre,
-                Filas = stock.LotesDisponibles
-                            .OrderBy(l => l.FechaProduccion)
-                            .Select(lote => new string[]
-                            {
-                            lote.IdLote.ToString(),
-                            lote.FechaProduccion.ToString("dd/MM/yyyy"),
-                            lote.FechaVencimiento.ToString("dd/MM/yyyy"),
-                            lote.CantidadDisponible.ToString("0.##") + " paquetes",
-                            }).ToArray()
-            }).ToArray();
+            var hoy = DateTime.Today;
 
-            return secciones;
+            // Total ventas del día (opcional si lo querés mostrar)
+            var ventasDia = _dbContext.Venta
+                                      .Include(v => v.DetalleVenta)
+                                      .ThenInclude(dv => dv.Lote)
+                                      .Where(v => v.Fecha.Date == hoy)
+                                      .SelectMany(v => v.DetalleVenta)
+                                      .Sum(dv => (int?)dv.Cantidad) ?? 0;
+
+            var produccionVM = new ProduccionDatos();
+
+            foreach (var stock in stocks.Where(s => s.CantidadDisponible > 0))
+            {
+                var seccion = new StockSeccionViewModel
+                {
+                    NombreTipoPasta = stock.TipoPasta.Nombre,
+                    ContenidoEnvase = stock.TipoPasta.ContenidoEnvase,
+                    CantidadDisponible = Math.Truncate(stock.CantidadDisponible),
+                    UltimaActualizacion = stock.UltimaActualizacion,
+                    Lotes = new ObservableCollection<LoteDetalleViewModel>(
+                        stock.LotesDisponibles
+                             .OrderBy(l => l.FechaProduccion)
+                             .Select(l => new LoteDetalleViewModel
+                             {
+                                 IdLote = l.IdLote,
+                                 FechaProduccion = l.FechaProduccion,
+                                 FechaVencimiento = l.FechaVencimiento,
+                                 CantidadDisponible = Math.Truncate(l.CantidadDisponible),
+                                 CantidadProducida = Math.Truncate(l.CantidadProducida), 
+                                 Estado = l.Estado,
+                                 CantidadDefectuosa = 0
+                             })
+                    )
+                };
+
+                produccionVM.Secciones.Add(seccion);
+            }
+
+            // 🔹 Indicadores
+            produccionVM.TotalTipos = produccionVM.Secciones.Count;
+            produccionVM.StockTotal = (int)produccionVM.Secciones.Sum(s => s.CantidadDisponible);
+            produccionVM.ProduccionTotal = (int)produccionVM.Secciones.Sum(s => s.Lotes.Sum(l => l.CantidadProducida));
+            produccionVM.VentasDia = ventasDia;
+
+            return produccionVM;
         }
 
-        // Crear stock para un tipo de pasta si no existe
+        // ================= Obtener lotes disponibles =================
+        /// <summary>
+        /// Devuelve todos los lotes que aún tienen stock disponible.
+        /// </summary>
+        public List<LoteProduccionModel> ObtenerLotesDisponibles()
+        {
+            try
+            {
+                var lotes = _dbContext.LoteProduccion
+                    .Include(l => l.TipoPasta)
+                    .Where(l => l.CantidadDisponible > 0 && l.Estado != "Agotado")
+                    .OrderBy(l => l.FechaProduccion)
+                    .ToList();
+
+                return lotes;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al obtener los lotes disponibles: {ex.Message}");
+                return new List<LoteProduccionModel>();
+            }
+        }
+
+
+        // ================= Crear o obtener stock =================
+        /// <summary>
+        /// Crea un registro de stock para un tipo de pasta si no existe.
+        /// </summary>
         public StockActualModel CrearOObtenerStock(TipoPastaModel tipoPasta)
         {
             var stock = _dbContext.StockActual
@@ -64,7 +132,10 @@ namespace FIDELANDIA.Services
             return stock;
         }
 
-        // Al agregar lote al stock
+        // ================= Agregar lote al stock =================
+        /// <summary>
+        /// Agrega un lote al stock correspondiente, actualizando cantidades y fecha.
+        /// </summary>
         public bool AgregarLoteAlStock(LoteProduccionModel lote)
         {
             try
@@ -81,7 +152,10 @@ namespace FIDELANDIA.Services
                     stock = CrearOObtenerStock(tipoPasta);
                 }
 
-                // Agregarlo a la colección de stock (opcional, para mantener navegación)
+                // ⚡ Vincular lote al stock
+                lote.IdStockActual = stock.IdStock;
+
+                // Agregarlo a la colección de stock (solo para navegación en memoria)
                 stock.LotesDisponibles.Add(lote);
 
                 // Actualizar stock
@@ -94,18 +168,31 @@ namespace FIDELANDIA.Services
             catch (DbUpdateException dbEx)
             {
                 var detalle = dbEx.InnerException?.Message ?? dbEx.Message;
-                MessageBox.Show($"❌ Error al actualizar stock (DB):\n{detalle}");
+                MessageBox.Show(
+                    $"Error al actualizar stock (DB):\n{detalle}", // mensaje detallado
+                    "Error",                                       // título del MessageBox
+                    MessageBoxButton.OK,                           // solo botón "Aceptar"
+                    MessageBoxImage.Error                           // icono de error
+                );
                 return false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"❌ Error al actualizar stock:\n{ex.Message}");
+                MessageBox.Show(
+                    $"Error al actualizar stock:\n{ex.Message}", // mensaje detallado
+                    "Error",                                      // título del MessageBox
+                    MessageBoxButton.OK,                          // solo botón "Aceptar"
+                    MessageBoxImage.Error                          // icono de error
+                );
                 return false;
             }
         }
 
 
-        // Descontar stock al vender
+        // ================= Descontar stock =================
+        /// <summary>
+        /// Descuenta stock de un tipo de pasta al realizar una venta.
+        /// </summary>
         public bool DescontarStock(int idTipoPasta, decimal cantidad)
         {
             try
@@ -134,10 +221,16 @@ namespace FIDELANDIA.Services
                     }
                 }
 
-                // Eliminar lotes agotados
-                stock.LotesDisponibles = stock.LotesDisponibles
-                                             .Where(l => l.CantidadDisponible > 0)
-                                             .ToList();
+                // Desvincular lotes agotados
+                var lotesAgotados = stock.LotesDisponibles
+                                         .Where(l => l.CantidadDisponible <= 0)
+                                         .ToList();
+
+                foreach (var lote in lotesAgotados)
+                {
+                    lote.IdStockActual = null; // ⚡ desvincula de la DB
+                    stock.LotesDisponibles.Remove(lote); // opcional, navegación en memoria
+                }
 
                 stock.CantidadDisponible -= cantidad;
                 stock.UltimaActualizacion = DateTime.Now;
@@ -147,7 +240,65 @@ namespace FIDELANDIA.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"❌ Error al descontar stock:\n{ex.Message}");
+                MessageBox.Show(
+                    $"Error al descontar stock:\n{ex.Message}", // mensaje detallado
+                    "Error",                                     // título del MessageBox
+                    MessageBoxButton.OK,                         // botón Aceptar
+                    MessageBoxImage.Error                        // icono de error
+                );
+                return false;
+            }
+        }
+
+        // ================= Confirmar balance diario =================
+        /// <summary>
+        /// Cambia el estado de todos los lotes "Creados" a "Confirmado".
+        /// </summary>
+        public bool ConfirmarBalanceDiario()
+        {
+            try
+            {
+                // Buscar todos los lotes con estado "Creados" sin importar la fecha
+                var lotesPorConfirmar = _dbContext.LoteProduccion
+                    .Where(l => l.Estado == "Creado")
+                    .ToList();
+
+                if (!lotesPorConfirmar.Any())
+                {
+                    MessageBox.Show(
+                        "No hay lotes pendientes de confirmar.",
+                        "Información",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+                    return false;
+                }
+
+                // Cambiar estado a "Confirmado"
+                foreach (var lote in lotesPorConfirmar)
+                {
+                    lote.Estado = "Confirmado";
+                }
+
+                _dbContext.SaveChanges();
+
+                MessageBox.Show(
+                    $"Se confirmaron {lotesPorConfirmar.Count} lote(s) correctamente.",
+                    "Balance confirmado",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al confirmar el balance: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
                 return false;
             }
         }

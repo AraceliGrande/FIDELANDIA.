@@ -1,20 +1,13 @@
 ﻿using FIDELANDIA.Data;
+using FIDELANDIA.Helpers;
 using FIDELANDIA.Services;
+using FIDELANDIA.ViewModels;
 using FIDELANDIA.Windows;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FIDELANDIA.Views.Produccion
 {
@@ -22,6 +15,8 @@ namespace FIDELANDIA.Views.Produccion
     {
         private readonly StockService _stockService;
 
+        // Propiedad para la sección seleccionada
+        public StockSeccionViewModel SeccionSeleccionada { get; set; }
         public ProduccionView()
         {
             InitializeComponent();
@@ -31,21 +26,34 @@ namespace FIDELANDIA.Views.Produccion
 
         private void RefrescarTablaStock()
         {
-            this.DataContext = _stockService.ObtenerStocksParaVista();
+            var datos = _stockService.ObtenerStocksParaVista();
+            if (datos == null)
+            {
+                this.DataContext = null;
+                return;
+            }
+
+            // Bind global al objeto ProduccionDatos
+            this.DataContext = datos;
+
+            // Inicialmente, no hay sección seleccionada
+            SeccionSeleccionada = null;
+            TablaDetalle.DataContext = SeccionSeleccionada;
         }
+
 
         private void NuevoLote_Click(object sender, RoutedEventArgs e)
         {
             var ventana = new CrearLoteProducFormWindow();
+            ventana.Owner = Window.GetWindow(this);
             ventana.ShowDialog();
-            RefrescarTablaStock(); // ✅ actualizar después de crear un lote
         }
 
         private void NuevaVenta_Click(object sender, RoutedEventArgs e)
         {
             var ventana = new CrearVentaProducFormWindow();
+            ventana.Owner = Window.GetWindow(this);
             ventana.ShowDialog();
-            RefrescarTablaStock(); // ✅ actualizar después de una venta
         }
 
         private void BtnNuevoTipoPasta_Click(object sender, RoutedEventArgs e)
@@ -53,8 +61,100 @@ namespace FIDELANDIA.Views.Produccion
             var ventana = new CrearTipoPastaWindow();
             ventana.Owner = Window.GetWindow(this);
             ventana.ShowDialog();
-            RefrescarTablaStock(); // ✅ actualizar después de agregar un tipo de pasta
         }
-    }
 
+
+        private void GenerarBalanceDiario_Click(object sender, RoutedEventArgs e)
+        {
+            var ventana = new BalanceDiarioWindow();
+            ventana.Owner = Window.GetWindow(this);
+            ventana.ShowDialog();
+        }
+
+
+        private void RegistrarDefectos_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (DataContext is ProduccionDatos datos)
+                {
+                    // 🔹 Buscar todos los lotes que tengan cantidad defectuosa
+                    var lotesConDefectos = datos.Secciones
+                        .SelectMany(s => s.Lotes)
+                        .Where(l => l.CantidadDefectuosa > 0)
+                        .ToList();
+
+                    if (!lotesConDefectos.Any())
+                    {
+                        MessageBox.Show(
+                             "No se registraron defectos en ningún lote.",
+                             "Información",
+                             MessageBoxButton.OK,
+                             MessageBoxImage.Information
+                         );
+                        return;
+
+                    }
+
+                    // 🔹 Validar cantidades antes de ejecutar cualquier registro
+                    var loteConError = lotesConDefectos
+                        .FirstOrDefault(l => l.CantidadDefectuosa > l.CantidadDisponible);
+
+                    if (loteConError != null)
+                    {
+                        MessageBox.Show(
+                            $"La cantidad defectuosa del lote {loteConError.IdLote} ({loteConError.CantidadDefectuosa}) " +
+                            $"no puede ser mayor a la cantidad disponible ({loteConError.CantidadDisponible}). " +
+                            "Corrija los valores y vuelva a intentarlo.",
+                            "Error", MessageBoxButton.OK, MessageBoxImage.Error
+                        );
+                        return; // ❌ Cancelar toda la operación
+                    }
+
+                    var dbContext = new FidelandiaDbContext();
+                    var loteService = new LoteProduccionService(dbContext);
+
+                    // 🔹 Registrar defectos
+                    foreach (var lote in lotesConDefectos)
+                    {
+                        loteService.RegistrarDefectos(
+                            idLote: lote.IdLote,
+                            cantidadDefectuosa: lote.CantidadDefectuosa
+                        );
+                    }
+
+                    MessageBox.Show(
+                            "Los defectos se registraron correctamente.",
+                            "Confirmación",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information
+                        );
+
+                    // 🔹 Refrescar los datos
+                    AppEvents.NotificarLoteCreado();
+                }
+                else
+                {
+                    MessageBox.Show("No se encontraron datos de producción.",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al registrar defectos: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+        private void TipoPasta_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is StockSeccionViewModel stock)
+            {
+                SeccionSeleccionada = stock;
+                TablaDetalle.DataContext = SeccionSeleccionada;
+            }
+        }
+
+    }
 }

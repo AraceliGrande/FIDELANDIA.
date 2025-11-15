@@ -1,48 +1,188 @@
 ﻿<UserControl x:Class="FIDELANDIA.Views.Produccion.CrearVentaFormView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
-             d:DesignWidth="800"
-             Background="Transparent">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             Background="#F5F5F5">
 
-    <Border Background="White" Padding="32" Effect="{StaticResource DropShadow}">
-        <StackPanel>
+    <Grid Margin="36">
 
-            <!-- Título -->
-            <TextBlock Text="Registrar Venta"
-                       FontSize="19"
-                       FontWeight="Bold"
-                       Foreground="#e5740a"
-                       Margin="0,0,0,10"/>
+        <!-- Dividir pantalla en dos columnas -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
 
-            <!-- Subtítulo -->
-            <TextBlock Text="Seleccione la cantidad a vender de cada lote disponible."
-                       FontSize="11"
-                       FontWeight="SemiBold"
-                       Foreground="DarkOliveGreen"
-                       TextWrapping="Wrap"
-                       Margin="0,0,0,20"/>
+        <!-- Columna izquierda: Buscador + Cards -->
+        <Grid Grid.Column="0" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Título -->
+                <RowDefinition Height="Auto"/>
+                <!-- Buscador -->
+                <RowDefinition Height="*"/>
+                <!-- Cards -->
+            </Grid.RowDefinitions>
 
-            <!-- DataGrid de lotes -->
-            <DataGrid x:Name="DgLotes" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column"
-                      GridLinesVisibility="All" Margin="0,0,0,20" Height="300">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Lote" Binding="{Binding Lote}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Tipo de Pasta" Binding="{Binding TipoPasta}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Fecha Producción" Binding="{Binding FechaProduccion}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Cantidad Disponible" Binding="{Binding CantidadDisponible}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Cantidad a Vender" Binding="{Binding CantidadAVender}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-
-            <!-- Botones -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="120" Height="35" Margin="0,0,12,0" Click="Cancelar_Click"/>
-                <Button Content="Registrar Venta" Style="{StaticResource PrimaryButton}" Width="120" Height="35" Click="RegistrarVenta_Click"/>
+            <!-- Título y subtítulo -->
+            <StackPanel Grid.Row="0" Margin="30,10,80,20">
+                <TextBlock Text="Registrar Venta"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Foreground="#E5740A"
+                           Margin="0,0,0,10"/>
+                <TextBlock Text="Seleccione la cantidad a vender de cada tipo de pasta disponible."
+                           FontSize="12"
+                           Foreground="#555"
+                           TextWrapping="Wrap"/>
             </StackPanel>
 
+            <!-- Buscador -->
+            <Border Grid.Row="1"
+                    Background="White" CornerRadius="10" BorderThickness="0"
+                    Margin="30,10,80,20"
+                    Padding="6"
+                    HorizontalAlignment="Stretch"
+                    Effect="{DynamicResource DropShadow}">
+                <TextBox x:Name="BuscarTextBox"
+                         FontSize="12"
+                         BorderThickness="0"
+                         HorizontalAlignment="Stretch"
+                         VerticalContentAlignment="Center"
+                         Padding="2"
+                         TextChanged="BuscarTextBox_TextChanged"/>
+            </Border>
+
+            <!-- Cards de tipos de pasta -->
+            <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="TiposPastaList" Margin="30,10,30,20">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="12"
+                                Background="White"
+                                Padding="12"
+                                Margin="0,0,12,12"
+                                MinWidth="300"
+                                HorizontalAlignment="Stretch"
+                                Effect="{DynamicResource DropShadow}">  
+
+                                <!-- Usamos Grid en lugar de StackPanel -->
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <!-- Encabezado -->
+                                        <RowDefinition Height="*"/>
+                                        <!-- Lotes: ocupa todo el espacio posible -->
+                                        <RowDefinition Height="Auto"/>
+                                        <!-- Selector abajo -->
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Nombre y contenido -->
+                                    <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                                        <TextBlock Text="{Binding TipoPasta.Nombre}"
+                                           FontSize="15"
+                                           FontWeight="Bold"
+                                           Foreground="#2E2E2E"
+                                           Margin="0,2,0,3"/>
+                                        <TextBlock Text="{Binding TipoPasta.ContenidoEnvase, StringFormat={}Contenido: {0} Kg}"
+                                           FontWeight="SemiBold"
+                                           FontSize="11"
+                                           Foreground="Gray"
+                                           Margin="0,0,0,5"/>
+                                        <Separator Background="#EEE" Height="1" Margin="0,6,0,6"/>
+                                    </StackPanel>
+
+                                    <!-- Tabla de Lotes (ocupa el alto disponible) -->
+                                    <StackPanel Grid.Row="1">
+                                        <Grid Margin="0,0,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="Producción" FontWeight="SemiBold" FontSize="10" Foreground="#777" Grid.Column="0"/>
+                                            <TextBlock Text="Vencimiento" FontWeight="SemiBold" FontSize="10" Foreground="#777" Grid.Column="1"/>
+                                            <TextBlock Text="Disponible" FontWeight="SemiBold" FontSize="10" Foreground="#777" Grid.Column="2" HorizontalAlignment="Center"/>
+                                        </Grid>
+
+                                        <ItemsControl ItemsSource="{Binding Lotes}" Margin="0,1,0,6">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,1,0,1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <TextBlock Text="{Binding FechaProduccion, StringFormat={}{0:d}}" Grid.Column="0" FontSize="12" Foreground="#555"/>
+                                                        <TextBlock Text="{Binding FechaVencimiento, StringFormat={}{0:d}}" Grid.Column="1" FontSize="12" Foreground="#555"/>
+                                                        <TextBlock Text="{Binding CantidadDisponible}" Grid.Column="2" FontSize="12" Foreground="#2E7D32" HorizontalAlignment="Center"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+
+                                    <!-- Selector de cantidad (abajo de todo) -->
+                                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                                        <TextBlock Text="Cantidad:" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="13" Margin="0,0,4,0"/>
+                                        <ComboBox Width="50"
+                                              Loaded="CantidadComboBox_Loaded"
+                                              SelectionChanged="CantidadComboBox_SelectionChanged"
+                                              Background="#F5F5F5"
+                                              BorderBrush="#CCC"
+                                              Foreground="#2E2E2E"
+                                              HorizontalContentAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+        </Grid>
+
+        <!-- Columna derecha: Desglose de compra -->
+        <Border Grid.Column="1" Background="#FAFAFA" CornerRadius="12" Padding="26" Margin="12,0,0,0" BorderBrush="#EEE" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Resumen de la venta" FontSize="18" FontWeight="Bold" Foreground="#2E2E2E" Margin="0,0,0,10"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Height="300">
+
+                    <StackPanel x:Name="ResumenVentaContainer" Margin="0,5,0,0">
+                        <ItemsControl x:Name="ResumenVentaList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,8,0,0">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                            <TextBlock Text="{Binding TipoPasta}" FontWeight="SemiBold" FontSize="12" Width="120"/>
+                                            <TextBlock Text="{Binding Cantidad}" FontWeight="Bold" FontSize="12" Foreground="#E5740A" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                        <Separator Margin="0,8" Background="#EEE"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+
+            </StackPanel>
+        </Border>
+
+        <!-- Botones en la parte inferior derecha -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Margin="0,0,16,16">
+            <Button Content="Cancelar" Style="{StaticResource SecondaryButton}" Width="100" Height="36" Margin="0,0,8,0" Click="Cancelar_Click"/>
+            <Button Content="Registrar Venta" Style="{StaticResource PrimaryButton}" Width="120" Height="36" Click="RegistrarVenta_Click"/>
         </StackPanel>
-    </Border>
+
+    </Grid>
 </UserControl>

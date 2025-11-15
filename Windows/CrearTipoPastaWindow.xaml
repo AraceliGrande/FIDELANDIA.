@@ -7,13 +7,11 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Icon="/Resources/logo.ico"
-        SizeToContent="Height"
-        Background="#f0f2f5"
-        Title="CrearTipoPastaWindow" 
-        Width="800">
+        WindowState="Maximized"
+        Title="CrearTipoPastaWindow">
     <Grid>
-        <Border Background="White" Padding="32" CornerRadius="8" Effect="{StaticResource DropShadow}">
+        <Grid Background="#f0f2f5">
             <local:CrearTipoPastaFormView/>
-        </Border>
+        </Grid>
     </Grid>
 </Window>

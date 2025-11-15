@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FIDELANDIA.ViewModels;
+using FIDELANDIA.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,37 @@ namespace FIDELANDIA.Views.Home
         public HomeView()
         {
             InitializeComponent();
+        }
+        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.NavigateCommand.Execute("Proveedores");
+            }
+        }
+
+        private void ProduccionBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var ventana = new CrearLoteProducFormWindow();
+            ventana.Owner = Window.GetWindow(this);
+            ventana.ShowDialog();
+            if (DataContext is MainViewModel vm)
+                vm.NavigateCommand.Execute("Produccion");
+        }
+
+        private void VentaBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var ventana = new CrearVentaProducFormWindow();
+            ventana.Owner = Window.GetWindow(this);
+            ventana.ShowDialog();
+            if (DataContext is MainViewModel vm)
+                vm.NavigateCommand.Execute("Produccion");
+        }
+
+        private void DashboardBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+                vm.NavigateCommand.Execute("Dashboard_Produccion");
         }
     }
 }

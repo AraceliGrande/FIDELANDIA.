@@ -1,0 +1,293 @@
+﻿<UserControl x:Class="FIDELANDIA.Views.Produccion.BalanceDiario"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             Background="#F5F5F5">
+
+    <UserControl.Resources>
+        <!-- Estilo moderno para TabItem -->
+        <Style TargetType="TabItem">
+            <Setter Property="Foreground" Value="#555"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="MinWidth" Value="200"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border Name="Border" 
+                                CornerRadius="8,8,0,0" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="0">
+                            <ContentPresenter x:Name="ContentSite"
+                                              VerticalAlignment="Center" 
+                                              HorizontalAlignment="Center" 
+                                              ContentSource="Header"
+                                              Margin="17,4"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#E5740A"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para el panel del TabControl -->
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Título -->
+            <RowDefinition Height="*"/>
+            <!-- Tabs + contenido -->
+            <RowDefinition Height="Auto"/>
+            <!-- Botones (siempre abajo) -->
+
+        </Grid.RowDefinitions>
+
+        <!-- Título principal -->
+        <TextBlock Text="📊 Resumen Diario" FontSize="20" FontWeight="Bold" Foreground="#E5740A" Margin="0,0,0,16"/>
+
+        <!-- TabControl con estilo moderno -->
+        <TabControl Grid.Row="1" Padding="10" BorderThickness="0.5" Background="#FCFCFC">
+
+            <!-- TAB 2 -->
+            <TabItem Header="Resumen de Producción y Ventas">
+                <Grid Margin="10,5,10,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <!-- gráfico -->
+                        <RowDefinition Height="4*"/>
+                        <!-- tabla detalle -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Gráfico -->
+                    <Border Grid.Row="0" Background="White" CornerRadius="6" BorderBrush="#EEE" BorderThickness="0.8" Margin="0,0,0,10">
+                        <StackPanel Margin="10,10,10,0">
+                            <lvc:CartesianChart x:Name="MyChart" Height="130" DataClick="MyChart_DataClick">
+                                <lvc:CartesianChart.DataTooltip>
+                                    <lvc:DefaultTooltip Foreground="Gray" Background="White" FontSize="10" FontWeight="Normal"/>
+                                </lvc:CartesianChart.DataTooltip>
+                                <lvc:CartesianChart.AxisX>
+                                    <lvc:Axis Title="Tipo de Pasta" Labels="{Binding TipoPastaLabels}"/>
+                                </lvc:CartesianChart.AxisX>
+                                <lvc:CartesianChart.AxisY>
+                                    <lvc:Axis Title="Cantidad" LabelFormatter="{Binding FormatoCantidad}"/>
+                                </lvc:CartesianChart.AxisY>
+                            </lvc:CartesianChart>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Resumen de lotes -->
+                    <Border Grid.Row="1" Background="White" Padding="5" CornerRadius="6" BorderBrush="#EEE" BorderThickness="0.8">
+                        <StackPanel>
+                            <!-- Título + Botón Ver todos -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,5">
+                                <Button Content="Eliminar filtro" Width="100" Height="22" Margin="10,0,0,0" VerticalAlignment="Center" Click="BtnVerTodos_Click" Background="Transparent" BorderThickness="0" Foreground="#666" Cursor="Hand" FontSize="11" Padding="0" HorizontalAlignment="Left">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Foreground" Value="#666"/>
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Setter Property="FontWeight" Value="Normal"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="TextBlock.TextDecorations" Value="Underline"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+
+                            <!-- Tabla de lotes -->
+                            <DataGrid ItemsSource="{Binding LotesFiltrados}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                              IsReadOnly="True" RowHeight="28" RowBackground="White" AlternatingRowBackground="#FCFCFC"
+                              HorizontalGridLinesBrush="#F0F0F0" VerticalGridLinesBrush="#F0F0F0" BorderBrush="White"
+                              MaxHeight="245" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Tipo de Pasta" Binding="{Binding TipoPasta}" Width="2*" />
+                                    <DataGridTextColumn Header="Producción" Binding="{Binding TipoLote}" Width="100" />
+                                    <DataGridTextColumn Header="ID Lote" Binding="{Binding IdLote}" Width="80" />
+                                    <DataGridTextColumn Header="Cant. producida" Binding="{Binding CantidadProduccion}" Width="*" />
+                                    <DataGridTextColumn Header="Cant. disponible" Binding="{Binding CantidadDisponible}" Width="*" />
+                                    <DataGridTextColumn Header="Cant. vendida" Binding="{Binding CantidadVendidaHoy}" Width="*" />
+                                    <DataGridTextColumn Header="Fecha Producción" Binding="{Binding FechaProduccion, StringFormat={}{0:dd/MM/yyyy}}" Width="*" />
+                                    <DataGridTextColumn Header="Fecha Vencimiento" Binding="{Binding FechaVencimiento, StringFormat={}{0:dd/MM/yyyy}}" Width="*" />
+                                    <DataGridTemplateColumn Header="Ventas" Width="60">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="▼" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+
+                                <!-- Subtabla de ventas asociadas -->
+                                <DataGrid.RowDetailsTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="20,0,20,0">
+                                            <ItemsControl ItemsSource="{Binding VentasAsociadas}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel>
+                                                            <Grid Margin="10,1,10,1">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Text="{Binding IdLote, StringFormat=' ID lote: {0}'}" Grid.Column="0" FontSize="12" Foreground="#333"/>
+                                                                <TextBlock Text="{Binding IdVenta, StringFormat=' ID venta: {0}'}" Grid.Column="1" FontSize="12" Foreground="#333"/>
+                                                                <TextBlock Text="{Binding Cantidad, StringFormat=' Cantidad: {0} unidad/es'}" Grid.Column="2" FontSize="12" Foreground="#333" HorizontalAlignment="Center"/>
+                                                                <TextBlock Text="{Binding Fecha,StringFormat='Fecha venta: {0:dd/MM/yyyy}'}" Grid.Column="3" FontSize="12" Foreground="#333" HorizontalAlignment="Right"/>
+                                                            </Grid>
+                                                            <Separator Background="#EAEAEA" Height="1" Margin="0,4,0,4"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGrid.RowDetailsTemplate>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Producción y ventas">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Card Producción -->
+                    <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="10" Margin="0,0,5,0" BorderBrush="#EAEAEA" BorderThickness="0.5">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Producciones registradas" FontSize="12" FontWeight="SemiBold" Foreground="Gray" VerticalAlignment="Center"/>
+                                <Button Content="+  Registrar lote" Style="{StaticResource TertiaryButton}" FontSize="12" Width="140" Height="25" Grid.Column="1" Click="NuevoLote_Click"/>
+                            </Grid>
+
+                            <Grid Height="329">
+                                <DataGrid ItemsSource="{Binding LotesProduccion}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" RowHeight="30" HeadersVisibility="Column" BorderThickness="0" HorizontalGridLinesBrush="#F0F0F0" VerticalGridLinesBrush="#F0F0F0" Background="White" AlternatingRowBackground="#FCFCFC" RowBackground="White" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Tipo Pasta" Binding="{Binding TipoPasta}" Width="3*" />
+                                        <DataGridTextColumn Header="ID Lote" Binding="{Binding IdLote}" Width="*" />
+                                        <DataGridTextColumn Header="Producción (kg)" Binding="{Binding CantidadProduccion}" Width="*" />
+                                        <DataGridTextColumn Header="Fecha Producción" Binding="{Binding FechaProduccion, StringFormat={}{0:dd/MM/yyyy}}" Width="*" />
+                                        <DataGridTextColumn Header="Fecha Vencimiento" Binding="{Binding FechaVencimiento, StringFormat={}{0:dd/MM/yyyy}}" Width="*" />
+                                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="*" />
+                                        <DataGridTemplateColumn Header="" Width="40">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="❌" Background="Transparent" BorderThickness="0" FontSize="9" Cursor="Hand" Foreground="Gray" Click="EliminarProduccion_Click">
+                                                        <Button.Style>
+                                                            <Style TargetType="Button">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <!-- Si Estado es Defectuoso, ocultar botón -->
+                                                                    <DataTrigger Binding="{Binding Estado}" Value="Defectuoso">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Card Ventas -->
+                    <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="10" Margin="5,0,0,0" BorderBrush="#EAEAEA" BorderThickness="0.5">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Ventas registradas" FontSize="12" FontWeight="SemiBold" Foreground="Gray" VerticalAlignment="Center"/>
+                                <Button Content="+  Registrar venta" Style="{StaticResource TertiaryButton}" FontSize="12" Width="140" Height="25" Grid.Column="1"  Click="NuevaVenta_Click"/>
+                            </Grid>
+
+                            <!-- Contenedor con altura limitada para scroll -->
+                            <Grid Height="329">
+                                <DataGrid ItemsSource="{Binding VentasDetalladas}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" RowHeight="30" HeadersVisibility="Column" BorderThickness="0" HorizontalGridLinesBrush="#F0F0F0" VerticalGridLinesBrush="#F0F0F0" Background="White" AlternatingRowBackground="#FCFCFC" RowBackground="White" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Tipo de Pasta" Binding="{Binding Lote.TipoPasta.Nombre}" Width="3*" />
+                                        <DataGridTextColumn Header="ID Venta" Binding="{Binding IdVenta}" Width="*"/>
+                                        <DataGridTextColumn Header="ID Lote" Binding="{Binding IdLote}" Width="*" />
+                                        <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}" Width="*"/>
+                                        <DataGridTextColumn Header="Fecha Venta" Binding="{Binding Venta.Fecha, StringFormat=d}" Width="*" />
+                                        <DataGridTemplateColumn Header="" Width="40">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="❌" Background="Transparent" BorderThickness="0" FontSize="7" Cursor="Hand" Foreground="Gray" Click="EliminarDetalleVenta_Click"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Grid Grid.Row="2" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <!-- Izquierda -->
+                <ColumnDefinition Width="*" />
+                <!-- Derecha -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Botón Exportar a la izquierda -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
+                <Button Content="⬇ Exportar Excel"
+                Style="{StaticResource SecondaryButton}"
+                Click="BtnExportarExcel_Click"
+                Height="32" Width="163" />
+            </StackPanel>
+
+            <!-- Botones Cancelar y Confirmar a la derecha -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
+                <Button Content="Cancelar"
+                Style="{StaticResource SecondaryButton}"
+                Width="120" Height="30"
+                Margin="0,0,10,0"
+                Click="Cancelar_Click"/>
+                <Button Content="Confirmar balance"
+                Style="{StaticResource PrimaryButton}"
+                Click="BtnConfirmarBalance_Click"
+                Width="160" Height="30"/>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+
+</UserControl>

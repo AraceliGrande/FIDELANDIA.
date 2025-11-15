@@ -17,12 +17,14 @@ namespace FIDELANDIA.Data
         public DbSet<TipoPastaModel> TiposPasta { get; set; }
         public DbSet<LoteProduccionModel> LoteProduccion { get; set; }
         public DbSet<StockActualModel> StockActual { get; set; }
+        public DbSet<VentaModel> Venta { get; set; }
+        public DbSet<DetalleVentaModel> DetalleVenta { get; set; }
+
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(
-    "Server=DESKTOP-5NQHMNN;Database=FidelandiaDB;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=localhost;Database=FidelandiaDB;Trusted_Connection=True;TrustServerCertificate=True;");
 
         }
 
@@ -39,6 +41,8 @@ namespace FIDELANDIA.Data
             modelBuilder.Entity<TipoPastaModel>().HasKey(tp => tp.IdTipoPasta);
             modelBuilder.Entity<LoteProduccionModel>().HasKey(lp => lp.IdLote);
             modelBuilder.Entity<StockActualModel>().HasKey(s => s.IdStock);
+            modelBuilder.Entity<VentaModel>().HasKey(v => v.IdVenta);
+            modelBuilder.Entity<DetalleVentaModel>().HasKey(d => d.IdDetalle);
 
             // Relación Transaccion → Proveedor
             modelBuilder.Entity<TransaccionModel>()
@@ -67,12 +71,12 @@ namespace FIDELANDIA.Data
                 .HasForeignKey<StockActualModel>(s => s.IdTipoPasta)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relación StockActual -> LoteProduccion
+            // Relación StockActual -> LoteProduccion (1:N) mediante IdStockActual
             modelBuilder.Entity<StockActualModel>()
                 .HasMany(s => s.LotesDisponibles)
-                .WithOne() 
-                .HasForeignKey(l => l.IdTipoPasta) 
-                .OnDelete(DeleteBehavior.Restrict);
+                .WithOne(l => l.StockActual)
+                .HasForeignKey(l => l.IdStockActual)
+                .OnDelete(DeleteBehavior.SetNull);
 
             // TipoPasta → Lotes (1:N) (opcional)
             modelBuilder.Entity<TipoPastaModel>()
@@ -81,7 +85,54 @@ namespace FIDELANDIA.Data
                 .HasForeignKey(l => l.IdTipoPasta)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Relación DetalleVenta → Venta
+            modelBuilder.Entity<DetalleVentaModel>()
+                .HasOne(d => d.Venta)
+                .WithMany(v => v.DetalleVenta)
+                .HasForeignKey(d => d.IdVenta)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relación DetalleVenta → LoteProduccion
+            modelBuilder.Entity<DetalleVentaModel>()
+                .HasOne(d => d.Lote)
+                .WithMany() // sin navegación inversa
+                .HasForeignKey(d => d.IdLote)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
+
+        public void Seed()
+        {
+            // 👉 Si NO hay categorías, las crea por primera vez
+            if (!CategoriaProveedor.Any())
+            {
+                CategoriaProveedor.AddRange(
+                    new CategoriaProveedorModel { Nombre = "Materias primas" },
+                    new CategoriaProveedorModel { Nombre = "Insumos" },
+                    new CategoriaProveedorModel { Nombre = "Envases" },
+                    new CategoriaProveedorModel { Nombre = "Maquinaria" },
+                    new CategoriaProveedorModel { Nombre = "Mantenimiento" },
+                    new CategoriaProveedorModel { Nombre = "Servicios" },
+                    new CategoriaProveedorModel { Nombre = "Limpieza" },
+                    new CategoriaProveedorModel { Nombre = "Logística" },
+                    new CategoriaProveedorModel { Nombre = "Repuestos" },
+                    new CategoriaProveedorModel { Nombre = "Seguridad e higiene" },
+                    new CategoriaProveedorModel { Nombre = "Papelería" },
+                    new CategoriaProveedorModel { Nombre = "Tecnología" },
+                    new CategoriaProveedorModel { Nombre = "Energía" },
+                    new CategoriaProveedorModel { Nombre = "Transporte" },
+                    new CategoriaProveedorModel { Nombre = "Laboratorio" },
+                    new CategoriaProveedorModel { Nombre = "Indumentaria" },
+                    new CategoriaProveedorModel { Nombre = "Publicidad y marketing" },
+                    new CategoriaProveedorModel { Nombre = "Construcción" },
+                    new CategoriaProveedorModel { Nombre = "Control de plagas" },
+                    new CategoriaProveedorModel { Nombre = "Terceros / Outsourcing" }
+                );
+
+                SaveChanges();
+            }
+        }
+
 
     }
 }

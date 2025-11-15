@@ -50,7 +50,7 @@
                             <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
                             <Setter Property="Effect">
                                 <Setter.Value>
-                                    <DropShadowEffect BlurRadius="18" ShadowDepth="4" Opacity="0.25" Color="#888"/>
+                                    <DropShadowEffect BlurRadius="18" ShadowDepth="4" Opacity="0.20" Color="#888"/>
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
@@ -77,7 +77,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" 
+                    <Border x:Name="border" Background="{TemplateBinding Background}" 
                         CornerRadius="6"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
@@ -85,10 +85,41 @@
                             <DropShadowEffect Color="Gray"
                                           BlurRadius="10"
                                           ShadowDepth="2"
-                                          Opacity="0.5"/>
+                                          Opacity="0.3"/>
                         </Border.Effect>
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <!-- 🌈 Hover: degradado naranja → blanco -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background">
+                                <Setter.Value>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#d75025" Offset="0.0"/>
+                                        <GradientStop Color="#d44214" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Foreground" Value="white"/>
+                        </Trigger>
+
+                        <!-- 🟠 Presionado: degradado blanco → naranja -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background">
+                                <Setter.Value>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#ffa78b" Offset="0.0"/>
+                                        <GradientStop Color="#d75025" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                       
+
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -101,6 +132,68 @@
         <Setter Property="Foreground" Value="#e5740a"/>
         <Setter Property="BorderBrush" Value="#e5740a"/>
     </Style>
+
+    <Style x:Key="TertiaryButton" TargetType="Button">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="#e5740a"/>
+        <Setter Property="BorderBrush" Value="#e5740a"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border1" Background="{TemplateBinding Background}" 
+                    CornerRadius="6"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                        <Border.Effect>
+                            <DropShadowEffect Color="LightGray"
+                                      BlurRadius="10"
+                                      ShadowDepth="1"
+                                      Opacity="0.2"/>
+                        </Border.Effect>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+
+                        <!-- 🌈 Hover: degradado naranja → blanco -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border1" Property="Background">
+                                <Setter.Value>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#d75025" Offset="0.0"/>
+                                        <GradientStop Color="#d44214" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Foreground" Value="white"/>
+                        </Trigger>
+
+                        <!-- 🟠 Presionado: degradado blanco → naranja -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border1" Property="Background">
+                                <Setter.Value>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#ffa78b" Offset="0.0"/>
+                                        <GradientStop Color="#d75025" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 
     <!-- Alinear texto a la derecha -->
     <Style x:Key="RightAlignStyle" TargetType="TextBlock">
@@ -190,10 +283,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#ed7a0e"/>
+                            <Setter Property="Background" Value="#df633c"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="#ed7a0e"/>
+                            <Setter Property="Background" Value="#df633c"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -363,6 +456,8 @@
             </Setter.Value>
         </Setter>
     </Style>
+    
+
 
 
 

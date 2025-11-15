@@ -19,6 +19,7 @@ namespace FIDELANDIA.Windows
     /// </summary>
     public partial class CrearLoteProducFormWindow : Window
     {
+        public event Action LoteCreado;
         public CrearLoteProducFormWindow()
         {
             InitializeComponent();

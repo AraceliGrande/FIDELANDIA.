@@ -5,11 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FIDELANDIA"
         mc:Ignorable="d"
-        Background="{StaticResource BgPrimary}" 
         xmlns:views="clr-namespace:FIDELANDIA.Views"
-        Title="Fidelandia" 
         WindowState="Maximized"
-        Icon="/Resources/icono1.jpg"
+        Foreground="white"
         WindowStartupLocation="CenterScreen"
         xmlns:vm="clr-namespace:FIDELANDIA.ViewModels" d:DesignHeight="588.463" d:DesignWidth="829.19">
 
@@ -18,32 +16,58 @@
     </Window.DataContext>
 
     <Grid>
+        <!-- 🌅 Capa 1: Imagen de fondo -->
+        <Image Source="/Resources/fidelandia_fondo.png"
+               Stretch="UniformToFill"
+               Opacity="0.3"/>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{Binding SidebarWidth}"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <!-- 🩶 Capa 2: Velo blanco para aclarar -->
+        <Rectangle Fill="White" Opacity="0.45"/>
 
-        <!-- Sidebar -->
-        <Border CornerRadius="0,20,20,0">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="#FFB74D" Offset="0.0"/>
-                    <GradientStop Color="#F57C00" Offset="0.25"/>
-                    <GradientStop Color="#FF8A65" Offset="0.75"/>
-                </LinearGradientBrush>
-            </Border.Background>
+        <Border Height="30" VerticalAlignment="Top" 
+            Background="#B3FFFFFF" Opacity="0.8">
             <Border.Effect>
-                <DropShadowEffect 
+                <BlurEffect Radius="10"/>
+            </Border.Effect>
+        </Border>
+
+        <Border Height="5" VerticalAlignment="Bottom" 
+             Background="#B3FFFFFF" Opacity="0.8">
+            <Border.Effect>
+                <BlurEffect Radius="10"/>
+            </Border.Effect>
+        </Border>
+
+
+        <!-- 💡 Capa 3: Contenido real -->
+        <Grid >
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding SidebarWidth}"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Sidebar -->
+            <Border CornerRadius="0,20,20,0">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#ff7347" Offset="0.0"/>
+                        <GradientStop Color="#FF8A65" Offset="0.86"/>
+                        <GradientStop Color="#ff7347" Offset="0.99"/>
+
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect 
                      Color="Black" 
                      Opacity="0.15" 
                     BlurRadius="10"
                     ShadowDepth="2"
                     Direction="270"/>
-            </Border.Effect>
-            <StackPanel>
-                <!-- Botón toggle -->
-                <Button Content="☰"
+                </Border.Effect>
+                <StackPanel>
+                    <!-- Botón toggle -->
+                    <Button Content="☰"
                         Margin="0,20,0,0"
                         Foreground="White"
                         Background="Transparent"
@@ -51,40 +75,46 @@
                         FontSize="22" 
                         Command="{Binding ToggleSidebarCommand}"/>
 
-                <StackPanel Margin="0,20,0,0">
-                    <Button Style="{StaticResource SidebarButton}"
+                    <StackPanel Margin="0,20,0,0">
+                        <Button Style="{StaticResource SidebarButton}"
                             FontWeight="SemiBold"
                             Content="🏠  Home"
                             Command="{Binding NavigateCommand}"
                             CommandParameter="Home"/>
 
-                    <Button Style="{StaticResource SidebarButton}"
+                        <Button Style="{StaticResource SidebarButton}"
                             FontWeight="SemiBold"
                             Content="🤝  Proveedores"
                             Command="{Binding NavigateCommand}"
                             CommandParameter="Proveedores"/>
 
+                        <Button Style="{StaticResource SidebarButton}"
+                             FontWeight="SemiBold"
+                             Content="📈  Dashboard Proveedores"
+                             Command="{Binding NavigateCommand}"
+                             CommandParameter="Dashboard_Proveedores"/>
 
-                    <Button Style="{StaticResource SidebarButton}"
+                        <Button Style="{StaticResource SidebarButton}"
                             FontWeight="SemiBold"
                             Content="⚙  Produccion"
                             Command="{Binding NavigateCommand}"
                             CommandParameter="Produccion"/>
 
-                    <Button Style="{StaticResource SidebarButton}"
+                        <Button Style="{StaticResource SidebarButton}"
                              FontWeight="SemiBold"
-                             Content="📈  Dashboard"
+                             Content="📊  Dashboard Producción"
                              Command="{Binding NavigateCommand}"
-                             CommandParameter="Dashboard"/>
-
+                             CommandParameter="Dashboard_Produccion"/>
+                        
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-        </Border>
+            </Border>
 
-        <ContentControl Grid.Column="1" Content="{Binding CurrentView}"/>
+            <ContentControl Grid.Column="1" Content="{Binding CurrentView}"/>
 
+        </Grid>
     </Grid>
-        
+
 </Window>
 
 

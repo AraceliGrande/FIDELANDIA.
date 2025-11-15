@@ -38,5 +38,24 @@ namespace FIDELANDIA.Windows
         {
             this.Close();
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            var ventanaPrincipal = Application.Current.Windows
+                .OfType<MainWindow>()
+                .FirstOrDefault();
+
+            if (ventanaPrincipal != null)
+            {
+                // Igualar tamaño completo
+                this.Width = ventanaPrincipal.ActualWidth;
+                this.Height = ventanaPrincipal.ActualHeight;
+
+                // Alinear posiciones
+                this.Left = ventanaPrincipal.Left;
+                this.Top = ventanaPrincipal.Top;
+            }
+        }
+
     }
 }

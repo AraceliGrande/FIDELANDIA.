@@ -1,63 +1,233 @@
 ﻿<UserControl x:Class="FIDELANDIA.Views.DashboardView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#f0f2f5">
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:local="clr-namespace:FIDELANDIA.Views">
 
-    <UserControl.Resources>
-        <DropShadowEffect x:Key="DropShadow" BlurRadius="10" ShadowDepth="3" Opacity="0.3"/>
-    </UserControl.Resources>
+    <Border CornerRadius="12" Padding="10">
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Título -->
-            <RowDefinition Height="*"/>
-            <!-- Cards -->
-        </Grid.RowDefinitions>
+        <DockPanel LastChildFill="True">
 
-        <!-- Texto de bienvenida -->
-        <StackPanel Grid.Row="0" HorizontalAlignment="Left" Margin="10,10,0,20">
-            <TextBlock Text="Pantalla pendiente" 
-                   FontSize="28" FontWeight="Bold" 
-                   Foreground="#333333" TextAlignment="Left"/>
-            <TextBlock Text="Se genera cuando ya está cargada la base de datos" 
-                   FontSize="16" Foreground="#666666" 
-                   Margin="0,8,0,0" TextAlignment="Left"/>
-        </StackPanel>
+            <Border VerticalAlignment="Center" Effect="{StaticResource DropShadow}" DockPanel.Dock="Top" CornerRadius="10" Background="White"  BorderBrush="#eee" BorderThickness="0.5" Opacity="1" Padding="20" Margin="6,0,6,10">
+                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-        <!-- Cards -->
-        <UniformGrid Grid.Row="1" Columns="3" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0">
-            <!-- Card 1 -->
-            <Border CornerRadius="12" Background="White" Margin="15" Padding="20"
-                BorderBrush="#ddd" BorderThickness="1"
-                Effect="{StaticResource DropShadow}">
-                <StackPanel>
-                    <TextBlock Text="Card 1" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
-                    <TextBlock Text="Contenido de la tarjeta 1" TextWrapping="Wrap"/>
-                </StackPanel>
+                    <StackPanel VerticalAlignment="Center" Margin="10">
+                        <TextBlock Text="Tablero de control de producción" FontSize="17" FontWeight="Bold" Foreground="#8C3000"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <Border Margin="0,0,6,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Desde:" VerticalAlignment="Center" Foreground="#666" FontSize="12" Margin="0,0,4,0"/>
+                                <DatePicker x:Name="FechaDesdePicker"  Style="{StaticResource UnderlineDatePicker}"
+                         SelectedDate="{Binding FechaDesde, Mode=TwoWay}"
+                         Width="120"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="35,0,35,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Hasta:" VerticalAlignment="Center" Foreground="#666" FontSize="12" Margin="0,0,4,0"/>
+                                <DatePicker x:Name="FechaHastaPicker"  Style="{StaticResource UnderlineDatePicker}"
+                         SelectedDate="{Binding FechaHasta, Mode=TwoWay}"
+                         Width="120"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Content="Filtrar" Click="Filtrar_Click" Style="{StaticResource PrimaryButton}" Cursor="Hand" Width="100"  Height="35" />
+                            
+                    </StackPanel>
+
+                </Grid>
             </Border>
 
-            <!-- Card 2 -->
-            <Border CornerRadius="12" Background="White" Margin="15" Padding="20"
-                BorderBrush="#ddd" BorderThickness="1"
-                Effect="{StaticResource DropShadow}">
-                <StackPanel>
-                    <TextBlock Text="Card 2" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
-                    <TextBlock Text="Contenido de la tarjeta 2" TextWrapping="Wrap"/>
-                </StackPanel>
-            </Border>
+            <!-- ======================= CONTENIDO PRINCIPAL ======================= -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
 
-            <!-- Card 3 -->
-            <Border CornerRadius="12" Background="White" Margin="15" Padding="20"
-                BorderBrush="#ddd" BorderThickness="1"
-                Effect="{StaticResource DropShadow}">
-                <StackPanel>
-                    <TextBlock Text="Card 3" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
-                    <TextBlock Text="Contenido de la tarjeta 3" TextWrapping="Wrap"/>
-                </StackPanel>
-            </Border>
+                <Grid>
 
-            <!-- Agregá más cards según necesites -->
-        </UniformGrid>
-    </Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1.2*"/>
+                        <RowDefinition Height="3*"/>
+                        <RowDefinition Height="2.5*"/>
+                        <RowDefinition Height="2.5*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- ===================== MÉTRICAS (CARDS) ===================== -->
+                    <UniformGrid Grid.Row="0" Columns="4" HorizontalAlignment="Stretch" Margin="0">
+                        <!-- Producción Total -->
+                        <Border Background="White" CornerRadius="16" Padding="6" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="Producción (Envases)" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding CantidadProducida, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VariacionProduccionText}" Foreground="{Binding VariacionProduccionColor}" FontSize="12" TextAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Ventas Totales -->
+                        <Border Background="White" CornerRadius="16" Padding="6" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="Ventas Totales" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VentasTotales, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VariacionVentasText}" Foreground="{Binding VariacionVentasColor}" FontSize="12" TextAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Stock Promedio -->
+                        <Border Background="White" CornerRadius="16" Padding="6" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="Produccion (Kg)" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding CantidadProducidaKg, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VariacionCantidadProduccionKgText}" Foreground="{Binding VariacionCantidadProduccionKgColor}" FontSize="12" TextAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Ticket Promedio -->
+                        <Border Background="White" CornerRadius="16" Padding="6" Margin="5" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="Ticket Promedio" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding TicketPromedio, StringFormat=C}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VariacionTicketText}" Foreground="{Binding VariacionTicketColor}" FontSize="12" TextAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <!-- ===================== GRÁFICOS PRINCIPALES ===================== -->
+                    <Grid Grid.Row="1" Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2.5*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Gráfico principal -->
+                        <Border Grid.Column="0" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text=" Producción y ventas por tipo de pasta"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"
+                                       Foreground="#333"/>
+                                <lvc:CartesianChart Series="{Binding ProduccionPorTipoSeries}" Width="650" Height="180" Foreground="#333">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Labels="{Binding TipoPastaLabels}" Title="Tipo de pasta">
+                                            <lvc:Axis.Separator>
+                                                <lvc:Separator Step="1" />
+                                            </lvc:Axis.Separator>
+                                        </lvc:Axis>
+                                    </lvc:CartesianChart.AxisX>
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Title="Kg / $" />
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+
+                            </StackPanel>
+                        </Border>
+
+                        <!-- PieChart -->
+                        <Border Grid.Column="1" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Participación de Ventas" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#333"/>
+                                <lvc:PieChart Series="{Binding ParticipacionVentasSeries}" LegendLocation="Bottom" Height="150" InnerRadius="5" Foreground="#333"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- ===================== COMPARACIÓN HISTÓRICA ===================== -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Gráfico 1 -->
+                        <Border Grid.Column="0" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Evolucion de envases producidos" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#333"/>
+                                <lvc:CartesianChart Series="{Binding ProduccionTotalSeries}" Height="145" Width="500" Foreground="#333">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Title="Tiempo" Labels="{Binding MesesLabels}" ShowLabels="False">
+                                            <lvc:Axis.Separator>
+                                                <lvc:Separator Step="1"/>
+                                            </lvc:Axis.Separator>
+                                        </lvc:Axis>
+                                    </lvc:CartesianChart.AxisX>
+
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Title="Cantidad"/>
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+                            </StackPanel>
+                        </Border>
+
+
+                        <!-- Gráfico 2 -->
+                        <Border Grid.Column="1" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Evolucion de ventas realizadas" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#333"/>
+                                <lvc:CartesianChart Series="{Binding RendimientoSeries}" Height="145" Width="500" Foreground="#333">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Title="Tiempo" Labels="{Binding MesesLabels}" ShowLabels="False">
+                                            <lvc:Axis.Separator>
+                                                <lvc:Separator Step="1"/>
+                                            </lvc:Axis.Separator>
+                                        </lvc:Axis>
+                                    </lvc:CartesianChart.AxisX>
+                                </lvc:CartesianChart>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Gráfico 3 -->
+                        <Border Grid.Column="0" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Cantidad de kg producidos" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#333"/>
+                                <lvc:CartesianChart Series="{Binding LoteComparativoSeries}" Height="145" Width="500" Foreground="#333">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Title="Tiempo" Labels="{Binding MesesLabels}" ShowLabels="False">
+                                            <lvc:Axis.Separator>
+                                                <lvc:Separator Step="1"/>
+                                            </lvc:Axis.Separator>
+                                        </lvc:Axis>
+                                    </lvc:CartesianChart.AxisX>
+
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Title="Cantidad"/>
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+                            </StackPanel>
+                        </Border>
+
+
+                        <!-- Gráfico 4 -->
+                        <Border Grid.Column="1" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Recaudacion generada" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#333"/>
+                                <lvc:CartesianChart Series="{Binding TipoSeries}" Height="145" Width="500" Foreground="#333">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Title="Tiempo" Labels="{Binding MesesLabels}" ShowLabels="False">
+                                            <lvc:Axis.Separator>
+                                                <lvc:Separator Step="1"/>
+                                            </lvc:Axis.Separator>
+                                        </lvc:Axis>
+                                    </lvc:CartesianChart.AxisX>
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Title="Cantidad"/>
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
 </UserControl>

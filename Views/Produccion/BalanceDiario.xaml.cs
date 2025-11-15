@@ -140,7 +140,12 @@ namespace FIDELANDIA.Views.Produccion
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Error al cargar balance: {ex.Message}");
+                System.Windows.MessageBox.Show(
+                    $"Error al cargar balance: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 

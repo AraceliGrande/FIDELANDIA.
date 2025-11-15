@@ -143,14 +143,24 @@ namespace FIDELANDIA.Views.Produccion
 
                 if (!detalles.Any())
                 {
-                    MessageBox.Show("Seleccione al menos una cantidad para registrar la venta.");
+                    MessageBox.Show(
+                        "Seleccione un producto para registrar la venta.",
+                        "Advertencia",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
                 // Llamar al servicio para crear la venta y actualizar los lotes
                 var ventaCreada = await _ventaService.CrearVentaAsync(detalles);
 
-                MessageBox.Show($"Venta registrada correctamente");
+                MessageBox.Show(
+                    "Venta registrada correctamente.",
+                    "Éxito",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
 
                 // Limpiar selección y actualizar resumen
                 foreach (var key in _cantidadesSeleccionadas.Keys.ToList())
@@ -164,7 +174,12 @@ namespace FIDELANDIA.Views.Produccion
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al registrar la venta: {ex.Message}");
+                MessageBox.Show(
+                    $"Error al registrar la venta:\n{ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 

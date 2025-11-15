@@ -15,6 +15,8 @@ namespace FIDELANDIA.Views.Produccion
     {
         private readonly StockService _stockService;
 
+        // Propiedad para la sección seleccionada
+        public StockSeccionViewModel SeccionSeleccionada { get; set; }
         public ProduccionView()
         {
             InitializeComponent();
@@ -31,8 +33,12 @@ namespace FIDELANDIA.Views.Produccion
                 return;
             }
 
+            // Bind global al objeto ProduccionDatos
             this.DataContext = datos;
 
+            // Inicialmente, no hay sección seleccionada
+            SeccionSeleccionada = null;
+            TablaDetalle.DataContext = SeccionSeleccionada;
         }
 
 
@@ -80,9 +86,14 @@ namespace FIDELANDIA.Views.Produccion
 
                     if (!lotesConDefectos.Any())
                     {
-                        MessageBox.Show("No se registraron defectos en ningún lote.",
-                            "Información", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show(
+                             "No se registraron defectos en ningún lote.",
+                             "Información",
+                             MessageBoxButton.OK,
+                             MessageBoxImage.Information
+                         );
                         return;
+
                     }
 
                     // 🔹 Validar cantidades antes de ejecutar cualquier registro
@@ -112,8 +123,12 @@ namespace FIDELANDIA.Views.Produccion
                         );
                     }
 
-                    MessageBox.Show("Los defectos se registraron correctamente.",
-                        "Confirmación", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(
+                            "Los defectos se registraron correctamente.",
+                            "Confirmación",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information
+                        );
 
                     // 🔹 Refrescar los datos
                     AppEvents.NotificarLoteCreado();
@@ -136,8 +151,8 @@ namespace FIDELANDIA.Views.Produccion
         {
             if (sender is Button button && button.DataContext is StockSeccionViewModel stock)
             {
-                TablaDetalle.DataContext = null;
-                TablaDetalle.DataContext = stock; 
+                SeccionSeleccionada = stock;
+                TablaDetalle.DataContext = SeccionSeleccionada;
             }
         }
 

@@ -240,7 +240,12 @@ namespace FIDELANDIA.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar el dashboard: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al cargar el dashboard: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 

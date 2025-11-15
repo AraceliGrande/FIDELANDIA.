@@ -98,7 +98,7 @@
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
-                                        <TextBlock Grid.Row="0" Text="Proporción de saldo (Debe) - Actualidad" FontSize="12" FontWeight="SemiBold" Foreground="#333" Margin="0,4,10,10"/>
+                                        <TextBlock Grid.Row="0" Text="Proporción de saldo (Debe)" FontSize="12" FontWeight="SemiBold" Foreground="#333" Margin="0,4,10,10"/>
                                         <lvc:PieChart Grid.Row="1" Series="{Binding GastosPorCategoriaSeries}" LegendLocation="Bottom" MinHeight="180" InnerRadius="15" VerticalAlignment="Stretch" Margin="17,20"/>
                                     </Grid>
                                 </Border>

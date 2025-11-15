@@ -8,6 +8,9 @@ using System.Windows;
 
 namespace FIDELANDIA.Services
 {
+    /// <summary>
+    /// Servicio encargado de manejar la lógica de lotes de producción.
+    /// </summary>
     public class LoteProduccionService
     {
         private readonly FidelandiaDbContext _dbContext;
@@ -21,7 +24,9 @@ namespace FIDELANDIA.Services
             _stockService = new StockService(dbContext);
         }
 
-        // Crear un nuevo lote de producción
+        /// <summary>
+        /// Crear un nuevo lote de producción y agregarlo al stock.
+        /// </summary>
         public LoteProduccionModel CrearLote(int idTipoPasta, decimal cantidadDisponible, DateTime fechaProduccion,
                               DateTime fechaVencimiento, string estado)
         {
@@ -47,14 +52,21 @@ namespace FIDELANDIA.Services
             }
             catch (Exception ex)
             {
-                // fallback general
+                // Mostrar detalle del error
                 var detalle = ex.Message + Environment.NewLine + (ex.InnerException?.Message ?? "");
-                MessageBox.Show($"Error al crear tipo de pasta:{Environment.NewLine}{detalle}");
+                MessageBox.Show(
+                          $"Ocurrió un error al crear el tipo de pasta:{Environment.NewLine}{detalle}",
+                          "Error al crear tipo de pasta",            // Título del MessageBox
+                          MessageBoxButton.OK,                       // Botón OK
+                          MessageBoxImage.Error                      // Icono de error
+                      ); 
                 return null;
             }
         }
 
-        // Traer todos los lotes
+        /// <summary>
+        /// Obtener todos los lotes de producción, ordenados por fecha.
+        /// </summary>
         public List<LoteProduccionModel> ObtenerTodos()
         {
             try
@@ -66,12 +78,19 @@ namespace FIDELANDIA.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al obtener lotes de producción: {ex.Message}");
+                MessageBox.Show(
+                      $"Ocurrió un error al obtener lotes de producción:{Environment.NewLine}{ex.Message}",
+                      "Error al obtener lotes",           // Título del MessageBox
+                      MessageBoxButton.OK,                 // Botón OK
+                      MessageBoxImage.Error                // Icono de error
+                  );
                 return new List<LoteProduccionModel>();
             }
         }
 
-        // Obtener un lote por Id
+        /// <summary>
+        /// Obtener un lote por su Id.
+        /// </summary>
         public LoteProduccionModel? ObtenerPorId(int idLote)
         {
             try
@@ -82,11 +101,18 @@ namespace FIDELANDIA.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al obtener lote de producción: {ex.Message}");
-                return null;
+                MessageBox.Show(
+                    $"Ocurrió un error al obtener el lote de producción:{Environment.NewLine}{ex.Message}",
+                    "Error de Lote de Producción",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                ); return null;
             }
         }
 
+        /// <summary>
+        /// Eliminar un lote de producción junto con sus ventas asociadas y actualizar stock.
+        /// </summary>
         public async Task<(bool ok, string mensaje)> EliminarLoteAsync(int idLote)
         {
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
@@ -146,6 +172,10 @@ namespace FIDELANDIA.Services
                 return (false, $"Error al eliminar producción: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Registrar defectos en un lote de producción, creando un nuevo lote "Defectuoso" y actualizando stock.
+        /// </summary>
         public bool RegistrarDefectos(int idLote, decimal cantidadDefectuosa)
         {
             using var transaction = _dbContext.Database.BeginTransaction(); // Inicia transacción
@@ -158,13 +188,23 @@ namespace FIDELANDIA.Services
 
                 if (loteOriginal == null)
                 {
-                    MessageBox.Show("No se encontró el lote especificado.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(
+                        "No se encontró el lote especificado.",
+                        "Error de Lote de Producción",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
                     return false;
                 }
 
                 if (cantidadDefectuosa <= 0)
                 {
-                    MessageBox.Show("La cantidad defectuosa debe ser mayor a 0.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(
+                        "La cantidad defectuosa debe ser mayor a 0.",
+                        "Advertencia",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return false;
                 }
 
@@ -224,8 +264,13 @@ namespace FIDELANDIA.Services
             catch (Exception ex)
             {
                 transaction.Rollback(); // Revertir cambios
-                MessageBox.Show($"Error al registrar defectos: {ex.Message}",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                        $"Error al registrar defectos: {ex.Message}",  // mensaje con detalles del error
+                        "Error",                                        // título de la ventana
+                        MessageBoxButton.OK,                            // botón disponible
+                        MessageBoxImage.Error                            // icono de error
+                    );
+
                 return false;
             }
         }

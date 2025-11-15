@@ -8,6 +8,7 @@
         <local:ExpresionPaqueteConverter x:Key="PaqueteConverter"/>
     </UserControl.Resources>
 
+
     <Grid Margin="15,8,15,8" >
 
         <Grid>
@@ -155,12 +156,13 @@
                                     <StackPanel>
                                         <!-- Encabezado tabla -->
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,10">
-                                            <TextBlock Text="{Binding NombreTipoPasta, FallbackValue='Seleccioná un tipo de pasta'}" FontWeight="Bold" FontSize="14" Foreground="#B65601"/>
+                                            <TextBlock Text="{Binding NombreTipoPasta, TargetNullValue='Seleccioná un tipo de pasta'}" 
+           FontWeight="Bold" FontSize="14" Foreground="#B65601"/>
                                             <TextBlock Text="   Detalle de productos disponibles" FontSize="11" Foreground="#555" Margin="10,3,0,0"/>
                                         </StackPanel>
 
                                         <!-- DataGrid scrollable -->
-                                        <DataGrid ItemsSource="{Binding Lotes, FallbackValue='', Mode=OneWay}" 
+                                        <DataGrid ItemsSource="{Binding Lotes, FallbackValue={x:Null}}" 
                                                   AutoGenerateColumns="False"
                                                   HeadersVisibility="Column"
                                                   CanUserAddRows="False"

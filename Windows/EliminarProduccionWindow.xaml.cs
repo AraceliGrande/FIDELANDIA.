@@ -68,7 +68,12 @@ namespace FIDELANDIA.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al eliminar producción: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al eliminar producción: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
     }

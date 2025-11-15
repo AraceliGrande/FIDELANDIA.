@@ -131,7 +131,12 @@ namespace FIDELANDIA.Views.Produccion
 
                 if (selectedCard == null)
                 {
-                    MessageBox.Show("Debe seleccionar un tipo de pasta.");
+                    MessageBox.Show(
+                        "Debe seleccionar un tipo de pasta.",
+                        "Atención",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
@@ -141,19 +146,34 @@ namespace FIDELANDIA.Views.Produccion
                 // Validar cantidad
                 if (!decimal.TryParse(TxtCantidad.Text, out decimal cantidad) || cantidad <= 0)
                 {
-                    MessageBox.Show("Ingrese una cantidad válida mayor a 0.");
+                    MessageBox.Show(
+                        "Ingrese una cantidad válida mayor a 0.",
+                        "Atención",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
                 if (DpFechaProduccion.SelectedDate == null)
                 {
-                    MessageBox.Show("Seleccione la fecha de producción.");
+                    MessageBox.Show(
+                        "Seleccione la fecha de producción.",
+                        "Atención",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
                 if (DpFechaVencimiento.SelectedDate == null)
                 {
-                    MessageBox.Show("Seleccione la fecha de vencimiento.");
+                    MessageBox.Show(
+                        "Seleccione la fecha de vencimiento.",
+                        "Atención",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
@@ -174,7 +194,12 @@ namespace FIDELANDIA.Views.Produccion
                     // Llamamos al helper que imprime todos los QR
                     ImpresionHelper.ImprimirQRs(lotesAImprimir);
 
-                    MessageBox.Show("Lote de producción creado correctamente.");
+                    MessageBox.Show(
+                        "Lote de producción creado correctamente.",
+                        "Éxito",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                     AppEvents.NotificarLoteCreado();
                     Window.GetWindow(this)?.Close();
                 }
@@ -183,22 +208,15 @@ namespace FIDELANDIA.Views.Produccion
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ocurrió un error al crear el lote de producción: {ex.Message}");
+                MessageBox.Show(
+                    $"Ocurrió un error al crear el lote de producción: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
-        private void CrearQR(LoteProduccionModel nuevoLote)
-        {
-            // Convertimos las propiedades del objeto a texto
-            string textoQr = $"Fidelandia - Pastas Frescas\n\n" +
-                             $"Identificador Unico: {nuevoLote.IdLote}\n" +
-                             $"Tipo de pasta: {nuevoLote.TipoPasta.Nombre}\n" +
-                             $"Cantidad producida: {nuevoLote.CantidadProducida}\n" +
-                             $"Fecha de produccion: {nuevoLote.FechaProduccion:dd/MM/yyyy}\n" +
-                             $"Fecha de vencimiento: {nuevoLote.FechaVencimiento:dd/MM/yyyy}\n";
-            // Pasamos el texto al helper
-            QrImage.Source = QrHelper.GenerarQr(textoQr);
-        }
-
+      
         private void PrevisualizarQR()
         {
             if (

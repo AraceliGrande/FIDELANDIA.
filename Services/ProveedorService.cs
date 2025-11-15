@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FIDELANDIA.Services
 {
+    /// <summary>
+    /// Servicio para manejar operaciones relacionadas con proveedores,
+    /// incluyendo creación, consultas, transacciones y categorías.
+    /// </summary>
     public class ProveedorService
     {
         private readonly FidelandiaDbContext _dbContext;
@@ -18,6 +22,10 @@ namespace FIDELANDIA.Services
             _dbContext = dbContext;
         }
 
+        // ================= Crear proveedor =================
+        /// <summary>
+        /// Crea un nuevo proveedor en la base de datos.
+        /// </summary>
         public bool CrearProveedor(string nombre, string cuit, string direccion, string telefono, string email,
                             int categoriaProveedorID, decimal limiteCredito, bool isActivo)
         {
@@ -47,7 +55,10 @@ namespace FIDELANDIA.Services
             }
         }
 
-        // ✅ Traer todos los proveedores
+        // ================= Obtener todos los proveedores =================
+        /// <summary>
+        /// Trae todos los proveedores con información básica.
+        /// </summary>
         public List<ProveedorModel> ObtenerTodos()
         {
             try
@@ -69,6 +80,10 @@ namespace FIDELANDIA.Services
             }
         }
 
+        // ================= Obtener proveedor completo =================
+        /// <summary>
+        /// Obtiene un proveedor incluyendo su categoría y demás relaciones.
+        /// </summary>
         public ProveedorModel? ObtenerProveedorCompleto(int proveedorId)
         {
             try
@@ -84,10 +99,19 @@ namespace FIDELANDIA.Services
             }
         }
 
+        // ================= Contar transacciones =================
+        /// <summary>
+        /// Cuenta todas las transacciones de un proveedor.
+        /// </summary>
         public int ContarTransacciones(int proveedorId)
         {
             return _dbContext.Transacciones.Count(t => t.ProveedorID == proveedorId);
         }
+
+        // ================= Obtener transacciones paginadas =================
+        /// <summary>
+        /// Obtiene un listado paginado de transacciones de un proveedor.
+        /// </summary>
         public List<TransaccionModel> ObtenerTransaccionesPaginadas(int proveedorId, int pagina = 1, int tamanoPagina = 9, decimal saldoInicial = 0, bool traerTodos = false)
         {
             try
@@ -134,6 +158,10 @@ namespace FIDELANDIA.Services
             }
         }
 
+        // ================= Obtener transacciones por rango de fechas =================
+        /// <summary>
+        /// Obtiene transacciones de un proveedor dentro de un rango de fechas y calcula saldo acumulado.
+        /// </summary>
         public List<TransaccionModel> ObtenerTransaccionesPorFechas(int proveedorId, DateTime? fechaDesde, DateTime? fechaHasta)
         {
             try
@@ -197,8 +225,10 @@ namespace FIDELANDIA.Services
             }
         }
 
-
-
+        // ================= Obtener categorías =================
+        /// <summary>
+        /// Obtiene todas las categorías de proveedores.
+        /// </summary>
 
         public List<CategoriaProveedorModel> ObtenerCategorias()
         {
@@ -210,7 +240,12 @@ namespace FIDELANDIA.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al obtener categorías: {ex.Message}");
+                MessageBox.Show(
+                    $"Error al obtener categorías: {ex.Message}", // mensaje detallado
+                    "Error",                                       // título de la ventana
+                    MessageBoxButton.OK,                           // solo botón "Aceptar"
+                    MessageBoxImage.Error                           // icono de error
+                );
                 return new List<CategoriaProveedorModel>();
             }
         }

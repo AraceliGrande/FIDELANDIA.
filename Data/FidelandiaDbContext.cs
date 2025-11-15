@@ -24,8 +24,7 @@ namespace FIDELANDIA.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(
-    "Server=DESKTOP-5NQHMNN;Database=FidelandiaDB;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=localhost;Database=FidelandiaDB;Trusted_Connection=True;TrustServerCertificate=True;");
 
         }
 
@@ -101,6 +100,39 @@ namespace FIDELANDIA.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
         }
+
+        public void Seed()
+        {
+            // 👉 Si NO hay categorías, las crea por primera vez
+            if (!CategoriaProveedor.Any())
+            {
+                CategoriaProveedor.AddRange(
+                    new CategoriaProveedorModel { Nombre = "Materias primas" },
+                    new CategoriaProveedorModel { Nombre = "Insumos" },
+                    new CategoriaProveedorModel { Nombre = "Envases" },
+                    new CategoriaProveedorModel { Nombre = "Maquinaria" },
+                    new CategoriaProveedorModel { Nombre = "Mantenimiento" },
+                    new CategoriaProveedorModel { Nombre = "Servicios" },
+                    new CategoriaProveedorModel { Nombre = "Limpieza" },
+                    new CategoriaProveedorModel { Nombre = "Logística" },
+                    new CategoriaProveedorModel { Nombre = "Repuestos" },
+                    new CategoriaProveedorModel { Nombre = "Seguridad e higiene" },
+                    new CategoriaProveedorModel { Nombre = "Papelería" },
+                    new CategoriaProveedorModel { Nombre = "Tecnología" },
+                    new CategoriaProveedorModel { Nombre = "Energía" },
+                    new CategoriaProveedorModel { Nombre = "Transporte" },
+                    new CategoriaProveedorModel { Nombre = "Laboratorio" },
+                    new CategoriaProveedorModel { Nombre = "Indumentaria" },
+                    new CategoriaProveedorModel { Nombre = "Publicidad y marketing" },
+                    new CategoriaProveedorModel { Nombre = "Construcción" },
+                    new CategoriaProveedorModel { Nombre = "Control de plagas" },
+                    new CategoriaProveedorModel { Nombre = "Terceros / Outsourcing" }
+                );
+
+                SaveChanges();
+            }
+        }
+
 
     }
 }

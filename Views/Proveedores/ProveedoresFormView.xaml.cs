@@ -36,19 +36,34 @@ namespace FIDELANDIA.Views
 
             if (string.IsNullOrWhiteSpace(TxtNombre.Text))
             {
-                MessageBox.Show("El nombre del proveedor es obligatorio.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(
+                    "El nombre del proveedor es obligatorio.",
+                    "Advertencia",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(TxtCuit.Text))
             {
-                MessageBox.Show("El CUIT es obligatorio.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(
+                    "El CUIT es obligatorio.",
+                    "Advertencia",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
                 return false;
             }
 
             if (CmbCategoria.SelectedValue == null || (int)CmbCategoria.SelectedValue == 0)
             {
-                MessageBox.Show("Debe seleccionar una categoría.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(
+                    "Debe seleccionar una categoría.",
+                    "Advertencia",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
                 return false;
             }
 
@@ -61,7 +76,12 @@ namespace FIDELANDIA.Views
                                       System.Globalization.CultureInfo.InvariantCulture,
                                       out limiteCredito))
                 {
-                    MessageBox.Show("El límite de crédito no es un número válido. Use punto (.) como separador decimal.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(
+                        "El límite de crédito no es un número válido.",
+                        "Advertencia",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return false;
                 }
             }
@@ -89,17 +109,32 @@ namespace FIDELANDIA.Views
 
                 if (resultado)
                 {
-                    MessageBox.Show("Proveedor creado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(
+                        "Proveedor creado correctamente.",
+                        "Éxito",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                     Window.GetWindow(this)?.Close();
                 }
                 else
                 {
-                    MessageBox.Show("No se pudo crear el proveedor.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(
+                        "No se pudo crear el proveedor.",
+                        "Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ocurrió un error al crear el proveedor:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Ocurrió un error al crear el proveedor:\n{ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 

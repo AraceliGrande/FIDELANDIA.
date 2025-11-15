@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace FIDELANDIA.Services
 {
+    /// <summary>
+    /// Servicio para manejar transacciones de proveedores,
+    /// actualizando saldo y registrando movimientos.
+    /// </summary>
     class TransaccionService
     {
         private readonly FidelandiaDbContext _dbContext;
@@ -20,6 +24,9 @@ namespace FIDELANDIA.Services
             _dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Crea una transacción para un proveedor, actualiza el saldo y guarda en la base de datos.
+        /// </summary>
         public void CrearTransaccion(TransaccionModel transaccion)
         {
             var proveedor = _dbContext.Proveedores

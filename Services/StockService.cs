@@ -10,6 +10,10 @@ using System.Windows;
 
 namespace FIDELANDIA.Services
 {
+    /// <summary>
+    /// Servicio para manejar operaciones de stock de producción,
+    /// incluyendo consultas, agregados, descuentos y balances diarios.
+    /// </summary>
     public class StockService
     {
         private readonly FidelandiaDbContext _dbContext;
@@ -19,7 +23,12 @@ namespace FIDELANDIA.Services
             _dbContext = dbContext;
         }
 
-        // Obtener todo el stock actualizado
+
+        // ================= Obtener stocks para la vista =================
+        /// <summary>
+        /// Obtiene el stock actualizado para mostrar en la vista de producción.
+        /// Calcula totales y ventas del día.
+        /// </summary>
         public ProduccionDatos ObtenerStocksParaVista()
         {
             var stocks = _dbContext.StockActual
@@ -75,6 +84,10 @@ namespace FIDELANDIA.Services
             return produccionVM;
         }
 
+        // ================= Obtener lotes disponibles =================
+        /// <summary>
+        /// Devuelve todos los lotes que aún tienen stock disponible.
+        /// </summary>
         public List<LoteProduccionModel> ObtenerLotesDisponibles()
         {
             try
@@ -94,7 +107,11 @@ namespace FIDELANDIA.Services
             }
         }
 
-        // Crear stock para un tipo de pasta si no existe
+
+        // ================= Crear o obtener stock =================
+        /// <summary>
+        /// Crea un registro de stock para un tipo de pasta si no existe.
+        /// </summary>
         public StockActualModel CrearOObtenerStock(TipoPastaModel tipoPasta)
         {
             var stock = _dbContext.StockActual
@@ -115,7 +132,10 @@ namespace FIDELANDIA.Services
             return stock;
         }
 
-        // Agregar lote al stock
+        // ================= Agregar lote al stock =================
+        /// <summary>
+        /// Agrega un lote al stock correspondiente, actualizando cantidades y fecha.
+        /// </summary>
         public bool AgregarLoteAlStock(LoteProduccionModel lote)
         {
             try
@@ -148,17 +168,31 @@ namespace FIDELANDIA.Services
             catch (DbUpdateException dbEx)
             {
                 var detalle = dbEx.InnerException?.Message ?? dbEx.Message;
-                MessageBox.Show($"❌ Error al actualizar stock (DB):\n{detalle}");
+                MessageBox.Show(
+                    $"Error al actualizar stock (DB):\n{detalle}", // mensaje detallado
+                    "Error",                                       // título del MessageBox
+                    MessageBoxButton.OK,                           // solo botón "Aceptar"
+                    MessageBoxImage.Error                           // icono de error
+                );
                 return false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"❌ Error al actualizar stock:\n{ex.Message}");
+                MessageBox.Show(
+                    $"Error al actualizar stock:\n{ex.Message}", // mensaje detallado
+                    "Error",                                      // título del MessageBox
+                    MessageBoxButton.OK,                          // solo botón "Aceptar"
+                    MessageBoxImage.Error                          // icono de error
+                );
                 return false;
             }
         }
 
-        // Descontar stock al vender
+
+        // ================= Descontar stock =================
+        /// <summary>
+        /// Descuenta stock de un tipo de pasta al realizar una venta.
+        /// </summary>
         public bool DescontarStock(int idTipoPasta, decimal cantidad)
         {
             try
@@ -206,11 +240,20 @@ namespace FIDELANDIA.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"❌ Error al descontar stock:\n{ex.Message}");
+                MessageBox.Show(
+                    $"Error al descontar stock:\n{ex.Message}", // mensaje detallado
+                    "Error",                                     // título del MessageBox
+                    MessageBoxButton.OK,                         // botón Aceptar
+                    MessageBoxImage.Error                        // icono de error
+                );
                 return false;
             }
         }
 
+        // ================= Confirmar balance diario =================
+        /// <summary>
+        /// Cambia el estado de todos los lotes "Creados" a "Confirmado".
+        /// </summary>
         public bool ConfirmarBalanceDiario()
         {
             try

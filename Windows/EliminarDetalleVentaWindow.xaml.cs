@@ -53,19 +53,34 @@ namespace FIDELANDIA.Windows
 
                 if (ok)
                 {
-                    MessageBox.Show("Detalle eliminado correctamente. Stock actualizado.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(
+                        "Detalle eliminado correctamente. Stock actualizado.",
+                        "Éxito",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                     this.DialogResult = true;
 
                     this.Close();
                 }
                 else
                 {
-                    MessageBox.Show("No se pudo eliminar el detalle de venta.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(
+                        "No se pudo eliminar el detalle de venta.",
+                        "Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al eliminar detalle: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al eliminar detalle: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
     }

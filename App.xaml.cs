@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FIDELANDIA.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -8,31 +10,51 @@ namespace FIDELANDIA
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            // Captura excepciones globales del AppDomain
+            // Captura de errores generales
             AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
             {
                 Exception ex = (Exception)args.ExceptionObject;
-                MessageBox.Show($"Error no controlado: {ex.Message}\n{ex.StackTrace}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"ERROR NO CONTROLADO:\n{ex.Message}", "Error Fatal", MessageBoxButton.OK, MessageBoxImage.Error);
             };
 
-            // Captura excepciones del Dispatcher (UI thread)
+            // Captura errores de UI
             DispatcherUnhandledException += (sender, args) =>
             {
-                MessageBox.Show($"Excepción en UI: {args.Exception.Message}\n{args.Exception.StackTrace}", "Error UI", MessageBoxButton.OK, MessageBoxImage.Error);
-                args.Handled = true; // evita que la app se cierre automáticamente
+                MessageBox.Show($"ERROR EN INTERFAZ:\n{args.Exception.Message}", "Error UI", MessageBoxButton.OK, MessageBoxImage.Error);
+                args.Handled = true;
             };
+
+            base.OnStartup(e);
 
             try
             {
-                MainWindow mainWindow = new MainWindow();
-                mainWindow.Show();
+                using (var db = new FidelandiaDbContext())
+                {
+                    // Crea la base de datos si no existe
+                    db.Database.EnsureCreated();
+
+                    // 👉 EJECUTA EL SEED SOLO SI ES NECESARIO
+                    db.Seed();
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al iniciar MainWindow: {ex.Message}\n{ex.StackTrace}", "Error Inicio", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"ERROR al inicializar la Base de Datos:\n\n" +
+                    $"{ex.Message}\n\n" +
+                    $"La aplicación se cerrará.",
+                    "Error de Base de Datos",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+
+                Current.Shutdown();
+                return;
             }
 
-            base.OnStartup(e);
+            // Lanzar la ventana principal
+            MainWindow main = new MainWindow();
+            main.Show();
         }
     }
 }

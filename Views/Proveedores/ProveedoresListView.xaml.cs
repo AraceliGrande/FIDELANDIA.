@@ -25,7 +25,12 @@ namespace FIDELANDIA.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al inicializar la vista de proveedores: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al inicializar la vista de proveedores: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 
@@ -40,7 +45,12 @@ namespace FIDELANDIA.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar los proveedores: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al cargar los proveedores: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 
@@ -56,7 +66,12 @@ namespace FIDELANDIA.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al abrir la ventana de nuevo proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al abrir la ventana de nuevo proveedor: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 
@@ -74,7 +89,12 @@ namespace FIDELANDIA.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al seleccionar el proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al seleccionar el proveedor: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 
@@ -96,7 +116,12 @@ namespace FIDELANDIA.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al seleccionar proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al seleccionar proveedor: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
     }

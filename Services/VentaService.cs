@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace FIDELANDIA.Services
 {
+    /// <summary>
+    /// Servicio encargado de manejar operaciones de venta,
+    /// incluyendo creación de ventas, actualización de stock y eliminación de detalles.
+    /// </summary>
     public class VentaService
     {
         private readonly FidelandiaDbContext _context;
@@ -19,8 +23,10 @@ namespace FIDELANDIA.Services
             _stockService = stockService;
         }
 
-        /// Crea una venta, actualiza lotes y descuenta stock actual.
-        /// Si falla el descuento de stock, no se guarda nada.
+        /// <summary>
+        /// Crea una venta y descuenta stock de los lotes correspondientes.
+        /// Si falla alguna operación, se revierte todo con una transacción.
+        /// </summary>
         public async Task<VentaModel> CrearVentaAsync(List<DetalleVentaModel> detalleVentas)
         {
             if (detalleVentas == null || !detalleVentas.Any())
@@ -76,6 +82,12 @@ namespace FIDELANDIA.Services
                 throw;
             }
         }
+
+        // ================= Eliminar detalle de venta =================
+        /// <summary>
+        /// Elimina un detalle de venta y revierte stock y lote correspondiente.
+        /// Si no quedan detalles, elimina la venta completa.
+        /// </summary>
 
         public async Task<bool> EliminarDetalleVentaAsync(int idVenta, int idLote)
         {

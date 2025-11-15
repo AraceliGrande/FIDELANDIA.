@@ -45,19 +45,34 @@ namespace FIDELANDIA.Views.Proveedores
             {
                 if (_proveedorActual == null)
                 {
-                    MessageBox.Show("No se ha especificado un proveedor.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(
+                        "No se ha especificado un proveedor.",
+                        "Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(TxtConcepto.Text))
                 {
-                    MessageBox.Show("Debe ingresar un concepto.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(
+                        "Debe ingresar un concepto.",
+                        "Advertencia",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
                 if (!decimal.TryParse(TxtDebe.Text, out decimal monto) || monto <= 0)
                 {
-                    MessageBox.Show("Debe ingresar un monto válido mayor que cero.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(
+                        "Debe ingresar un monto válido mayor que cero.",
+                        "Advertencia",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
@@ -73,14 +88,24 @@ namespace FIDELANDIA.Views.Proveedores
 
                 _service.CrearTransaccion(transaccion);
 
-                MessageBox.Show("Transacción registrada correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(
+                    "Transacción registrada correctamente.",
+                    "Éxito",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
 
                 AppEvents.OnTransaccionCreada(_proveedorActual.ProveedorID);
                 Window.GetWindow(this)?.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar la transacción: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al guardar la transacción: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 

@@ -62,13 +62,23 @@ namespace FIDELANDIA.Views
             {
                 if (string.IsNullOrWhiteSpace(ruta))
                 {
-                    MessageBox.Show("No hay comprobante disponible para esta transacción.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(
+                        "No hay comprobante disponible para esta transacción.",
+                        "Aviso",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                     return;
                 }
 
                 if (!System.IO.File.Exists(ruta))
                 {
-                    MessageBox.Show("No se encontró el archivo: " + ruta);
+                    MessageBox.Show(
+                        "No se encontró el archivo: " + ruta,
+                        "Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
                     return;
                 }
 
@@ -81,7 +91,12 @@ namespace FIDELANDIA.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al abrir el comprobante: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    "Error al abrir el comprobante: " + ex.Message,
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 
@@ -235,7 +250,12 @@ namespace FIDELANDIA.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al mostrar el proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al mostrar el proveedor: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 
@@ -296,7 +316,12 @@ namespace FIDELANDIA.Views
         {
             if (_proveedorActual == null)
             {
-                MessageBox.Show("Debe seleccionar un proveedor primero.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(
+                    "Debe seleccionar un proveedor primero.",
+                    "Advertencia",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
                 return;
             }
 
@@ -392,7 +417,12 @@ namespace FIDELANDIA.Views
             {
                 if (MovimientosGrid.ItemsSource == null)
                 {
-                    MessageBox.Show("No hay datos para exportar.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(
+                        "No hay datos para exportar.",
+                        "Advertencia",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
@@ -401,7 +431,12 @@ namespace FIDELANDIA.Views
 
                 if (datos.Count == 0)
                 {
-                    MessageBox.Show("No hay registros para exportar.", "Información", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(
+                        "No hay registros para exportar.",
+                        "Información",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                     return;
                 }
 
@@ -411,7 +446,12 @@ namespace FIDELANDIA.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al exportar a Excel: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Error al exportar a Excel: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 

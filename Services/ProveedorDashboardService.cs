@@ -10,6 +10,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FIDELANDIA.Services
 {
+
+    /// <summary>
+    /// Servicio encargado de generar indicadores y gráficos para el dashboard de proveedores.
+    /// </summary>
     public class ProveedorDashboardService
     {
         private readonly FidelandiaDbContext _dbContext;
@@ -20,16 +24,17 @@ namespace FIDELANDIA.Services
         }
 
         // ================= KPIs =================
+        /// <summary>
+        /// Obtiene los indicadores clave de desempeño de los proveedores.
+        /// </summary>
         public (int totalProveedores, decimal saldoTotal, int proveedoresCriticos, int transaccionesMes, decimal mayorSaldo) ObtenerKPIs(int mes, int anio)
         {
             // Si no se pasa mes o año, usamos el actual
             if (mes <= 0) mes = DateTime.Now.Month;
             if (anio <= 0) anio = DateTime.Now.Year;
 
-            // 🔹 Consulta directa a la base de datos (más eficiente)
             int totalProveedores = _dbContext.Proveedores.Count();
 
-            // 🔹 Suma solo los "Debe" (no resta los "Haber")
             decimal saldoTotal = _dbContext.Transacciones
                 .Where(t => t.TipoTransaccion == "debe")
                 .Sum(t => (decimal?)t.Monto) ?? 0;
@@ -49,8 +54,10 @@ namespace FIDELANDIA.Services
 
         // ================= Gráficos =================
 
-        // Saldo por proveedor
-        // ================= Saldo por proveedor =================
+
+        /// <summary>
+        /// Obtiene el saldo por proveedor para graficar.
+        /// </summary>
         public SeriesCollection ObtenerSaldoPorProveedor(out List<string> labels, int mes, int anio)
         {
             var proveedores = _dbContext.Proveedores
@@ -70,12 +77,10 @@ namespace FIDELANDIA.Services
                 Fill = Brushes.Transparent // se define por mapper
             };
 
-            // 🎨 Colores personalizados
             var brushNegativo = new SolidColorBrush(Color.FromRgb(144, 238, 144)); // verde pastel
             var brushPositivo = new SolidColorBrush(Color.FromRgb(255, 160, 122)); // rojo pastel
             var brushCritico = new SolidColorBrush(Color.FromRgb(178, 34, 34));   // rojo oscuro (límite excedido)
 
-            // Guardamos los valores y mapeamos color según condición
             var valores = new List<double>();
             var colores = new List<Brush>();
 
@@ -86,7 +91,6 @@ namespace FIDELANDIA.Services
                     labels.Add(p.Nombre);
                     valores.Add((double)p.SaldoActual);
 
-                    // 🔸 Lógica del color
                     if (p.SaldoActual < 0)
                         colores.Add(brushNegativo);
                     else if (p.SaldoActual > p.LimiteCredito)
@@ -96,7 +100,6 @@ namespace FIDELANDIA.Services
                 }
             }
 
-            // Mapper con color por índice
             columnSeries.Configuration = LiveCharts.Configurations.Mappers.Xy<double>()
                 .X((value, index) => index)
                 .Y(value => value)
@@ -110,7 +113,9 @@ namespace FIDELANDIA.Services
 
 
 
-        // Debe/Haber por proveedor
+        /// <summary>
+        /// Obtiene el debe/haber por proveedor en un mes determinado.
+        /// </summary>
         public SeriesCollection ObtenerDebeHaberPorProveedor(out List<string> labels, int mes, int anio)
         {
             var proveedores = _dbContext.Proveedores
@@ -152,7 +157,9 @@ namespace FIDELANDIA.Services
             return series;
         }
 
-        // Movimiento acumulado del mes
+        /// <summary>
+        /// Obtiene el movimiento acumulado del mes.
+        /// </summary>
         public SeriesCollection ObtenerMovimientoAcumulado(out List<string> diasDelMes, int mes, int anio)
         {
             int diasMes = DateTime.DaysInMonth(anio, mes);
@@ -187,7 +194,9 @@ namespace FIDELANDIA.Services
             return series;
         }
 
-        // Deuda por categoría
+        /// <summary>
+        /// Obtiene la deuda por categoría de proveedor.
+        /// </summary>
         public SeriesCollection ObtenerDeudaPorCategoria(out List<string> categorias, int mes, int anio)
         {
             var categoriasData = _dbContext.CategoriaProveedor
@@ -218,7 +227,9 @@ namespace FIDELANDIA.Services
             return series;
         }
 
-        // Saldo acumulado por mes
+        /// <summary>
+        /// Obtiene el saldo acumulado por mes en el año.
+        /// </summary>
         public SeriesCollection ObtenerSaldoAcumuladoAnual(out List<string> meses)
         {
             meses = Enumerable.Range(1, 12)
@@ -250,7 +261,9 @@ namespace FIDELANDIA.Services
     };
         }
 
-        // Debe/Haber por mes
+        /// <summary>
+        /// Obtiene Debe/Haber anual por mes.
+        /// </summary>
         public SeriesCollection ObtenerDebeHaberAnual(out List<string> meses)
         {
             meses = Enumerable.Range(1, 12)
@@ -280,7 +293,9 @@ namespace FIDELANDIA.Services
     };
         }
 
-        // Gastos por categoría anual
+        /// <summary>
+        /// Obtiene gastos por categoría anual.
+        /// </summary>
         public SeriesCollection ObtenerGastosPorCategoriaAnual(out List<string> categorias)
         {
             var categoriasData = _dbContext.CategoriaProveedor
@@ -310,7 +325,9 @@ namespace FIDELANDIA.Services
         }
 
 
-        // Gastos por categoría
+        /// <summary>
+        /// Obtiene gastos por categoría para un mes específico.
+        /// </summary>
         public SeriesCollection ObtenerGastosPorCategoria(out List<string> categorias, int mes, int anio)
         {
             var categoriasData = _dbContext.CategoriaProveedor

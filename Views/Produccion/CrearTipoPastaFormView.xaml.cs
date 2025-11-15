@@ -38,19 +38,34 @@ namespace FIDELANDIA.Views.Produccion
             {
                 if (string.IsNullOrWhiteSpace(TxtNombre.Text))
                 {
-                    MessageBox.Show("Ingrese el nombre del tipo de pasta.");
+                    MessageBox.Show(
+                        "Ingrese el nombre del tipo de pasta.",
+                        "Advertencia",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
                 if (!decimal.TryParse(TxtContenido.Text, out decimal contenido) || contenido <= 0)
                 {
-                    MessageBox.Show("Ingrese un contenido válido mayor a 0.");
+                    MessageBox.Show(
+                        "Ingrese un contenido válido mayor a 0.",
+                        "Advertencia",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
                 if (!decimal.TryParse(TxtCosto.Text, out decimal costo) || costo <= 0)
                 {
-                    MessageBox.Show("Ingrese un costo válido mayor a 0.");
+                    MessageBox.Show(
+                        "Ingrese un costo válido mayor a 0.",
+                        "Advertencia",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
@@ -61,7 +76,12 @@ namespace FIDELANDIA.Views.Produccion
 
                 if (exito)
                 {
-                    MessageBox.Show("✅ Tipo de pasta creado correctamente.");
+                    MessageBox.Show(
+                        "Tipo de pasta creado correctamente.",
+                        "Éxito",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                     CargarTiposDePasta();
                     TxtNombre.Clear();
                     TxtDescripcion.Clear();
@@ -71,7 +91,12 @@ namespace FIDELANDIA.Views.Produccion
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al crear tipo de pasta: {ex.Message}");
+                MessageBox.Show(
+                    $"Error al crear tipo de pasta: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 
@@ -94,18 +119,33 @@ namespace FIDELANDIA.Views.Produccion
                 if (huboCambios)
                 {
                     _tipoPastaService.GuardarCambios(); // guarda todo junto
-                    MessageBox.Show("✅ Todos los cambios fueron guardados correctamente.");
+                    MessageBox.Show(
+                        "Todos los cambios fueron guardados correctamente.",
+                        "Éxito",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                 }
                 else
                 {
-                    MessageBox.Show("No se detectaron cambios para guardar.");
+                    MessageBox.Show(
+                        "No se detectaron cambios para guardar.",
+                        "Información",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                 }
 
                 CargarTiposDePasta();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"❌ Error al actualizar tipos de pasta: {ex.Message}");
+                MessageBox.Show(
+                    $"Error al actualizar tipos de pasta: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 

@@ -163,23 +163,23 @@
 
                                         <!-- DataGrid scrollable -->
                                         <DataGrid ItemsSource="{Binding Lotes, FallbackValue={x:Null}}" 
-                                                  AutoGenerateColumns="False"
-                                                  HeadersVisibility="Column"
-                                                  CanUserAddRows="False"
-                                                  CanUserDeleteRows="False"
-                                                  CanUserResizeRows="False"
-                                                  CanUserSortColumns="False"
-                                                  IsReadOnly="False"
-                                                  SelectionMode="Single"
-                                                  SelectionUnit="FullRow"
-                                                  GridLinesVisibility="Horizontal"
-                                                  HorizontalGridLinesBrush="#EEE" 
-                                                  RowBackground="Transparent"
-                                                  AlternatingRowBackground="Transparent"
-                                                  BorderThickness="0"
-                                                  Background="Transparent"
-                                                  VerticalScrollBarVisibility="Auto"
-                                                  Height="220">
+                                                           AutoGenerateColumns="False"
+                                                            HeadersVisibility="Column"
+                                                            CanUserAddRows="False"
+                                                            CanUserDeleteRows="False"
+                                                            CanUserResizeRows="False"
+                                                            CanUserSortColumns="False"
+                                                            IsReadOnly="False" 
+                                                            SelectionMode="Single"
+                                                            SelectionUnit="FullRow"
+                                                            GridLinesVisibility="Horizontal"
+                                                            HorizontalGridLinesBrush="#EEE" 
+                                                            RowBackground="Transparent"
+                                                            AlternatingRowBackground="Transparent"
+                                                            BorderThickness="0"
+                                                            Background="Transparent"
+                                                            VerticalScrollBarVisibility="Auto"
+                                                            Height="220">
 
                                             <!-- Quitar interacción y selección -->
                                             <DataGrid.RowStyle>
@@ -205,13 +205,14 @@
 
                                             <!-- Columnas -->
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Nº Lote" Binding="{Binding IdLote}" Width="*"/>
-                                                <DataGridTextColumn Header="Producción" Binding="{Binding FechaProduccion, StringFormat=dd/MM/yyyy}" Width="*"/>
-                                                <DataGridTextColumn Header="Vencimiento" Binding="{Binding FechaVencimiento, StringFormat=dd/MM/yyyy}" Width="*"/>
-                                                <DataGridTextColumn Header="Cantidad" Binding="{Binding CantidadDisponible}" Width="*"/>
+                                                <DataGridTextColumn Header="Nº Lote" Binding="{Binding IdLote}" Width="*" IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Producción" Binding="{Binding FechaProduccion, StringFormat=dd/MM/yyyy}" Width="*" IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Vencimiento" Binding="{Binding FechaVencimiento, StringFormat=dd/MM/yyyy}" Width="*" IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Cantidad" Binding="{Binding CantidadDisponible}" Width="*" IsReadOnly="True"/>
+
 
                                                 <!-- Nueva columna editable -->
-                                                <DataGridTemplateColumn Header="Remover" Width="*">
+                                                <DataGridTemplateColumn Header="Remover" Width="*" IsReadOnly="False">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding CantidadDefectuosa}" HorizontalAlignment="Center"/>

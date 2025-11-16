@@ -225,19 +225,59 @@ namespace FIDELANDIA.Views.Produccion
             {
                 var excelService = new ExcelExportService();
 
+                // Proyectamos los datos a objetos planos antes de exportar
+                var produccionPlano = LotesProduccion.Select(l => new
+                {
+                    l.IdLote,
+                    l.TipoPasta,
+                    l.CantidadProduccion,
+                    l.CantidadDisponible,
+                    FechaProduccion = l.FechaProduccion.ToString("dd/MM/yyyy"),
+                    FechaVencimiento = l.FechaVencimiento.ToString("dd/MM/yyyy"),
+                    l.Stock,
+                    l.VentasTotales,
+                    Estado = l.Estado,
+                    CantidadVendidaHoy = l.CantidadVendidaHoy
+                }).ToList();
+
+                var ventasPlano = VentasDetalladas.Select(v => new
+                {
+                    v.IdVenta,
+                    v.IdLote,
+                    TipoPasta = v.Lote?.TipoPasta?.Nombre ?? "",
+                    v.Cantidad,
+                    FechaVenta = v.Venta.Fecha.ToString("dd/MM/yyyy")
+                }).ToList();
+
+                var resumenPlano = LotesFiltrados.Select(l => new
+                {
+                    l.IdLote,
+                    l.TipoPasta,
+                    l.CantidadProduccion,
+                    l.CantidadDisponible,
+                    FechaProduccion = l.FechaProduccion.ToString("dd/MM/yyyy"),
+                    FechaVencimiento = l.FechaVencimiento.ToString("dd/MM/yyyy"),
+                    l.Stock,
+                    l.VentasTotales,
+                    Estado = l.Estado,
+                    CantidadVendidaHoy = l.CantidadVendidaHoy
+                }).ToList();
+
                 var datasets = new Dictionary<string, IEnumerable>
         {
-            { "Producción", LotesProduccion },
-            { "Ventas", VentasDetalladas },
-            { "Resumen", LotesFiltrados }
+            { "Producción", produccionPlano },
+            { "Ventas", ventasPlano },
+            { "Resumen", resumenPlano }
         };
 
                 excelService.ExportarMultiplesHojas(datasets);
             }
             catch (Exception ex)
             {
+                MessageBox.Show($"Error al exportar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
 
         private void EliminarProduccion_Click(object sender, RoutedEventArgs e)

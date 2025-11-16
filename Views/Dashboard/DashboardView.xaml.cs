@@ -1,4 +1,5 @@
 ﻿using FIDELANDIA.Data;
+using FIDELANDIA.Helpers;
 using FIDELANDIA.Models;
 using FIDELANDIA.Services;
 using LiveCharts;
@@ -37,7 +38,7 @@ namespace FIDELANDIA.Views
         private decimal _cantidadProducidaKg;
         public decimal CantidadProducidaKg
         {
-            get => _cantidadProducidaKg; // ✅ devuelve el campo privado
+            get => _cantidadProducidaKg;
             set { _cantidadProducidaKg = value; OnPropertyChanged(nameof(CantidadProducidaKg)); }
         }
 
@@ -75,6 +76,11 @@ namespace FIDELANDIA.Views
         public DateTime FechaDesde { get; set; }
         public DateTime FechaHasta { get; set; }
 
+        public bool agruparPorMes;
+
+        public SeriesCollection ProduccionVsVentasSeries { get; set; }
+
+
         // =====================================================
         // CONSTRUCTOR
         // =====================================================
@@ -87,63 +93,143 @@ namespace FIDELANDIA.Views
             _dashboardService = new DashboardService(dbContext);
 
             FechaHasta = DateTime.Today;
-            FechaDesde = FechaHasta.AddMonths(-1); // 6 meses atrás para mejor análisis
+            FechaDesde = FechaHasta.AddMonths(-1);
+            agruparPorMes= false;
+            CboAgrupacion.SelectedIndex = 0; 
 
-            CargarDashboardDesdeBD();
+            CargarDashboardDesdeBD(agruparPorMes);
         }
+
+        private void BtnExportarBackupProduccionVentas_Click(object sender, RoutedEventArgs e)
+        {
+            var db = new FidelandiaDbContext();
+            var backupService = new BackupExcelService(db);
+            backupService.ExportarBackupCompleto();
+        }
+
+        private void BtnExportarBackupProveedoresTransacciones_Click(object sender, RoutedEventArgs e)
+        {
+            var db = new FidelandiaDbContext();
+            var backupService = new ProveedoresExcelService(db);
+            backupService.ExportarProveedoresConTransacciones();
+        }
+
 
         // =====================================================
         // FILTRAR POR RANGO DE FECHAS
         // =====================================================
         private void Filtrar_Click(object sender, RoutedEventArgs e)
         {
-            // 🔹 Validar que el rango no supere 4 meses
-            var mesesDiferencia = ((FechaHasta.Year - FechaDesde.Year) * 12) + (FechaHasta.Month - FechaDesde.Month);
+            var dias = (FechaHasta - FechaDesde).TotalDays;
 
-            if (mesesDiferencia > 4)
+            // =================== VALIDACIÓN DE RANGO ===================
+            if (dias > 365)
             {
                 MessageBox.Show(
-                    "El rango de fechas no puede superar 4 meses. Ajuste las fechas seleccionadas.",
-                    "Rango demasiado grande",
+                    "El rango máximo permitido es de 1 año.",
+                    "Rango inválido",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning
                 );
-                return; // 
+                return; // Salimos sin cargar el dashboard
             }
 
-            // 🔹 Si es válido, cargar dashboard
-            CargarDashboardDesdeBD();
+            // =================== AGRUPACIÓN ===================
+            if (dias <= 31)
+            {
+                // Solo se puede agrupar por día
+                agruparPorMes = false;
+                CboAgrupacion.SelectedIndex = 0; // Día
+            }
+            else if (dias > 120)
+            {
+                // Solo se puede agrupar por mes
+                agruparPorMes = true;
+                CboAgrupacion.SelectedIndex = 1; // Mes
+            }
+            else
+            {
+                // Entre 31 y 90 días: permitir que el usuario elija
+                if (CboAgrupacion.SelectedItem is ComboBoxItem item)
+                {
+                    agruparPorMes = item.Tag.ToString() == "Mes";
+                }
+                else
+                {
+                    agruparPorMes = false; // Por defecto día
+                }
+            }
+
+            CargarDashboardDesdeBD(agruparPorMes);
         }
+
+
+
+
 
 
         // =====================================================
         // CARGA PRINCIPAL DEL DASHBOARD
         // =====================================================
-        private void CargarDashboardDesdeBD()
+        private void CargarDashboardDesdeBD(bool agruparPorMes)
         {
             try
             {
-                var resumen = _dashboardService.ObtenerDashboard(FechaDesde, FechaHasta);
+                var resumen = _dashboardService.ObtenerDashboard(FechaDesde, FechaHasta, agruparPorMes);
 
                 // ========== INDICADORES ==========
-                CantidadProducida = resumen.CantidadProducida;
-                VentasTotales = resumen.VentasTotales;
-                CantidadProducidaKg = resumen.ProduccionKg;
-                TicketPromedio = resumen.TicketPromedio;
+                // =================== VALORES PRINCIPALES ===================
+                CantidadProducida = resumen.CantidadProducida ?? 0;
+                VentasTotales = resumen.VentasTotales ?? 0;
+                CantidadProducidaKg = resumen.ProduccionKg ?? 0;
+                TicketPromedio = resumen.TicketPromedio ?? 0;
 
-                // ========== VARIACIONES REALES ==========
+                // =================== VARIACIONES ===================
+                // Solo asignar texto/color si existe valor, sino dejar null
+                if (resumen.VariacionCantidadProducida.HasValue)
+                {
+                    VariacionProduccionText = $"{resumen.VariacionCantidadProducida:+0.0;-0.0;0.0}%";
+                    VariacionProduccionColor = resumen.VariacionCantidadProducida >= 0 ? Brushes.ForestGreen : Brushes.Red;
+                }
+                else
+                {
+                    VariacionProduccionText = null;
+                    VariacionProduccionColor = null;
+                }
 
-                VariacionProduccionText = $"{resumen.VariacionCantidadProducida:+0.0;-0.0;0.0}%";
-                VariacionProduccionColor = resumen.VariacionCantidadProducida >= 0 ? Brushes.ForestGreen : Brushes.Red;
+                if (resumen.VariacionVentasTotales.HasValue)
+                {
+                    VariacionVentasText = $"{resumen.VariacionVentasTotales:+0.0;-0.0;0.0}%";
+                    VariacionVentasColor = resumen.VariacionVentasTotales >= 0 ? Brushes.ForestGreen : Brushes.Red;
+                }
+                else
+                {
+                    VariacionVentasText = null;
+                    VariacionVentasColor = null;
+                }
 
-                VariacionVentasText = $"{resumen.VariacionVentasTotales:+0.0;-0.0;0.0}%";
-                VariacionVentasColor = resumen.VariacionVentasTotales >= 0 ? Brushes.ForestGreen : Brushes.Red;
+                if (resumen.VariacionProduccionKg.HasValue)
+                {
+                    VariacionCantidadProduccionKgText = $"{resumen.VariacionProduccionKg:+0.0;-0.0;0.0}%";
+                    VariacionCantidadProduccionKgColor = resumen.VariacionProduccionKg >= 0 ? Brushes.ForestGreen : Brushes.Red;
+                }
+                else
+                {
+                    VariacionCantidadProduccionKgText = null;
+                    VariacionCantidadProduccionKgColor = null;
+                }
 
-                VariacionCantidadProduccionKgText = $"{resumen.VariacionProduccionKg:+0.0;-0.0;0.0}%";
-                VariacionCantidadProduccionKgColor = resumen.VariacionProduccionKg >= 0 ? Brushes.ForestGreen : Brushes.Red;
+                if (resumen.VariacionTicketPromedio.HasValue)
+                {
+                    VariacionTicketText = $"{resumen.VariacionTicketPromedio:+0.0;-0.0;0.0}%";
+                    VariacionTicketColor = resumen.VariacionTicketPromedio >= 0 ? Brushes.ForestGreen : Brushes.Red;
+                }
+                else
+                {
+                    VariacionTicketText = null;
+                    VariacionTicketColor = null;
+                }
 
-                VariacionTicketText = $"{resumen.VariacionTicketPromedio:+0.0;-0.0;0.0}%";
-                VariacionTicketColor = resumen.VariacionTicketPromedio >= 0 ? Brushes.ForestGreen : Brushes.Red;
 
 
                 // ========== PRODUCCIÓN / VENTAS / STOCK ==========
@@ -161,7 +247,7 @@ namespace FIDELANDIA.Views
                                     .Select(k => (double)(resumen.ProduccionPorTipo[k] -
                                                             (resumen.VentasPorTipo.ContainsKey(k) ? resumen.VentasPorTipo[k] : 0)))
                         )
-                    }               
+                    }
                 };
 
                 // ========== PARTICIPACIÓN EN VENTAS ==========
@@ -186,7 +272,7 @@ namespace FIDELANDIA.Views
                     {
                         new LineSeries
                         {
-                            Title = "Producción diaria (envases)",
+                            Title = "Producción diaria (Envases)",
                             Values = new ChartValues<double>(resumen.ProduccionDiariaEnvases.Values.Select(v => (double)v)),
                             Stroke = Brushes.SteelBlue,
                             Fill = new SolidColorBrush(Color.FromArgb(60, 70, 130, 180)),
@@ -215,7 +301,7 @@ namespace FIDELANDIA.Views
 {
                         new LineSeries
                         {
-                            Title = "Ventas diarias",
+                            Title = "Ventas diarias (Envases)",
                             Values = new ChartValues<double>(resumen.VentasDiaria.Values.Select(v => (double)v)),
                             Stroke = Brushes.ForestGreen,
                             Fill = new SolidColorBrush(Color.FromArgb(60, 34, 139, 34)),
@@ -235,6 +321,51 @@ namespace FIDELANDIA.Views
                         Fill = new SolidColorBrush(Color.FromArgb(60, 255, 69, 0))
                     }
                 };
+                // ===================== PRODUCCIÓN VS VENTAS =====================
+                var diasPeriodo = (FechaHasta - FechaDesde).TotalDays;
+
+                if (diasPeriodo > 30)
+                {
+                    // Usar LineSeries si el rango supera 30 días
+                ProduccionVsVentasSeries = new SeriesCollection
+                        {
+                            new LineSeries
+                            {
+                                Title = "Producción",
+                                Values = new ChartValues<double>(resumen.ProduccionDiariaEnvases.Values.Select(v => (double)v)),
+                                Stroke = Brushes.SteelBlue,
+                                Fill = new SolidColorBrush(Color.FromArgb(60, 70, 130, 180)),
+                                PointGeometrySize = 6,
+                                LineSmoothness = 0.4
+                            },
+                            new LineSeries
+                            {
+                                Title = "Ventas",
+                                Values = new ChartValues<double>(resumen.VentasDiaria.Values.Select(v => (double)v)),
+                                Stroke = Brushes.ForestGreen,
+                                Fill = new SolidColorBrush(Color.FromArgb(60, 34, 139, 34)),
+                                PointGeometrySize = 6,
+                                LineSmoothness = 0.4
+                            }
+                        };
+                                    }
+                                    else
+                                    {
+                                        // Usar ColumnSeries si el rango es menor o igual a 30 días
+                                        ProduccionVsVentasSeries = new SeriesCollection
+                        {
+                            new ColumnSeries
+                            {
+                                Title = "Producción",
+                                Values = new ChartValues<double>(resumen.ProduccionDiariaEnvases.Values.Select(v => (double)v))
+                            },
+                            new ColumnSeries
+                            {
+                                Title = "Ventas",
+                                Values = new ChartValues<double>(resumen.VentasDiaria.Values.Select(v => (double)v))
+                            }
+                        };
+                                    }
 
                 OnPropertyChanged(null);
             }

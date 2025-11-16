@@ -38,6 +38,17 @@
                             </StackPanel>
                         </Border>
 
+                        <Border Margin="10,0,30,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Tiempo:" VerticalAlignment="Center" Foreground="#666" FontSize="12" Margin="0,0,4,0"/>
+                                <ComboBox x:Name="CboAgrupacion" Width="150">
+                                    <ComboBoxItem Content="Día" Tag="Dia" />
+                                    <ComboBoxItem Content="Mes" Tag="Mes" />
+                                </ComboBox>
+                            </StackPanel>
+                        </Border>
+
+
                         <Button Content="Filtrar" Click="Filtrar_Click" Style="{StaticResource PrimaryButton}" Cursor="Hand" Width="100"  Height="35" />
                             
                     </StackPanel>
@@ -55,6 +66,8 @@
                         <RowDefinition Height="3*"/>
                         <RowDefinition Height="2.5*"/>
                         <RowDefinition Height="2.5*"/>
+                        <RowDefinition Height="1.5*"/>
+                        <RowDefinition Height="1.5*"/>
                     </Grid.RowDefinitions>
 
                     <!-- ===================== MÉTRICAS (CARDS) ===================== -->
@@ -64,7 +77,18 @@
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <TextBlock Text="Producción (Envases)" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
                                 <TextBlock Text="{Binding CantidadProducida, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
-                                <TextBlock Text="{Binding VariacionProduccionText}" Foreground="{Binding VariacionProduccionColor}" FontSize="12" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VariacionProduccionText}" Foreground="{Binding VariacionProduccionColor}" FontSize="12" TextAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding VariacionProduccionText}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </StackPanel>
                         </Border>
 
@@ -73,7 +97,18 @@
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <TextBlock Text="Ventas Totales" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
                                 <TextBlock Text="{Binding VentasTotales, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
-                                <TextBlock Text="{Binding VariacionVentasText}" Foreground="{Binding VariacionVentasColor}" FontSize="12" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VariacionVentasText}" Foreground="{Binding VariacionVentasColor}" FontSize="12" TextAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding VariacionVentasText}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </StackPanel>
                         </Border>
 
@@ -82,7 +117,18 @@
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <TextBlock Text="Produccion (Kg)" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
                                 <TextBlock Text="{Binding CantidadProducidaKg, StringFormat=N0}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
-                                <TextBlock Text="{Binding VariacionCantidadProduccionKgText}" Foreground="{Binding VariacionCantidadProduccionKgColor}" FontSize="12" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VariacionCantidadProduccionKgText}" Foreground="{Binding VariacionCantidadProduccionKgColor}"  FontSize="12" TextAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding VariacionCantidadProduccionKgText}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </StackPanel>
                         </Border>
 
@@ -91,11 +137,21 @@
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <TextBlock Text="Ticket Promedio" FontSize="12" Foreground="#777" FontWeight="SemiBold" TextAlignment="Center"/>
                                 <TextBlock Text="{Binding TicketPromedio, StringFormat=C}" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,3,0,0" TextAlignment="Center"/>
-                                <TextBlock Text="{Binding VariacionTicketText}" Foreground="{Binding VariacionTicketColor}" FontSize="12" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding VariacionTicketText}" Foreground="{Binding VariacionTicketColor}" FontSize="12" TextAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding VariacionTicketText}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </StackPanel>
                         </Border>
                     </UniformGrid>
-
                     <!-- ===================== GRÁFICOS PRINCIPALES ===================== -->
                     <Grid Grid.Row="1" Margin="0,0,0,5">
                         <Grid.ColumnDefinitions>
@@ -111,7 +167,7 @@
                                        FontWeight="SemiBold"
                                        Margin="0,0,0,10"
                                        Foreground="#333"/>
-                                <lvc:CartesianChart Series="{Binding ProduccionPorTipoSeries}" Width="650" Height="180" Foreground="#333">
+                                <lvc:CartesianChart Series="{Binding ProduccionPorTipoSeries}" Height="180" Foreground="#333" HorizontalAlignment="Stretch" Margin="2,20,5,2">
                                     <lvc:CartesianChart.AxisX>
                                         <lvc:Axis Labels="{Binding TipoPastaLabels}" Title="Tipo de pasta">
                                             <lvc:Axis.Separator>
@@ -119,9 +175,6 @@
                                             </lvc:Axis.Separator>
                                         </lvc:Axis>
                                     </lvc:CartesianChart.AxisX>
-                                    <lvc:CartesianChart.AxisY>
-                                        <lvc:Axis Title="Kg / $" />
-                                    </lvc:CartesianChart.AxisY>
                                 </lvc:CartesianChart>
 
                             </StackPanel>
@@ -147,7 +200,7 @@
                         <Border Grid.Column="0" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Evolucion de envases producidos" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#333"/>
-                                <lvc:CartesianChart Series="{Binding ProduccionTotalSeries}" Height="145" Width="500" Foreground="#333">
+                                <lvc:CartesianChart Series="{Binding ProduccionTotalSeries}" Height="145" Foreground="#333" HorizontalAlignment="Stretch" Margin="2,10,5,2">
                                     <lvc:CartesianChart.AxisX>
                                         <lvc:Axis Title="Tiempo" Labels="{Binding MesesLabels}" ShowLabels="False">
                                             <lvc:Axis.Separator>
@@ -155,10 +208,6 @@
                                             </lvc:Axis.Separator>
                                         </lvc:Axis>
                                     </lvc:CartesianChart.AxisX>
-
-                                    <lvc:CartesianChart.AxisY>
-                                        <lvc:Axis Title="Cantidad"/>
-                                    </lvc:CartesianChart.AxisY>
                                 </lvc:CartesianChart>
                             </StackPanel>
                         </Border>
@@ -168,7 +217,7 @@
                         <Border Grid.Column="1" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Evolucion de ventas realizadas" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#333"/>
-                                <lvc:CartesianChart Series="{Binding RendimientoSeries}" Height="145" Width="500" Foreground="#333">
+                                <lvc:CartesianChart Series="{Binding RendimientoSeries}" Height="145" Foreground="#333" HorizontalAlignment="Stretch" Margin="2,10,5,2">
                                     <lvc:CartesianChart.AxisX>
                                         <lvc:Axis Title="Tiempo" Labels="{Binding MesesLabels}" ShowLabels="False">
                                             <lvc:Axis.Separator>
@@ -190,7 +239,7 @@
                         <Border Grid.Column="0" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Cantidad de kg producidos" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#333"/>
-                                <lvc:CartesianChart Series="{Binding LoteComparativoSeries}" Height="145" Width="500" Foreground="#333">
+                                <lvc:CartesianChart Series="{Binding LoteComparativoSeries}" Height="145" Foreground="#333" HorizontalAlignment="Stretch" Margin="2,10,5,2">
                                     <lvc:CartesianChart.AxisX>
                                         <lvc:Axis Title="Tiempo" Labels="{Binding MesesLabels}" ShowLabels="False">
                                             <lvc:Axis.Separator>
@@ -198,10 +247,6 @@
                                             </lvc:Axis.Separator>
                                         </lvc:Axis>
                                     </lvc:CartesianChart.AxisX>
-
-                                    <lvc:CartesianChart.AxisY>
-                                        <lvc:Axis Title="Cantidad"/>
-                                    </lvc:CartesianChart.AxisY>
                                 </lvc:CartesianChart>
                             </StackPanel>
                         </Border>
@@ -211,7 +256,23 @@
                         <Border Grid.Column="1" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Recaudacion generada" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#333"/>
-                                <lvc:CartesianChart Series="{Binding TipoSeries}" Height="145" Width="500" Foreground="#333">
+                                <lvc:CartesianChart Series="{Binding TipoSeries}" Height="145" Foreground="#333" HorizontalAlignment="Stretch" Margin="2,10,5,2">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Title="Tiempo" Labels="{Binding MesesLabels}" ShowLabels="False">
+                                            <lvc:Axis.Separator>
+                                                <lvc:Separator Step="1"/>
+                                            </lvc:Axis.Separator>
+                                        </lvc:Axis>
+                                    </lvc:CartesianChart.AxisX>
+                                </lvc:CartesianChart>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <Grid Grid.Row="4">
+                        <Border Grid.Row="7" Background="White" CornerRadius="16" Margin="5" Padding="15" BorderBrush="#eee" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Producción vs Ventas (Envases)" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10" Foreground="#333"/>
+                                <lvc:CartesianChart Series="{Binding ProduccionVsVentasSeries}" Height="200" Foreground="#333" HorizontalAlignment="Stretch" Margin="20,10">
                                     <lvc:CartesianChart.AxisX>
                                         <lvc:Axis Title="Tiempo" Labels="{Binding MesesLabels}" ShowLabels="False">
                                             <lvc:Axis.Separator>
@@ -226,6 +287,27 @@
                             </StackPanel>
                         </Border>
                     </Grid>
+                    <Grid Grid.Row="5" HorizontalAlignment="Center" Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Content="Exportar producción y ventas" 
+            Click="BtnExportarBackupProduccionVentas_Click" 
+            Style="{StaticResource SecondaryButton}" 
+            Cursor="Hand" Width="250" Height="35" 
+            Margin="0,0,10,0"
+            Grid.Column="0" />
+
+                        <Button Content="Exportar proveedores y transacciones" 
+            Click="BtnExportarBackupProveedoresTransacciones_Click" 
+            Style="{StaticResource SecondaryButton}" 
+            Cursor="Hand" Width="250" Height="35" 
+            Margin="10,0,0,0"
+            Grid.Column="1" />
+                    </Grid>
+
                 </Grid>
             </ScrollViewer>
         </DockPanel>

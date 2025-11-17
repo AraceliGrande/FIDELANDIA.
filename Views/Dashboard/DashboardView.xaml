@@ -9,7 +9,7 @@
         <DockPanel LastChildFill="True">
 
             <Border VerticalAlignment="Center" Effect="{StaticResource DropShadow}" DockPanel.Dock="Top" CornerRadius="10" Background="White"  BorderBrush="#eee" BorderThickness="0.5" Opacity="1" Padding="20" Margin="6,0,6,10">
-                
+
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -50,7 +50,7 @@
 
 
                         <Button Content="Filtrar" Click="Filtrar_Click" Style="{StaticResource PrimaryButton}" Cursor="Hand" Width="100"  Height="35" />
-                            
+
                     </StackPanel>
 
                 </Grid>
@@ -68,6 +68,7 @@
                         <RowDefinition Height="2.5*"/>
                         <RowDefinition Height="1.5*"/>
                         <RowDefinition Height="1.5*"/>
+                        <RowDefinition Height="AUTO"/>
                     </Grid.RowDefinitions>
 
                     <!-- ===================== MÉTRICAS (CARDS) ===================== -->
@@ -289,25 +290,62 @@
                     </Grid>
                     <Grid Grid.Row="5" HorizontalAlignment="Center" Margin="0,20,0,10">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button Content="Exportar producción y ventas" 
-            Click="BtnExportarBackupProduccionVentas_Click" 
-            Style="{StaticResource SecondaryButton}" 
-            Cursor="Hand" Width="250" Height="35" 
-            Margin="0,0,10,0"
-            Grid.Column="0" />
+                        <Button Content="Administrar base de datos" 
+                                    Click="BtnTamanioBaseDatos"
+                                    Style="{StaticResource SecondaryButton}" 
+                                    Cursor="Hand"
+                                    Height="35"
+                                    MinWidth="200"
+                                    Margin="10,0,10,0"
+                                    Grid.Column="2" />      
 
-                        <Button Content="Exportar proveedores y transacciones" 
-            Click="BtnExportarBackupProveedoresTransacciones_Click" 
-            Style="{StaticResource SecondaryButton}" 
-            Cursor="Hand" Width="250" Height="35" 
-            Margin="10,0,0,0"
-            Grid.Column="1" />
                     </Grid>
+                    <!-- PANEL ESTADO DE BASE DE DATOS - OCULTO AL INICIO -->
+                    <Grid Grid.Row="6" x:Name="PanelBaseDatos" Visibility="Collapsed" Margin="0,25,0,10">
+                        <Border Background="White" CornerRadius="16" Padding="20" Margin="10" BorderBrush="#ddd" BorderThickness="1" HorizontalAlignment="Stretch">
+                            <StackPanel HorizontalAlignment="Center" Width="Auto">
 
+                                <!-- TITULO -->
+                                <TextBlock Text="Estado de la Base de Datos" FontSize="18" FontWeight="Bold" Foreground="#2D3436" Margin="0,0,0,15" TextAlignment="Center"/>
+
+                                <!-- INFORMACIÓN DETALLADA -->
+                                <StackPanel Margin="0,5,0,15">
+                                    <TextBlock Text="Límite permitido (SQL Express): 9 GB" FontSize="13" Foreground="#555" Margin="0,3"/>
+                                    <TextBlock Text="{Binding BaseDatosGBTexto, StringFormat=Espacio usado: {0}}" FontSize="13" Foreground="#555" Margin="0,3"/>
+                                    <TextBlock x:Name="TxtEstadoBD" Text="Estado: Analizando..." FontSize="13" FontWeight="SemiBold" Foreground="#333" Margin="0,5"/>
+                                </StackPanel>
+
+                                <!-- GRAFICO -->
+                                <lvc:PieChart Series="{Binding BaseDatosPieSeries}" Height="170" Width="170" InnerRadius="70" LegendLocation="None" Margin="0,10" Foreground="#333"/>
+
+                                <!-- RECOMENDACION -->
+                                <TextBlock Text="Recomendación:" FontSize="15" FontWeight="Bold" Foreground="#2d3436" Margin="0,15,0,5"/>
+                                <TextBlock x:Name="TxtRecomendacion" Text="Analizando..." FontSize="13" Foreground="#666" TextAlignment="Center" TextWrapping="Wrap" Margin="20,0,20,10"/>
+
+                                <!-- BOTONES DE ACCIÓN -->
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
+                                    <Button Content="Exportar producción y ventas" Width="190" Height="35" Margin="5" Click="BtnExportarBackupProduccionVentas_Click" Style="{StaticResource SecondaryButton}"/>
+                                    <Button Content="Exportar proveedores" Width="190" Height="35" Margin="5" Click="BtnExportarBackupProveedoresTransacciones_Click" Style="{StaticResource SecondaryButton}"/>
+                                    <Button Content="Vaciar producción/ventas" Width="190" Height="35" Margin="5"
+                                      Click="BtnVaciarProduccionVentas_Click" Style="{StaticResource SecondaryButton}"/>
+
+                                    <Button Content="Vaciar transacciones" Width="160" Height="35" Margin="5"
+                                     Click="BtnVaciarTransacciones_Click" Style="{StaticResource SecondaryButton}"/>
+
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
+                                    <Button Content="Vaciar base de datos" Width="160" Height="35" Margin="5" Click="BtnBorrarBaseDatos" Style="{StaticResource SecondaryButton}"/>
+                                </StackPanel>
+
+                                <!-- BOTON CERRAR -->
+                                <Button Content="Cerrar" Width="150" Height="32" Margin="0,25,0,0" Click="BtnCerrarPanelBaseDatos_Click" Style="{StaticResource SecondaryButton}"/>
+
+                            </StackPanel>
+                        </Border>
+                    </Grid>
                 </Grid>
             </ScrollViewer>
         </DockPanel>

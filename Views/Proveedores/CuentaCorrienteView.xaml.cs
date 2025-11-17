@@ -224,6 +224,10 @@ namespace FIDELANDIA.Views
                 ToolTipService.SetInitialShowDelay(DetalleNombre, 50);
                 ToolTipService.SetShowDuration(DetalleNombre, 20000);
 
+                NombreProveedor_Busqueda.ToolTip = tt;
+                ToolTipService.SetInitialShowDelay(NombreProveedor_Busqueda, 50);
+                ToolTipService.SetShowDuration(NombreProveedor_Busqueda, 20000);
+
                 // --- Aquí manejamos traerTodos ---
                 if (traerTodos)
                 {

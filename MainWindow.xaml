@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FIDELANDIA"
         mc:Ignorable="d"
+        Title="Fidelandia"
         xmlns:views="clr-namespace:FIDELANDIA.Views"
         WindowState="Maximized"
         Foreground="white"

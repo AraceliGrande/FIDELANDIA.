@@ -12,6 +12,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.VisualBasic;
 
 namespace FIDELANDIA.Views
 {
@@ -79,6 +80,12 @@ namespace FIDELANDIA.Views
         public bool agruparPorMes;
 
         public SeriesCollection ProduccionVsVentasSeries { get; set; }
+
+
+        public string BaseDatosGBTexto { get; set; }
+        public SeriesCollection BaseDatosPieSeries { get; set; }
+
+
 
 
         // =====================================================
@@ -162,7 +169,155 @@ namespace FIDELANDIA.Views
 
             CargarDashboardDesdeBD(agruparPorMes);
         }
+        private async void BtnTamanioBaseDatos(object sender, RoutedEventArgs e)
+        {
+            PanelBaseDatos.Visibility = Visibility.Visible;
+            await CargarTamanioBaseDatos();
+        }
+        private void BtnCerrarPanelBaseDatos_Click(object sender, RoutedEventArgs e)
+        {
+            PanelBaseDatos.Visibility = Visibility.Collapsed;
+        }
 
+        public async Task CargarTamanioBaseDatos()
+        {
+            var dbContext = new FidelandiaDbContext();
+            var service = new DatabaseSizeService(dbContext); 
+            double sizeMB = await service.ObtenerTamanioMB();
+            double sizeGB = sizeMB / 1024;
+
+            BaseDatosGBTexto = $"{sizeGB:N2} GB";
+
+            double limite = 9;
+            double libre = Math.Max(0, limite - sizeGB);
+
+            // GRAFICO
+            BaseDatosPieSeries = new SeriesCollection
+    {
+        new PieSeries
+        {
+            Title = "Usado",
+            Values = new ChartValues<double> { sizeGB },
+            Fill = (SolidColorBrush)new BrushConverter().ConvertFrom("#E17055")
+        },
+        new PieSeries
+        {
+            Title = "Libre",
+            Values = new ChartValues<double> { libre },
+            Fill = (SolidColorBrush)new BrushConverter().ConvertFrom("#00CEC9")
+        }
+    };
+
+            OnPropertyChanged(nameof(BaseDatosPieSeries));
+            OnPropertyChanged(nameof(BaseDatosGBTexto));
+
+            // TEXTOS Y RECOMENDACIONES
+            if (sizeGB < 4)
+            {
+                TxtEstadoBD.Text = "Estado: Muy saludable";
+                TxtRecomendacion.Text = "No se requieren acciones.";
+            }
+            else if (sizeGB < 7)
+            {
+                TxtEstadoBD.Text = "Estado: Moderado";
+                TxtRecomendacion.Text = "Se recomienda exportar datos regularmente.";
+            }
+            else if (sizeGB < 9)
+            {
+                TxtEstadoBD.Text = "Estado: Crítico";
+                TxtRecomendacion.Text = "Se recomienda exportar y vaciar datos cuanto antes.";
+            }
+            else
+            {
+                TxtEstadoBD.Text = "Estado: Límite alcanzado";
+                TxtRecomendacion.Text = "Debe eliminar registros antiguos urgentemente.";
+            }
+        }
+
+
+        private async void BtnBorrarBaseDatos(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("⚠ Esto borrará TODOS los datos de la base.\n¿Estás segura?",
+                "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                var dbContext = new FidelandiaDbContext();
+                var service = new DatabaseSizeService(dbContext);
+                await service.BorrarTodosLosRegistros();
+
+                MessageBox.Show("Todos los registros fueron eliminados correctamente.",
+                    "Base vaciada", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al borrar los datos: " + ex.Message);
+            }
+        }
+        private async void BtnVaciarTransacciones_Click(object sender, RoutedEventArgs e)
+        {
+            int meses = PreguntarMesesAConservar("transacciones");
+            if (meses < 0) return;
+
+            try
+            {
+                var dbContext = new FidelandiaDbContext();
+                var service = new DatabaseSizeService(dbContext);
+
+                await service.BorrarTransaccionesAntiguas(meses);
+
+                MessageBox.Show("Transacciones borradas correctamente.",
+                    "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al borrar transacciones: " + ex.Message);
+            }
+        }
+
+
+        private async void BtnVaciarProduccionVentas_Click(object sender, RoutedEventArgs e)
+        {
+            int meses = PreguntarMesesAConservar("producción/ventas");
+            if (meses < 0) return;
+
+            try
+            {
+                var dbContext = new FidelandiaDbContext();
+                var service = new DatabaseSizeService(dbContext);
+
+                await service.BorrarProduccionVentasAntiguas(meses);
+
+                MessageBox.Show("Producción y ventas borradas correctamente.",
+                    "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al borrar producción/ventas: " + ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Devuelve -1 si el usuario cancela.
+        /// </summary>
+        private int PreguntarMesesAConservar(string nombre)
+        {
+            string input = Interaction.InputBox(
+                $"Ingrese la cantidad de meses que desea conservar de {nombre}:",
+                "Conservar registros",
+                "3"); // valor por defecto en el textbox
+
+            if (string.IsNullOrWhiteSpace(input))
+                return -1; // Canceló
+
+            if (int.TryParse(input, out int meses))
+                return meses;
+
+            MessageBox.Show("Debe ingresar un número válido.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return -1;
+        }
 
 
 

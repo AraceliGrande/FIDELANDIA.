@@ -5,85 +5,98 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              Background="Transparent">
-    
-  
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="0">
 
-            <!-- Bienvenida -->
-            <Grid Margin="0,0,0,30">
-                <Border Background="#80FFFFFF" Opacity="1" Padding="7" Margin="0,27,0,0">
-                    <Border.Effect>
-                        <DropShadowEffect Color="White" BlurRadius="100" ShadowDepth="0" Opacity="0.4"/>
-                    </Border.Effect>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+    <DockPanel LastChildFill="True">
 
-                        <!-- Texto de bienvenida -->
-                        <StackPanel VerticalAlignment="Center" Margin="50,0,0,0">
-                            <TextBlock Text="¡Bienvenido nuevamente!" FontSize="23" FontWeight="Bold" Foreground="#e27a14" Margin="0,0,0,10"/>
-                            <TextBlock Text="Gestión de proveedores y stock" FontSize="11" Foreground="Gray" FontWeight="SemiBold"/>
+        <!-- Scroll principal -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top">
+            <StackPanel Margin="0">
+
+                <!-- Bienvenida -->
+                <Grid Margin="0,0,0,30">
+                    <Border Background="#80FFFFFF" Opacity="1" Padding="7" Margin="0,27,0,0">
+                        <Border.Effect>
+                            <DropShadowEffect Color="White" BlurRadius="100" ShadowDepth="0" Opacity="0.4"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Texto de bienvenida -->
+                            <StackPanel VerticalAlignment="Center" Margin="50,0,0,0">
+                                <TextBlock Text="¡Bienvenido nuevamente!" FontSize="23" FontWeight="Bold" Foreground="#e27a14" Margin="0,0,0,10"/>
+                                <TextBlock Text="Gestión de proveedores y stock" FontSize="11" Foreground="Gray" FontWeight="SemiBold"/>
+                            </StackPanel>
+
+                            <!-- Foto del usuario -->
+                            <Border Grid.Column="1" Width="90" Height="90" CornerRadius="65" Background="White" Margin="0,0,40,10" VerticalAlignment="Center" HorizontalAlignment="Right" >
+                                <Image Source="/Resources/icono.ico" Stretch="UniformToFill" ClipToBounds="True" Margin="10"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Cards principales -->
+                <WrapPanel HorizontalAlignment="Center" ItemHeight="170" ItemWidth="260" Margin="0">
+
+                    <!-- Ver proveedores -->
+                    <Border Background="White" CornerRadius="12" Padding="16" Margin="15"
+                            Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
+                            MouseLeftButtonDown="Border_MouseLeftButtonDown"
+                            Cursor="Hand">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image Source="/Resources/Proveedores.ico" Width="64" Height="64" Margin="0,0,0,12"/>
+                            <TextBlock Text="Ver proveedores" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
                         </StackPanel>
+                    </Border>
 
-                        <!-- Foto del usuario -->
-                        <Border Grid.Column="1" Width="90" Height="90" CornerRadius="65" Background="White" Margin="0,0,40,10" VerticalAlignment="Center" HorizontalAlignment="Right" >
-                            <Image Source="/Resources/icono.ico" Stretch="UniformToFill" ClipToBounds="True" Margin="10"/>
-                        </Border>
-                    </Grid>
-                </Border>
+                    <!-- Cargar producción diaria -->
+                    <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
+                            Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
+                            MouseLeftButtonDown="ProduccionBorder_MouseLeftButtonDown"
+                            Cursor="Hand">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image Source="/Resources/Produccion.ico" Width="64" Height="64" Margin="0,0,0,12"/>
+                            <TextBlock Text="Cargar producción" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
 
-            </Grid>
+                    <!-- Cargar venta diaria -->
+                    <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
+                            Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
+                            MouseLeftButtonDown="VentaBorder_MouseLeftButtonDown"
+                            Cursor="Hand">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image Source="/Resources/Venta.ico" Width="64" Height="64" Margin="0,0,0,12"/>
+                            <TextBlock Text="Cargar venta" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
 
-            <!-- Cards principales -->
-            <WrapPanel HorizontalAlignment="Center" ItemHeight="170" ItemWidth="260" Margin="0">
+                    <!-- Dashboard -->
+                    <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
+                            Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
+                            MouseLeftButtonDown="DashboardBorder_MouseLeftButtonDown"
+                            Cursor="Hand" >
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image Source="/Resources/Dashboard.ico" Width="64" Height="64" Margin="0,0,0,12"/>
+                            <TextBlock Text="Dashboard" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
 
-                <!-- Ver proveedores -->
-                <Border Background="White" CornerRadius="12" Padding="16" Margin="15"
-                        Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
-                        MouseLeftButtonDown="Border_MouseLeftButtonDown"
-                        Cursor="Hand">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Image Source="/Resources/Proveedores.ico" Width="64" Height="64" Margin="0,0,0,12"/>
-                        <TextBlock Text="Ver proveedores" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
+            </StackPanel>
+        </ScrollViewer>
 
-                <!-- Cargar producción diaria -->
-                <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
-                        Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
-                        MouseLeftButtonDown="ProduccionBorder_MouseLeftButtonDown"
-                        Cursor="Hand">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Image Source="/Resources/Produccion.ico" Width="64" Height="64" Margin="0,0,0,12"/>
-                        <TextBlock Text="Cargar producción" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
+        <!-- Texto tamaño base en la parte inferior derecha -->
+        <TextBlock x:Name="DbSizeTextBlock"
+                   FontSize="10"
+                   FontWeight="SemiBold"
+                   Foreground="Gray"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom"
+                   Margin="0,0,10,10"/>
 
-                <!-- Cargar venta diaria -->
-                <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
-                        Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
-                        MouseLeftButtonDown="VentaBorder_MouseLeftButtonDown"
-                        Cursor="Hand">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Image Source="/Resources/Venta.ico" Width="64" Height="64" Margin="0,0,0,12"/>
-                        <TextBlock Text="Cargar venta" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- Dashboard -->
-                <Border Background="White" CornerRadius="12" Padding="16" Margin="15" 
-                        Effect="{StaticResource DropShadow}" Style="{StaticResource card}"
-                        MouseLeftButtonDown="DashboardBorder_MouseLeftButtonDown"
-                        Cursor="Hand" >
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Image Source="/Resources/Dashboard.ico" Width="64" Height="64" Margin="0,0,0,12"/>
-                        <TextBlock Text="Dashboard" FontWeight="Bold" FontSize="16" Foreground="#333333" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-            </WrapPanel>
-        </StackPanel>
-    </ScrollViewer>
+    </DockPanel>
 </UserControl>

@@ -7,8 +7,13 @@ namespace FIDELANDIA.Helpers
 {
     public static class ImagenHelper
     {
-        // Carpeta interna dentro del sistema (junto al ejecutable)
-        private static readonly string carpetaComprobantes = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Comprobantes");
+        // Carpeta segura dentro del perfil del usuario (recomendado)
+        private static readonly string carpetaComprobantes =
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Fidelandia",
+                "Comprobantes"
+            );
 
         public static string? GuardarImagenComprobante()
         {
@@ -24,8 +29,7 @@ namespace FIDELANDIA.Helpers
                 if (dialog.ShowDialog() == true)
                 {
                     // Crear carpeta interna si no existe
-                    if (!Directory.Exists(carpetaComprobantes))
-                        Directory.CreateDirectory(carpetaComprobantes);
+                    Directory.CreateDirectory(carpetaComprobantes);
 
                     // Generar nombre único
                     string nombreArchivo = $"{DateTime.Now:yyyyMMdd_HHmmss}_{Path.GetFileName(dialog.FileName)}";
@@ -34,8 +38,8 @@ namespace FIDELANDIA.Helpers
                     // Copiar el archivo al sistema interno
                     File.Copy(dialog.FileName, destino, true);
 
-                    // Guardar solo la ruta relativa (por ejemplo: Data\Comprobantes\archivo.jpg)
-                    string rutaRelativa = Path.Combine("Data", "Comprobantes", nombreArchivo);
+                    // Guardar solo la ruta relativa (solo el nombre del archivo o subcarpetas internas)
+                    string rutaRelativa = Path.Combine("Comprobantes", nombreArchivo);
 
                     return rutaRelativa;
                 }
@@ -44,7 +48,8 @@ namespace FIDELANDIA.Helpers
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar el comprobante: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el comprobante: {ex.Message}",
+                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }

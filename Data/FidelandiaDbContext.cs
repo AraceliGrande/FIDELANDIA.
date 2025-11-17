@@ -20,13 +20,21 @@ namespace FIDELANDIA.Data
         public DbSet<VentaModel> Venta { get; set; }
         public DbSet<DetalleVentaModel> DetalleVenta { get; set; }
 
-
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=localhost;Database=FidelandiaDB;Trusted_Connection=True;TrustServerCertificate=True;");
+            // ⚡ Usar la cadena guardada en Settings
+            string connectionString = FIDELANDIA.Properties.Settings.Default.ConnectionString;
 
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                optionsBuilder.UseSqlServer(connectionString);
+            }
+            else
+            {
+                throw new Exception("La cadena de conexión no está configurada. Asegúrate de inicializar la aplicación al menos una vez.");
+            }
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 

@@ -230,33 +230,34 @@ namespace FIDELANDIA.Services
         /// <summary>
         /// Obtiene el saldo acumulado por mes en el año.
         /// </summary>
-        public SeriesCollection ObtenerSaldoAcumuladoAnual(out List<string> meses)
+        public SeriesCollection ObtenerSaldoAcumuladoAnual(int anio, out List<string> labels)
         {
-            meses = Enumerable.Range(1, 12)
-                              .Select(m => new DateTime(1, m, 1).ToString("MMM"))
-                              .ToList();
+            labels = new List<string>
+    { "Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic" };
 
-            var valores = new ChartValues<decimal>();
+            var saldos = _dbContext.Transacciones
+                .Where(t => t.Fecha.Year == anio && t.TipoTransaccion == "debe")
+                .GroupBy(t => t.Fecha.Month)
+                .Select(g => new { Mes = g.Key, Monto = g.Sum(x => x.Monto) })
+                .ToList();
 
-            for (int mes = 1; mes <= 12; mes++)
+            decimal acumulado = 0;
+            var valores = new double[12];
+
+            foreach (var m in saldos)
             {
-                var saldo = _dbContext.Proveedores
-                    .SelectMany(p => p.Transacciones)
-                    .Where(t => t.Fecha.Month <= mes)
-                    .Sum(t => t.TipoTransaccion == "debe" ? t.Monto : -t.Monto);
-                valores.Add(saldo);
+                acumulado += m.Monto;
+                valores[m.Mes - 1] = (double)acumulado;
             }
-
 
             return new SeriesCollection
     {
         new LineSeries
         {
-            Title = "Saldo acumulado",
-            Values = valores,
-            Stroke = Brushes.DarkGoldenrod,
-            Fill = Brushes.Transparent,
-            PointGeometrySize = 6
+            Title = $"Saldo acumulado {anio}",
+            Values = new ChartValues<double>(valores),
+            Stroke = Brushes.OrangeRed,
+            Fill = Brushes.Transparent
         }
     };
         }
@@ -264,34 +265,45 @@ namespace FIDELANDIA.Services
         /// <summary>
         /// Obtiene Debe/Haber anual por mes.
         /// </summary>
-        public SeriesCollection ObtenerDebeHaberAnual(out List<string> meses)
+        public SeriesCollection ObtenerDebeHaberAnual(int anio, out List<string> labels)
         {
-            meses = Enumerable.Range(1, 12)
-                              .Select(m => new DateTime(1, m, 1).ToString("MMM"))
-                              .ToList();
+            labels = new List<string>
+    { "Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic" };
 
-            var debe = new ChartValues<decimal>();
-            var haber = new ChartValues<decimal>();
+            var debe = new double[12];
+            var haber = new double[12];
 
-            for (int mes = 1; mes <= 12; mes++)
+            var movimientos = _dbContext.Transacciones
+                .Where(t => t.Fecha.Year == anio)
+                .GroupBy(t => new { t.Fecha.Month, t.TipoTransaccion })
+                .Select(g => new { g.Key.Month, g.Key.TipoTransaccion, Monto = g.Sum(x => x.Monto) })
+                .ToList();
+
+            foreach (var m in movimientos)
             {
-                decimal totalDebe = _dbContext.Transacciones
-                    .Where(t => t.Fecha.Month == mes && t.TipoTransaccion == "debe")
-                    .Sum(t => t.Monto);
-                decimal totalHaber = _dbContext.Transacciones
-                    .Where(t => t.Fecha.Month == mes && t.TipoTransaccion == "haber")
-                    .Sum(t => t.Monto);
-
-                debe.Add(totalDebe);
-                haber.Add(totalHaber);
+                if (m.TipoTransaccion == "debe")
+                    debe[m.Month - 1] = (double)m.Monto;
+                else
+                    haber[m.Month - 1] = (double)m.Monto;
             }
 
             return new SeriesCollection
     {
-        new ColumnSeries { Title = "Debe", Values = debe, Fill = Brushes.CornflowerBlue },
-        new ColumnSeries { Title = "Haber", Values = haber, Fill = Brushes.Orange }
+        new ColumnSeries
+        {
+            Title = $"Debe {anio}",
+            Values = new ChartValues<double>(debe),
+            Fill = Brushes.IndianRed
+        },
+        new ColumnSeries
+        {
+            Title = $"Haber {anio}",
+            Values = new ChartValues<double>(haber),
+            Fill = Brushes.SteelBlue
+        }
     };
         }
+
 
         /// <summary>
         /// Obtiene gastos por categoría anual.

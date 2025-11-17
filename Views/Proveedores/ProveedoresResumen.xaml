@@ -197,7 +197,7 @@
                                 <Border Background="White" CornerRadius="16" Padding="7" Margin="3" BorderBrush="#eee" BorderThickness="1">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,5,0,10" VerticalAlignment="Top">
                                         <TextBlock Text="Mes:" VerticalAlignment="Center" Margin="0,0,15,0"/>
-                                        <ComboBox x:Name="CbMes" Width="80" SelectionChanged="CbMes_SelectionChanged" Margin="0,0,15,0">
+                                        <ComboBox x:Name="CbMes" Width="80" SelectedValuePath="Tag" SelectionChanged="CbMes_SelectionChanged" Margin="0,0,15,0">
                                             <ComboBoxItem Content="Enero" Tag="1"/>
                                             <ComboBoxItem Content="Febrero" Tag="2"/>
                                             <ComboBoxItem Content="Marzo" Tag="3"/>

@@ -105,8 +105,8 @@ namespace FIDELANDIA.Views.Proveedores
             GastosPorCategoriaSeries = service.ObtenerGastosPorCategoria(out _, MesSeleccionado, AnioSeleccionado);
 
             // ==== Evolución anual ====
-            SaldoAcumuladoAnualSeries = service.ObtenerSaldoAcumuladoAnual(out var mesesLabels);
-            DebeHaberAnualSeries = service.ObtenerDebeHaberAnual(out _);
+            SaldoAcumuladoAnualSeries = service.ObtenerSaldoAcumuladoAnual(AnioSeleccionado, out var mesesLabels);
+            DebeHaberAnualSeries = service.ObtenerDebeHaberAnual(AnioSeleccionado, out _);
             MesesLabels = mesesLabels;
 
 
@@ -120,7 +120,9 @@ namespace FIDELANDIA.Views.Proveedores
             // chartPoint.X devuelve el índice de la barra clickeada (0..11)
             int mesSeleccionado = (int)chartPoint.X + 1; // +1 porque Enero=0 índice
             MesSeleccionado = mesSeleccionado;
-            AnioSeleccionado = DateTime.Now.Year;
+
+            CbMes.SelectedValue = mesSeleccionado;
+            TbAnio.Text = AnioSeleccionado.ToString();
 
             // Actualizar datos del card de transacciones
             CargarDatos();
@@ -147,20 +149,34 @@ namespace FIDELANDIA.Views.Proveedores
 
         private void TbAnio_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if (int.TryParse(TbAnio.Text, out int anio))
+            // Si el textbox está vacío, no hacemos nada
+            if (string.IsNullOrWhiteSpace(TbAnio.Text))
+                return;
+
+            // Validar que tenga SOLO números y exactamente 4 dígitos
+            if (TbAnio.Text.Length == 4 && int.TryParse(TbAnio.Text, out int anio))
             {
+                // Año válido → actualizar
                 AnioSeleccionado = anio;
                 CargarDatos();
             }
+            else
+            {
+                // Si tiene menos de 4 dígitos, no recargar datos
+                // NO hacer nada
+            }
         }
+
 
         private void MovimientoAcumuladoChart_DataClick(object sender, ChartPoint chartPoint)
         {
             int mesSeleccionado = (int)chartPoint.X + 1; // +1 porque Enero=0 índice
             MesSeleccionado = mesSeleccionado;
-            AnioSeleccionado = DateTime.Now.Year;
 
             CargarDatos();
+
+            CbMes.SelectedValue = mesSeleccionado;
+            TbAnio.Text = AnioSeleccionado.ToString();
 
             CardTransaccionesMes.Visibility = System.Windows.Visibility.Visible;
 

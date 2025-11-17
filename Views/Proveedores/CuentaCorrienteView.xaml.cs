@@ -17,7 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.IO;
 
 
 namespace FIDELANDIA.Views
@@ -56,11 +56,11 @@ namespace FIDELANDIA.Views
             AbrirComprobante(ruta); 
         }
 
-        private void AbrirComprobante(string ruta)
+        private void AbrirComprobante(string rutaRelativa)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(ruta))
+                if (string.IsNullOrWhiteSpace(rutaRelativa))
                 {
                     MessageBox.Show(
                         "No hay comprobante disponible para esta transacción.",
@@ -71,23 +71,53 @@ namespace FIDELANDIA.Views
                     return;
                 }
 
-                if (!System.IO.File.Exists(ruta))
+                // MISMA carpeta base que usa tu ImagenHelper
+                string carpetaBase = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Fidelandia",
+                    "Comprobantes"
+                );
+
+                // Interpretamos la ruta guardada en BD (ej: "Comprobantes\archivo.pdf")
+                string nombreArchivo = Path.GetFileName(rutaRelativa);
+
+                // Armamos la ruta completa real
+                string rutaCompleta = Path.Combine(carpetaBase, nombreArchivo);
+
+                if (!File.Exists(rutaCompleta))
                 {
                     MessageBox.Show(
-                        "No se encontró el archivo: " + ruta,
-                        "Error",
+                        "El comprobante no existe en el sistema:\n" + rutaCompleta,
+                        "Archivo no encontrado",
                         MessageBoxButton.OK,
-                        MessageBoxImage.Error
+                        MessageBoxImage.Warning
                     );
                     return;
                 }
 
-                // Abrir con el visor de imágenes predeterminado del sistema
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                // Determinar tipo por extensión
+                string extension = Path.GetExtension(rutaCompleta).ToLower();
+
+                if (extension == ".pdf" ||
+                    extension == ".jpg" || extension == ".jpeg" ||
+                    extension == ".png" || extension == ".bmp")
                 {
-                    FileName = ruta,
-                    UseShellExecute = true
-                });
+                    // Abrimos el archivo con la app predeterminada
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = rutaCompleta,
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    MessageBox.Show(
+                        $"Tipo de archivo no soportado: {extension}",
+                        "Aviso",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
+                }
             }
             catch (Exception ex)
             {
@@ -99,6 +129,7 @@ namespace FIDELANDIA.Views
                 );
             }
         }
+
 
         private void BtnPaginaAnterior_Click(object sender, RoutedEventArgs e)
         {

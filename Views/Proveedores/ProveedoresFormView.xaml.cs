@@ -70,11 +70,18 @@ namespace FIDELANDIA.Views
             // LimiteCredito opcional, pero si ingresaron algo debe ser válido
             if (!string.IsNullOrWhiteSpace(TxtLimiteCredito.Text))
             {
-                // Usamos InvariantCulture para que tome punto como separador decimal
-                if (!decimal.TryParse(TxtLimiteCredito.Text.Replace(',', '.'),
-                                      System.Globalization.NumberStyles.Any,
-                                      System.Globalization.CultureInfo.InvariantCulture,
-                                      out limiteCredito))
+                // 1️⃣ Quitamos los puntos que podrían estar como separadores de miles
+                string textoProcesado = TxtLimiteCredito.Text.Replace(".", "");
+
+                // 2️⃣ Reemplazamos la coma decimal por punto
+                textoProcesado = textoProcesado.Replace(',', '.');
+
+                // 3️⃣ Intentamos convertir a decimal usando InvariantCulture (punto como decimal)
+                if (!decimal.TryParse(
+                        textoProcesado,
+                        System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        out limiteCredito))
                 {
                     MessageBox.Show(
                         "El límite de crédito no es un número válido.",

@@ -1,11 +1,11 @@
 ﻿using FIDELANDIA.Data;
-using Microsoft.Data.SqlClient; // <- agregado para SqlConnection
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Windows;
 using FIDELANDIA.Properties;
 using System.Windows.Threading;
-using Microsoft.VisualBasic; // <- agregado para InputBox
+using Microsoft.VisualBasic;
 
 namespace FIDELANDIA
 {
@@ -13,7 +13,7 @@ namespace FIDELANDIA
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            // Captura errores generales
+            // Captura errores generales no controlados
             AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
             {
                 Exception ex = (Exception)args.ExceptionObject;
@@ -31,101 +31,93 @@ namespace FIDELANDIA
 
             try
             {
-                // ⚡ Detectar la instancia de SQL Server y guardar la cadena solo la primera vez
-                if (string.IsNullOrEmpty(FIDELANDIA.Properties.Settings.Default.ConnectionString))
+                string connectionString = Settings.Default.ConnectionString;
+
+                // ⚡ Bucle hasta que tengamos una conexión válida o se cancele
+                while (true)
                 {
-                    string connectionString = "";
                     bool connected = false;
 
-                    // Instancias predeterminadas
-                    string[] defaultServers = { @"localhost\SQLEXPRESS", "localhost" };
-
-                    foreach (var server in defaultServers)
+                    // Si ya había cadena guardada, probamos primero con ella
+                    if (!string.IsNullOrEmpty(connectionString))
                     {
                         try
                         {
-                            using (var testConn = new SqlConnection($"Server={server};Database=master;Trusted_Connection=True;Encrypt=False;"))
+                            using (var testConn = new SqlConnection(connectionString))
                             {
                                 testConn.Open();
-                                connectionString = $"Server={server};Database=FidelandiaDB;Trusted_Connection=True;TrustServerCertificate=True;";
-                                connected = true;
-                                break;
                             }
+                            connected = true;
+                            break; // conexión válida, salimos del bucle
                         }
                         catch
                         {
-                            // No hacer nada, probar siguiente
+                            // falla, pedimos la instancia al usuario
                         }
                     }
 
-                    // Si ninguna instancia funciona, preguntar al usuario
-                    if (!connected)
-                    {
-                        string userServer = Interaction.InputBox(
-                            "No se detectó ninguna instancia de SQL Server local.\n" +
-                            "Por favor ingrese el nombre del servidor SQL (ej: localhost\\SQLEXPRESS):",
-                            "Configurar Servidor SQL",
-                            @"localhost\SQLEXPRESS");
+                    // Pedir al usuario la instancia de SQL Server
+                    string userServer = Interaction.InputBox(
+                        "Ingrese el nombre de la instancia SQL Server (ej: localhost\\SQLEXPRESS):",
+                        "Configurar Servidor SQL",
+                        @"localhost\SQLEXPRESS");
 
-                        if (!string.IsNullOrEmpty(userServer))
-                        {
-                            try
-                            {
-                                using (var testConn = new SqlConnection($"Server={userServer};Database=master;Trusted_Connection=True;Encrypt=False;"))
-                                {
-                                    testConn.Open();
-                                    connectionString = $"Server={userServer};Database=FidelandiaDB;Trusted_Connection=True;TrustServerCertificate=True;";
-                                    connected = true;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show($"No se pudo conectar al servidor proporcionado:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                Current.Shutdown();
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("No se ingresó ningún servidor. La aplicación se cerrará.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            Current.Shutdown();
-                            return;
-                        }
+                    // ⚡ Detectamos si canceló o no escribió nada
+                    if (string.IsNullOrEmpty(userServer))
+                    {
+                        MessageBox.Show("Se canceló la configuración. La aplicación se cerrará.", "Cancelado", MessageBoxButton.OK, MessageBoxImage.Information);
+                        Current.Shutdown();
+                        return;
                     }
 
-                    // Guardar la cadena si se conectó
-                    if (connected)
+                    connectionString = $"Server={userServer};Database=FidelandiaDB;Trusted_Connection=True;TrustServerCertificate=True;";
+
+                    try
                     {
-                        FIDELANDIA.Properties.Settings.Default.ConnectionString = connectionString;
-                        FIDELANDIA.Properties.Settings.Default.Save();
+                        using (var testConn = new SqlConnection(connectionString))
+                        {
+                            testConn.Open();
+                        }
+
+                        // Guardamos la cadena si funciona
+                        Settings.Default.ConnectionString = connectionString;
+                        Settings.Default.Save();
+                        break; // salimos del bucle
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(
+                            $"No se pudo conectar al servidor proporcionado:\n{ex.Message}\n\nIntente nuevamente o presione Cancelar para salir.",
+                            "Error de Conexión",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error
+                        );
+                        connectionString = ""; // fuerza que vuelva a pedir
                     }
                 }
 
-                // Crear la base de datos y ejecutar seed
+                // ⚡ Crear la base y las tablas con EnsureCreated
                 using (var db = new FidelandiaDbContext())
                 {
-                    db.Database.EnsureCreated();
-                    db.Seed();
+                    db.Database.EnsureCreated(); // crea tablas si no existen
+                    db.Seed();                   // llena datos iniciales
                 }
+
+                // ⚡ Lanzar la ventana principal
+                MainWindow main = new MainWindow();
+                main.Show();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"ERROR al inicializar la Base de Datos:\n\n" +
-                    $"{ex.Message}\n\n" +
-                    $"La aplicación se cerrará.",
+                    $"ERROR al inicializar la Base de Datos:\n\n{ex.Message}\n\nLa aplicación se cerrará.",
                     "Error de Base de Datos",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
                 );
-
                 Current.Shutdown();
                 return;
             }
-
-            // Lanzar la ventana principal
-            MainWindow main = new MainWindow();
-            main.Show();
         }
     }
 }
